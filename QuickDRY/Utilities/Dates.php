@@ -12,6 +12,13 @@ use QuickDRYInstance\Common\QuickDRYUser;
  */
 class Dates extends strongType
 {
+    public static function DaysDiff($start_date, $end_date): float
+    {
+        $start_date = strtotime(self::Datestamp($start_date));
+        $end_date = strtotime(self::Datestamp($end_date));
+        return floor(($end_date - $start_date) / 3600.0 / 24.0);
+    }
+
     public static function ConvertToUserDate($datetime, $timezone): string
     {
         $datetime = Dates::Timestamp($datetime);

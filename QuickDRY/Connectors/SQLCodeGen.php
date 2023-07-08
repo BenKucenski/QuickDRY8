@@ -289,7 +289,8 @@ class SQLCodeGen extends strongType
 
             $fk_class = SQL_Base::TableToClass($this->DatabasePrefix, $fk->foreign_table_name, $this->LowerCaseTables, $this->DatabaseTypePrefix);
 
-            $db_use [] = 'use common\\' . $this->DatabaseTypePrefix . '_'  . $this->Database . '\\' . $fk_class . ';';
+            $namespace = strtolower($this->DatabaseConstant ? $this->DatabaseTypePrefix . '_'  . $this->DatabaseConstant : $this->DatabaseTypePrefix . '_'  . $this->Database);
+            $db_use [] = 'use common\\' . $namespace . '\\' . $fk_class . ';';
 
             $class_props[] = ' * @property ' . $fk_class . ' ' . $var;
             $foreign_key_props[] = 'protected ?' . $fk_class . ' $_' . $var . ' = null;';
@@ -345,8 +346,8 @@ class SQLCodeGen extends strongType
             $seens_vars[] = $var;
 
             $fk_class = SQL_Base::TableToClass($this->DatabasePrefix, $fk->foreign_table_name, $this->LowerCaseTables, $this->DatabaseTypePrefix);
-
-            $db_use [] = 'use common\\' . $this->DatabaseTypePrefix . '_'  . $this->Database . '\\' . $fk_class . ';';
+            $namespace = strtolower($this->DatabaseConstant ? $this->DatabaseTypePrefix . '_'  . $this->DatabaseConstant : $this->DatabaseTypePrefix . '_'  . $this->Database);
+            $db_use [] = 'use common\\' . $namespace . '\\' . $fk_class . ';';
 
 
             $class_props[] = ' * @property ' . $fk_class . '[] ' . $var;

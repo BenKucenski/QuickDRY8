@@ -61,9 +61,13 @@ class MySQL extends strongType
                         return mysqli_escape_string($conn, $params[$result[1]]);
                     }
                     return '\'' . mysqli_escape_string($conn, $params[$result[1]]) . '\'';
-                } else {
+                }
+
+                if(is_null($params[$result[1]])) {
                     return 'null';
                 }
+
+                Debug::Halt([$sql, $params], $result[0] . ' does not having a matching parameter (mysql_escape_query).');
             }
             return null;
         }, $sql);

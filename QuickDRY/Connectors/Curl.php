@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use models\_dw_api_log;
 use Psr\Http\Message\ResponseInterface;
+use QuickDRY\Utilities\HTTP;
 
 /**
  * Class Curl

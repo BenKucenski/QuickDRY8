@@ -52,7 +52,7 @@ class Metrics
         $res .= "\r\ntime spent per task (secs)\r\n";
         $res .= "--------------------\r\n";
         foreach (static::$_vars as $name => $last) {
-            $res .= "$name: " . static::$_total[$name] . ' (' . number_format(static::$_total[$name] * 100 / $total, 2) . "%)\r\n";
+            $res .= "$name: " . static::$_total[$name] . ' (' . number_format($total ? static::$_total[$name] * 100 / $total : 0, 2) . "%)\r\n";
         }
         if (sizeof(self::$_running)) {
             $res .= "Still Running\r\n";
