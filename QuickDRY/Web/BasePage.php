@@ -20,28 +20,13 @@ class BasePage extends strongType
     public static ?string $DOCXPageOrientation = null;
     public static ?string $DOCXFileName = null;
     public static ?string $PDFPostRedirect = null;
-    public static ?Request $Request = null;
-    public static ?Session $Session = null;
-    public static ?Cookie $Cookie = null;
-    public static ?Server $Server = null;
     public static ?bool $IncludeMenu = null;
     public static ?array $PostData = null;
     protected static array $Errors = [];
     public static ?string $MasterPage = null;
     private static ?string $MetaTitle = null;
+    public static ?string $CurrentPage = null;
 
-
-    /**
-     * BasePage constructor.
-     * @param Request $Request
-     * @param Session $Session
-     * @param Cookie $Cookie
-     * @param Server|null $Server
-     */
-    public function __construct(Request $Request, Session $Session, Cookie $Cookie, Server $Server = null)
-    {
-        static::Construct($Request, $Session, $Cookie, $Server);
-    }
 
     public static function Get()
     {
@@ -63,9 +48,12 @@ class BasePage extends strongType
 
     }
 
+
     public static function Init()
     {
-
+        $temp = parse_url($_SERVER['REQUEST_URI']);
+        self::$CurrentPage = $temp['path'] ?? '/';
+        self::$PostData = json_decode(file_get_contents('php://input')); // return a standard object
     }
 
     public static function Put()
@@ -99,59 +87,12 @@ class BasePage extends strongType
     }
 
     /**
-     * @param Request $Request
-     * @param Session $Session
-     * @param Cookie $Cookie
-     * @param Server|null $Server
-     */
-    public static function Construct(Request $Request, Session $Session, Cookie $Cookie, Server $Server = null)
-    {
-        static::$Request = $Request;
-        static::$Cookie = $Cookie;
-        static::$Session = $Session;
-        static::$Server = $Server;
-        static::$PostData = json_decode(file_get_contents('php://input')); // return a standard object
-    }
-
-    /**
      * @return string
      */
     public static function GetClassName(): string
     {
         return get_called_class();
     }
-
-
-
-    /**
-     * @param $error
-     */
-    protected function LogError($error)
-    {
-        static::$Errors[] = $error;
-    }
-
-    /**
-     * @return bool
-     */
-    public function HasErrors(): bool
-    {
-        return (bool)sizeof(static::$Errors);
-    }
-
-    /**
-     * @return string
-     */
-    public function RenderErrors(): string
-    {
-        $res = '<div class="PageModelErrors"><ul>';
-        foreach (static::$Errors as $error) {
-            $res .= '<li>' . $error . '</li>';
-        }
-        $res .= '</ul></div>';
-        return $res;
-    }
-
 
     public static function ExportToXLS()
     {

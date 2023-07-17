@@ -12,6 +12,26 @@ use QuickDRYInstance\Common\QuickDRYUser;
  */
 class Dates extends strongType
 {
+    /**
+     * @param $min_date
+     * @param $max_date
+     * @return float|int
+     */
+    public static function FractionalMonthsBetweenDates($min_date, $max_date): float|int
+    {
+        $months = 0;
+        try {
+            $min_date = new DateTime($min_date);
+            $max_date = new DateTime($max_date);
+            $interval = date_diff($min_date, $max_date);
+            $months = ($interval->y * 12) + $interval->m; // Total number of whole months
+            $months += round($interval->d / 30, 1); // Add the month fraction
+        } catch (Exception $ex) {
+            Debug($ex);
+        }
+        return $months;
+    }
+
     public static function DaysDiff($start_date, $end_date): float
     {
         $start_date = strtotime(self::Datestamp($start_date));
