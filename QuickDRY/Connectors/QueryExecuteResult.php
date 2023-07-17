@@ -17,4 +17,6 @@ class QueryExecuteResult extends strongType
     public ?string $numrows = null; // 1\r\n
     public ?array $data = null; // []\r\n
     public ?string $query = null; // \r\n
+
+    public ?SQL_Query $SQL_Query = null;
 }

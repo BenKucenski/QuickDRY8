@@ -1031,7 +1031,9 @@ WHERE
             }
 
             if ($return_query) {
-                return new SQL_Query($sql, $params);
+                $v = new QueryExecuteResult();
+                $v->SQL_Query = new SQL_Query($sql, $params);
+                return $v;
             }
             $res = static::Execute($sql, $params);
 
@@ -1070,7 +1072,7 @@ SET
                 }
             }
             if (!sizeof($props)) {
-                return ['error' => ''];
+                return new QueryExecuteResult();
             }
 
             $sql .= implode(',', $props);
@@ -1081,7 +1083,9 @@ WHERE
 ';
 
             if ($return_query) {
-                return new SQL_Query($sql, $params);
+                $v = new QueryExecuteResult();
+                $v->SQL_Query = new SQL_Query($sql, $params);
+                return $v;
             }
             $res = static::Execute($sql, $params);
         }
@@ -1108,9 +1112,9 @@ WHERE
     /**
      * @param bool $return_query
      *
-     * @return array|SQL_Query
+     * @return QueryExecuteResult|null
      */
-    protected function _Insert(bool $return_query = false)
+    protected function _Insert(bool $return_query = false): ?QueryExecuteResult
     {
         $primary = static::$_primary ?? [];
         $primary_set = true;
@@ -1149,7 +1153,9 @@ INSERT INTO
 
 
         if ($return_query) {
-            return new SQL_Query($sql, $params);
+            $v = new QueryExecuteResult();
+            $v->SQL_Query = new SQL_Query($sql, $params);
+            return $v;
         }
         $res = static::Execute($sql, $params);
 
@@ -1168,9 +1174,9 @@ INSERT INTO
 
     /**
      * @param bool $return_query
-     * @return array|SQL_Query
+     * @return QueryExecuteResult|null
      */
-    protected function _Update(bool $return_query = false)
+    protected function _Update(bool $return_query = false): ?QueryExecuteResult
     {
         if (!sizeof($this->_change_log)) {
             return null;
@@ -1234,7 +1240,9 @@ WHERE
         }
 
         if ($return_query) {
-            return new SQL_Query($sql, $params);
+            $v = new QueryExecuteResult();
+            $v->SQL_Query = new SQL_Query($sql, $params);
+            return $v;
         }
 
 
