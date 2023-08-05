@@ -5,8 +5,14 @@ use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
+/**
+ *
+ */
 class Helpers extends strongType
 {
+    /**
+     * @return bool
+     */
     public static function IsCLI(): bool
     {
         return (php_sapi_name() === 'cli');
@@ -159,7 +165,12 @@ class Helpers extends strongType
 
 // debug functions
 
-    public static function CleanHalt($var, $message = null)
+    /**
+     * @param $var
+     * @param $message
+     * @return void
+     */
+    public static function CleanHalt($var, $message = null): void
     {
         Debug::CleanHalt($var, $message);
     }
@@ -168,11 +179,15 @@ class Helpers extends strongType
      * @param $var
      * @param null $message
      */
-    public static function Halt($var, $message = null)
+    public static function Halt($var, $message = null): void
     {
         Debug::Halt($var, $message);
     }
 
+    /**
+     * @param $path
+     * @return array
+     */
     public static function GetFolderFilesRecursive($path): array
     {
         $directory = new RecursiveDirectoryIterator($path, FilesystemIterator::FOLLOW_SYMLINKS);

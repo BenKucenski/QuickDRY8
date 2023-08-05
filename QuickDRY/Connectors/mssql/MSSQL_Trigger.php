@@ -4,6 +4,9 @@ namespace QuickDRY\Connectors\mssql;
 
 use QuickDRY\Utilities\SimpleReport;
 
+/**
+ *
+ */
 class MSSQL_Trigger extends SimpleReport
 {
     public string $name;

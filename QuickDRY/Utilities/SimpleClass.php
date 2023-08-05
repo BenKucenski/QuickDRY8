@@ -21,7 +21,7 @@ class SimpleClass
     /**
      * @param array $row
      */
-    public function FromRow(array $row)
+    public function FromRow(array $row): void
     {
         foreach ($row as $k => $v) {
             $this->$k = $v;

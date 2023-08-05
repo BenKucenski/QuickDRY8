@@ -2,6 +2,8 @@
 
 namespace QuickDRY\Math;
 
+use JetBrains\PhpStorm\ArrayShape;
+
 /**
  * Class UTMClass
  */
@@ -64,9 +66,9 @@ class UTMClass
 
     /**
      * @param $rad
-     * @return float|int
+     * @return float
      */
-    public static function RadToDeg($rad)
+    public static function RadToDeg($rad): float
     {
         return ($rad * 180.0 / self::$pi);
     }
@@ -94,9 +96,9 @@ class UTMClass
     */
     /**
      * @param $phi
-     * @return float|int
+     * @return float
      */
-    public static function ArcLengthOfMeridian($phi)
+    public static function ArcLengthOfMeridian($phi): float
     {
         //var alpha, beta, gamma, delta, epsilon, n;
         //var result;
@@ -172,13 +174,10 @@ class UTMClass
     */
     /**
      * @param $y
-     * @return float|int
+     * @return float
      */
-    public static function FootpointLatitude($y)
+    public static function FootpointLatitude($y): float
     {
-//        var y_, alpha_, beta_, gamma_, delta_, epsilon_, n;
-//        var result;
-
         /* Precalculate n (Eq. 10.18) */
         $n = (self::$sm_a - self::$sm_b) / (self::$sm_a + self::$sm_b);
 
@@ -240,10 +239,6 @@ class UTMClass
      */
     public static function MapLatLonToXY($phi, $lambda, $lambda0): array
     {
-        //var N, nu2, ep2, t, t2, l;
-        //var l3coef, l4coef, l5coef, l6coef, l7coef, l8coef;
-        //var tmp;
-
         /* Precalculate ep2 */
         $ep2 = (pow(self::$sm_a, 2.0) - pow(self::$sm_b, 2.0)) / pow(self::$sm_b, 2.0);
 
@@ -352,7 +347,7 @@ class UTMClass
      * @param $xy_b
      * @return float|int
      */
-    public static function GetDistance($xy_a, $xy_b)
+    public static function GetDistance($xy_a, $xy_b): float|int
     {
         $a = $xy_a[0] - $xy_b[0];
         $b = $xy_a[1] - $xy_b[1];
@@ -377,7 +372,7 @@ class UTMClass
      * @param $bearing
      * @return array
      */
-    public static function AddKmToLatLon($lat, $lon, $distance, $bearing): array
+    #[ArrayShape(['lat' => 'float', 'lon' => 'float'])] public static function AddKmToLatLon($lat, $lon, $distance, $bearing): array
     {
         $earthRadius = 6371;
         $lat1 = deg2rad($lat);

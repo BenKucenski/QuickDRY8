@@ -143,7 +143,7 @@ class JsonStatusResult extends strongType
      * @param $HTTP_RESPONSE_CODE
      * @param JsonStatusResult $error
      */
-    public static function SetResponseCode($HTTP_RESPONSE_CODE, self $error)
+    public static function SetResponseCode($HTTP_RESPONSE_CODE, self $error): void
     {
         switch ($HTTP_RESPONSE_CODE) {
             case HTTP_STATUS_CONTINUE:

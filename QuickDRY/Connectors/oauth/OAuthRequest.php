@@ -1,7 +1,11 @@
 <?php
 
-namespace QuickDRY\Connectors;
+namespace QuickDRY\Connectors\oauth;
 
+
+/**
+ *
+ */
 class OAuthRequest
 {
     protected array $parameters;
@@ -12,6 +16,11 @@ class OAuthRequest
     public static string $version = '1.0';
     public static string $POST_INPUT = 'php://input';
 
+    /**
+     * @param string $http_method
+     * @param string $http_url
+     * @param array|NULL $parameters
+     */
     public function __construct(string $http_method, string $http_url, array $parameters = NULL)
     {
         $parameters = ($parameters) ?: [];
@@ -63,7 +72,7 @@ class OAuthRequest
 
             // We have a Authorization-header with OAuth data. Parse the header
             // and add those overriding any duplicates from GET or POST
-            if (isset($request_headers['Authorization']) && substr($request_headers['Authorization'], 0, 6) == 'OAuth ') {
+            if (isset($request_headers['Authorization']) && str_starts_with($request_headers['Authorization'], 'OAuth ')) {
                 $header_parameters = OAuthUtil::split_header(
                     $request_headers['Authorization']
                 );
@@ -98,7 +107,13 @@ class OAuthRequest
         return new OAuthRequest($http_method, $http_url, $parameters);
     }
 
-    public function set_parameter($name, $value, $allow_duplicates = true)
+    /**
+     * @param $name
+     * @param $value
+     * @param bool $allow_duplicates
+     * @return void
+     */
+    public function set_parameter($name, $value, bool $allow_duplicates = true): void
     {
         if ($allow_duplicates && isset($this->parameters[$name])) {
             // We have already added parameter(s) with this name, so add to the list
@@ -114,17 +129,28 @@ class OAuthRequest
         }
     }
 
-    public function get_parameter($name)
+    /**
+     * @param string $name
+     * @return mixed|null
+     */
+    public function get_parameter(string $name): mixed
     {
         return $this->parameters[$name] ?? null;
     }
 
+    /**
+     * @return array
+     */
     public function get_parameters(): array
     {
         return $this->parameters;
     }
 
-    public function unset_parameter($name)
+    /**
+     * @param string $name
+     * @return void
+     */
+    public function unset_parameter(string $name): void
     {
         unset($this->parameters[$name]);
     }
@@ -231,7 +257,7 @@ class OAuthRequest
             $out = 'Authorization: OAuth';
 
         foreach ($this->parameters as $k => $v) {
-            if (substr($k, 0, 5) != 'oauth') {
+            if (!str_starts_with($k, 'oauth')) {
                 continue;
             }
             if (is_array($v)) {
@@ -247,13 +273,22 @@ class OAuthRequest
         return $out;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->to_url();
     }
 
 
-    public function sign_request($signature_method, $consumer, $token)
+    /**
+     * @param $signature_method
+     * @param $consumer
+     * @param $token
+     * @return void
+     */
+    public function sign_request($signature_method, $consumer, $token): void
     {
         $this->set_parameter(
             'oauth_signature_method',
@@ -264,7 +299,13 @@ class OAuthRequest
         $this->set_parameter('oauth_signature', $signature, false);
     }
 
-    public function build_signature($signature_method, $consumer, $token)
+    /**
+     * @param $signature_method
+     * @param $consumer
+     * @param $token
+     * @return mixed
+     */
+    public function build_signature($signature_method, $consumer, $token): mixed
     {
         return $signature_method->build_signature($this, $consumer, $token);
     }

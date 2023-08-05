@@ -3,7 +3,6 @@
 namespace QuickDRY\Utilities;
 
 
-
 use DateTime;
 use ReflectionException;
 use ReflectionProperty;
@@ -16,21 +15,29 @@ class strongType
     private array $_missing_properties = [];
     protected static ?array $_alias = null;
 
+    /**
+     * @return void
+     */
     public function isMissingProperties(): void
     {
         self::checkMissingProperties($this->_missing_properties, static::class);
     }
 
+    /**
+     * @param array $missing_properties
+     * @param string $class
+     * @return void
+     */
     public static function checkMissingProperties(array $missing_properties, string $class): void
     {
-        if(!CONST_HALT_ON_MISSING_PARAMS) {
+        if (!CONST_HALT_ON_MISSING_PARAMS) {
             return;
         }
-        if(!sizeof($missing_properties)) {
+        if (!sizeof($missing_properties)) {
             return;
         }
         $code = [];
-        foreach($missing_properties as $key => $val) {
+        foreach ($missing_properties as $key => $val) {
             if (is_array($val)) {
                 $code[] = 'public ?array $' . $key . ' = null; // ' . json_encode($val);
             } elseif (is_object($val) && get_class($val) === DateTime::class) {
@@ -55,9 +62,14 @@ class strongType
         self::checkMissingProperties($this->_missing_properties, static::class);
     }
 
+    /**
+     * @param $name
+     * @param $value
+     * @return void
+     */
     public function __set($name, $value)
     {
-        if(isset(static::$_alias[$name])) {
+        if (isset(static::$_alias[$name])) {
             $name = static::$_alias[$name];
         }
 
@@ -74,14 +86,16 @@ class strongType
      */
     public function toArray(bool $exclude_empty = false): array
     {
-        $values = $exclude_empty ? array_filter(get_object_vars($this), static function($var){return $var !== null;}) : get_object_vars($this);
-        foreach($values as $k => $v) {
-            if($k[0] === '_') {
+        $values = $exclude_empty ? array_filter(get_object_vars($this), static function ($var) {
+            return $var !== null;
+        }) : get_object_vars($this);
+        foreach ($values as $k => $v) {
+            if ($k[0] === '_') {
                 unset($values[$k]);
                 continue;
             }
-            if(is_object($v)) {
-                if(get_class($v) === DateTime::class) {
+            if (is_object($v)) {
+                if (get_class($v) === DateTime::class) {
                     $values[$k] = Dates::Timestamp($v);
                 }
             }
@@ -106,7 +120,7 @@ class strongType
                 $this->$k = $v;
                 continue;
             }
-            switch($rp->getType()->getName()) {
+            switch ($rp->getType()->getName()) {
                 case 'DateTime':
                 case 'array':
                 case 'string':
@@ -141,7 +155,7 @@ class strongType
             $this->fromData($data);
         }
 
-        if($item) {
+        if ($item) {
             $data = json_decode(json_encode($item), true);
             $this->fromData($data);
         }
@@ -203,10 +217,8 @@ class strongType
             foreach ($cols as $col) {
                 if (property_exists($item, $col)) {
                     $row[] = $item->$col;
-                } else {
-                    if ($key = array_search($col, self::$_alias)) {
-                        $row[] = $item->$key;
-                    }
+                } elseif ($key = array_search($col, self::$_alias)) {
+                    $row[] = $item->$key;
                 }
             }
             fputcsv($output, $row);

@@ -25,7 +25,7 @@ class Cookie
      * @param string $value
      * @param float $expires
      */
-    public static function Set(string $name, string $value, float $expires = 24)
+    public static function Set(string $name, string $value, float $expires = 24): void
     {
         if ($expires) {
             setcookie($name, $value, time() + $expires * 60 * 60, '/', HTTP_HOST);

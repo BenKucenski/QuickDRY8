@@ -32,6 +32,11 @@ class Dates extends strongType
         return $months;
     }
 
+    /**
+     * @param $start_date
+     * @param $end_date
+     * @return float
+     */
     public static function DaysDiff($start_date, $end_date): float
     {
         $start_date = strtotime(self::Datestamp($start_date));
@@ -39,6 +44,12 @@ class Dates extends strongType
         return floor(($end_date - $start_date) / 3600.0 / 24.0);
     }
 
+    /**
+     * @param $datetime
+     * @param $timezone
+     * @return string
+     * @throws Exception
+     */
     public static function ConvertToUserDate($datetime, $timezone): string
     {
         $datetime = Dates::Timestamp($datetime);
@@ -53,6 +64,11 @@ class Dates extends strongType
         }
     }
 
+    /**
+     * @param $datetime
+     * @param $timezone
+     * @return string
+     */
     public static function ConvertToServerDate($datetime, $timezone): string
     {
         $datetime = Dates::Timestamp($datetime);
@@ -229,9 +245,9 @@ class Dates extends strongType
     /**
      * @param $date
      * @param null $null
-     * @return false|int|null
+     * @return float|bool|int|string|null
      */
-    public static function DateToInt($date, $null = null)
+    public static function DateToInt($date, $null = null): float|bool|int|string|null
     {
         if ($date instanceof DateTime) {
             $temp = $date->getTimestamp();
@@ -336,11 +352,14 @@ class Dates extends strongType
      * @param int $offset
      * @return string|null
      */
-    public static function AdjustedTime($time = 0, int $offset = 0): ?string
+    public static function AdjustedTime(mixed $time = 0, int $offset = 0): ?string
     {
         if (!$time) $time = time();
 
-        if (!is_numeric($time)) $time = strtotime($time);
+        if (!is_numeric($time)) {
+            $time = strtotime($time);
+        }
+
         if ($offset < 0) {
             $time = strtotime($offset . ' hour', $time);
         } else {
@@ -414,7 +433,7 @@ class Dates extends strongType
      * @param DateTime|string $dateTime
      * @return string
      */
-    public static function SQLDateTimeToString($dateTime): string
+    public static function SQLDateTimeToString(mixed $dateTime): string
     {
         if (!is_object($dateTime)) {
             try {
@@ -598,7 +617,7 @@ class Dates extends strongType
     /**
      * @return false|int
      */
-    public static function GMTtime()
+    public static function GMTtime(): bool|int
     {
         return strtotime(gmdate('m/d/Y H:i:s'));
     }

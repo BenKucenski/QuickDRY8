@@ -350,7 +350,7 @@ database = ' . $this->current_db . '
         if (defined('QUERY_RETRY')) {
             $count = 0;
             while (!$res && $count <= QUERY_RETRY) {
-                $res = @mysqli_query($this->db, $sql, MYSQLI_USE_RESULT);
+                $res = mysqli_query($this->db, $sql, MYSQLI_USE_RESULT);
                 if (!$res) {
                     if (mysqli_error($this->db)) {
                         break;
@@ -364,7 +364,7 @@ database = ' . $this->current_db . '
                 $count++;
             }
         } else {
-            $res = @mysqli_query($this->db, $sql, MYSQLI_USE_RESULT);
+            $res = mysqli_query($this->db, $sql, MYSQLI_USE_RESULT);
         }
 
         if ($res && is_object($res)) {

@@ -21,15 +21,15 @@ class SimpleExcel_Reader extends strongType
     public static function FromFilename(string $file, bool $process_cells = true, bool $debug = false, int $row_limit = null): array
     {
         if ($debug) {
-            Log::Insert('SimpleExcel_Reader::FromFilename', true);
+            Log::Insert('SimpleExcel_Reader::FromFilename');
         }
         try {
             if ($debug) {
-                Log::Insert('Loading', true);
+                Log::Insert('Loading');
             }
             $spreadsheet = IOFactory::load($file);
             if ($debug) {
-                Log::Insert('Done Loading', true);
+                Log::Insert('Done Loading');
             }
 
 
@@ -49,20 +49,20 @@ class SimpleExcel_Reader extends strongType
     public static function ToReport(Spreadsheet $spreadsheet, bool $process_cells = true, bool $debug = false, int $row_limit = null): array
     {
         if ($debug) {
-            Log::Insert('SimpleExcel_Reader::ToReport', true);
+            Log::Insert('SimpleExcel_Reader::ToReport');
         }
         $report = [];
         $sheetCount = $spreadsheet->getSheetCount();
         $sheetNames = $spreadsheet->getSheetNames();
 
         if ($debug) {
-            Log::Insert('Sheet Count: ' . $sheetCount, true);
+            Log::Insert('Sheet Count: ' . $sheetCount);
         }
 
         for ($sheet = 0; $sheet < $sheetCount; $sheet++) {
             try {
                 if ($debug) {
-                    Log::Insert('Sheet: ' . $sheetNames[$sheet], true);
+                    Log::Insert('Sheet: ' . $sheetNames[$sheet]);
                 }
 
                 $activeSheet = $spreadsheet->setActiveSheetIndex($sheet);
@@ -73,13 +73,13 @@ class SimpleExcel_Reader extends strongType
                 $cols = $activeSheet->getHighestColumn();
 
                 if ($debug) {
-                    Log::Insert('Rows: ' . $rows . ', Cols: ' . $cols, true);
+                    Log::Insert('Rows: ' . $rows . ', Cols: ' . $cols);
                 }
 
                 $per_page = 100;
                 for ($row = 1; $row <= $rows; $row += $per_page) {
                     if ($debug) {
-                        Log::Insert($row . ' / ' . $rows, true);
+                        Log::Insert($row . ' / ' . $rows);
                     }
                     $end = ($row + $per_page - 1);
                     if ($end > $rows) {
@@ -99,11 +99,11 @@ class SimpleExcel_Reader extends strongType
                 }
 
                 if ($debug) {
-                    Log::Insert('Done Reading Data', true);
+                    Log::Insert('Done Reading Data');
                 }
 
             } catch (Exception $ex) {
-                Halt($ex);
+                Debug($ex);
             }
         }
         return $report;

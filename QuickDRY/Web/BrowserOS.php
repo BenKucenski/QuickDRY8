@@ -22,7 +22,7 @@ class BrowserOS
     /**
      *
      */
-    public static function Configure()
+    public static function Configure(): void
     {
         $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
         if ($ua == '') return;

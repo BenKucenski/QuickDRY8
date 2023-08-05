@@ -7,15 +7,24 @@ use QuickDRY\Connectors\QueryExecuteResult;
 use QuickDRY\Utilities\Dates;
 use QuickDRY\Utilities\Log;
 
+/**
+ *
+ */
 class MySQL_Queue
 {
     private array $_sql = [];
 
+    /**
+     * @return int
+     */
     public function Count(): int
     {
         return sizeof($this->_sql);
     }
 
+    /**
+     * @return QueryExecuteResult|null
+     */
     public function Flush(): ?QueryExecuteResult
     {
         if (!$this->Count()) {

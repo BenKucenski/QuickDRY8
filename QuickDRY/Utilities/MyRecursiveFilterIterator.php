@@ -4,8 +4,14 @@ namespace QuickDRY\Utilities;
 
 use RecursiveFilterIterator;
 
+/**
+ *
+ */
 class MyRecursiveFilterIterator extends RecursiveFilterIterator
 {
+    /**
+     * @return bool
+     */
     public function accept(): bool
     {
         $filename = $this->current()->getFilename();

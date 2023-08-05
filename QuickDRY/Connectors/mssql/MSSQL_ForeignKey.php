@@ -22,7 +22,7 @@ class MSSQL_ForeignKey
     /**
      * @param $row
      */
-    public function FromRow($row)
+    public function FromRow($row): void
     {
         foreach ($row as $key => $value) {
             switch ($key) {
@@ -54,14 +54,14 @@ class MSSQL_ForeignKey
         }
     }
 
-    public function AddRow($row)
+    /**
+     * @param $row
+     * @return void
+     */
+    public function AddRow($row): void
     {
         if (!is_array($this->column_name)) {
             $this->column_name = [$this->column_name];
-        }
-
-        if (!is_array($this->foreign_column_name)) {
-            $this->foreign_column_name = [$this->foreign_column_name];
         }
 
         $this->column_name[$row['REFERENCED_COLUMN_ID']] = $row['FK_COLUMN_NAME'];

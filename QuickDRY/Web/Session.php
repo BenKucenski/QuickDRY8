@@ -25,7 +25,10 @@ class Session
         return $vals;
     }
 
-    public static function ClearAll()
+    /**
+     * @return void
+     */
+    public static function ClearAll(): void
     {
         foreach ($_SESSION as $n => $v) {
             unset(static::$_VALS[$n]);
@@ -38,7 +41,7 @@ class Session
      *
      * @return mixed|string
      */
-    public function Get(string $name)
+    public function Get(string $name): mixed
     {
         if (isset($_SESSION[$name])) {
             return unserialize($_SESSION[$name]);
@@ -63,7 +66,7 @@ class Session
     /**
      * @param $name
      */
-    public static function Clear($name = null)
+    public static function Clear($name = null): void
     {
         if (is_null($name)) {
             session_destroy();
@@ -87,7 +90,7 @@ class Session
      * @param $value
      * @return mixed
      */
-    public function Set($name, $value)
+    public function Set($name, $value): mixed
     {
         $_SESSION[$name] = serialize($value);
         static::$_VALS[$name] = $_SESSION[$name];

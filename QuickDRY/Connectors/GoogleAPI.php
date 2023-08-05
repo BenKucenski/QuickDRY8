@@ -53,7 +53,7 @@ class GoogleAPI
     /**
      *
      */
-    public function GetRequest()
+    public function GetRequest(): void
     {
         $contextOptions = [
             'ssl' => [

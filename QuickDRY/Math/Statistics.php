@@ -4,6 +4,9 @@ namespace QuickDRY\Math;
 
 use QuickDRY\Utilities\Debug;
 
+/**
+ *
+ */
 class Statistics
 {
     public float $m;
@@ -14,6 +17,12 @@ class Statistics
     public float $xm;
     public float $ym;
 
+    /**
+     * @param $data
+     * @param $x_key
+     * @param $y_key
+     * @return bool
+     */
     public function _rsquare($data, $x_key, $y_key): bool
     {
         $xm = static::mean($data, $x_key);
@@ -40,7 +49,12 @@ class Statistics
         return true;
     }
 
-    public static function mean($list, $key = null)
+    /**
+     * @param $list
+     * @param $key
+     * @return float|int
+     */
+    public static function mean($list, $key = null): float|int
     {
         $t = 0;
         if (sizeof($list) == 0) {
@@ -60,6 +74,14 @@ class Statistics
         return $t / sizeof($list);
     }
 
+    /**
+     * @param $xm
+     * @param $ym
+     * @param $data
+     * @param $x_key
+     * @param $y_key
+     * @return array
+     */
     public static function mb($xm, $ym, $data, $x_key, $y_key): array
     {
         $mb = [];
@@ -76,6 +98,12 @@ class Statistics
         return $mb;
     }
 
+    /**
+     * @param $data
+     * @param $x_key
+     * @param $y_key
+     * @return float
+     */
     public static function rsquare($data, $x_key, $y_key): float
     {
         $xm = static::mean($data, $x_key);
@@ -94,7 +122,13 @@ class Statistics
         return 1.0 - $n / $d;
     }
 
-    public static function stddev($data, $key = null, $minus_one = true)
+    /**
+     * @param $data
+     * @param $key
+     * @param bool $minus_one
+     * @return float
+     */
+    public static function stddev($data, $key = null, bool $minus_one = true): float
     {
         if (!sizeof($data)) {
             return 0;

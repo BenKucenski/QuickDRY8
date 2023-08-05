@@ -22,7 +22,7 @@ class MySQL_ForeignKey
     /**
      * @param array $row
      */
-    public function FromRow(array $row)
+    public function FromRow(array $row): void
     {
         foreach ($row as $key => $value) {
             switch ($key) {
@@ -45,7 +45,11 @@ class MySQL_ForeignKey
         }
     }
 
-    public function AddRow($row)
+    /**
+     * @param $row
+     * @return void
+     */
+    public function AddRow($row): void
     {
         if (!is_array($this->column_name)) {
             $this->column_name = [$this->column_name];

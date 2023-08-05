@@ -4,6 +4,9 @@ namespace QuickDRY\Web;
 
 use QuickDRY\Utilities\strongType;
 
+/**
+ *
+ */
 class PDFMargins extends strongType
 {
     public ?string $Units;

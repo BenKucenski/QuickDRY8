@@ -1,28 +1,40 @@
 <?php
 
-namespace QuickDRY\Connectors;
+namespace QuickDRY\Connectors\oauth;
 
+
+/**
+ *
+ */
 class OAuthUtil
 {
-    public static function urlencode_rfc3986($input)
+    /**
+     * @param $input
+     * @return array|string|string[]
+     */
+    public static function urlencode_rfc3986($input): array|string
     {
         if (is_array($input)) {
             return array_map(['OAuthUtil', 'urlencode_rfc3986'], $input);
-        } else if (is_scalar($input)) {
+        } elseif (is_scalar($input)) {
             return str_replace(
                 '+',
                 ' ',
                 str_replace('%7E', '~', rawurlencode($input))
             );
-        } else {
-            return '';
         }
+        return '';
+
     }
 
 
     // This decode function isn't taking into consideration the above
     // modifications to the encoding process. However, this method doesn't
     // seem to be used anywhere so leaving it as is.
+    /**
+     * @param string $string
+     * @return string
+     */
     public static function urldecode_rfc3986(string $string): string
     {
         return urldecode($string);
@@ -33,7 +45,12 @@ class OAuthUtil
     // Can filter out any non-oauth parameters if needed (default behaviour)
     // May 28th, 2010 - method updated to tjerk.meesters for a speed improvement.
     //                  see http://code.google.com/p/oauth/issues/detail?id=163
-    public static function split_header($header, $only_allow_oauth_parameters = true): array
+    /**
+     * @param $header
+     * @param bool $only_allow_oauth_parameters
+     * @return array
+     */
+    public static function split_header($header, bool $only_allow_oauth_parameters = true): array
     {
         $params = [];
         if (preg_match_all('/(' . ($only_allow_oauth_parameters ? 'oauth_' : '') . '[a-z_-]*)=(:?"([^"]*)"|([^,]*))/', $header, $matches)) {
@@ -48,6 +65,10 @@ class OAuthUtil
     }
 
     // helper to try to sort out headers for people who aren't running apache
+
+    /**
+     * @return array
+     */
     public static function get_headers(): array
     {
         if (function_exists('apache_request_headers')) {
@@ -78,7 +99,7 @@ class OAuthUtil
                 $out['Content-Type'] = $_ENV['CONTENT_TYPE'];
 
             foreach ($_SERVER as $key => $value) {
-                if (substr($key, 0, 5) == 'HTTP_') {
+                if (str_starts_with($key, 'HTTP_')) {
                     // this is chaos, basically it is just there to capitalize the first
                     // letter of every word that is not an initial HTTP and strip HTTP
                     // code from przemek
@@ -97,6 +118,10 @@ class OAuthUtil
     // This function takes a input like a=b&a=c&d=e and returns the parsed
     // parameters like this
     // array('a' => array('b','c'), 'd' => 'e')
+    /**
+     * @param $input
+     * @return array
+     */
     public static function parse_parameters($input): array
     {
         if (!isset($input) || !$input) return [];
@@ -127,6 +152,10 @@ class OAuthUtil
         return $parsed_parameters;
     }
 
+    /**
+     * @param $params
+     * @return string
+     */
     public static function build_http_query($params): string
     {
         if (!$params) return '';

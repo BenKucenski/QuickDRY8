@@ -14,11 +14,19 @@ use stdClass;
 use const QuickDRY\Utilities\HTTP_STATUS_CALM_DOWN;
 use const QuickDRY\Utilities\HTTP_STATUS_UNAUTHORIZED;
 
+/**
+ *
+ */
 class Security extends strongType
 {
     public static string $cipher = 'AES-256-CFB';
 
     public static string $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_';
+
+    /**
+     * @param string $token
+     * @return string
+     */
     public static function convertToken(string $token): string
     {
         $m = strlen(self::$chars);
@@ -32,6 +40,9 @@ class Security extends strongType
         return $new_token;
     }
 
+    /**
+     * @return string
+     */
     public static function generateToken(): string
     {
         try {
@@ -42,6 +53,10 @@ class Security extends strongType
         return '';
     }
 
+    /**
+     * @param $plaintext
+     * @return string
+     */
     public static function encrypt($plaintext): string
     {
         $ivlen = openssl_cipher_iv_length(self::$cipher);
@@ -52,7 +67,11 @@ class Security extends strongType
         return $ciphertext . '::' . base64_encode($iv) . '::' . base64_encode($tag);
     }
 
-    public static function decryptBase64(string $data)
+    /**
+     * @param string $data
+     * @return bool|string
+     */
+    public static function decryptBase64(string $data): bool|string
     {
         $parts = explode('::', $data);
         return self::decrypt(
@@ -62,11 +81,22 @@ class Security extends strongType
         );
     }
 
-    public static function decrypt($ciphertext, $iv, $tag)
+    /**
+     * @param $ciphertext
+     * @param $iv
+     * @param $tag
+     * @return false|string
+     */
+    public static function decrypt($ciphertext, $iv, $tag): bool|string
     {
         return openssl_decrypt($ciphertext, self::$cipher, MASTER_SECRET_KEY, 0, $iv, $tag);
     }
 
+    /**
+     * @param array $data
+     * @param int $expire_seconds
+     * @return string
+     */
     public static function createBearerToken(array $data, int $expire_seconds): string
     {
         $issuedAt = new DateTimeImmutable();
@@ -88,6 +118,10 @@ class Security extends strongType
         );
     }
 
+    /**
+     * @param string $token
+     * @return stdClass|null
+     */
     public static function decodeBearerToken(string $token): ?stdClass
     {
         // https://stackoverflow.com/questions/72278051/why-is-jwtdecode-returning-status-kid-empty-unable-to-lookup-corr
@@ -97,23 +131,28 @@ class Security extends strongType
             switch($ex->getMessage()) {
                 case 'Expired token':
                     HTTP::ExitJSON(['error' => 'token expired'], HTTP_STATUS_UNAUTHORIZED);
-                    break;
+
                 case 'Signature verification failed':
                 case 'Wrong number of segments':
                     HTTP::ExitJSON(['error' => 'invalid token'], HTTP_STATUS_UNAUTHORIZED);
-                    break;
             }
             HTTP::ExitJSON(['error' => $ex->getMessage()]);
         }
-        return null;
     }
 
+    /**
+     * @param string $token
+     * @return int
+     */
     public static function getExpirationTimestamp(string $token): int
     {
         $data = self::decodeBearerToken($token);
         return intval($data->exp);
     }
 
+    /**
+     * @return string|null
+     */
     public static function validateHeaders(): ?string
     {
         Log::Insert('validateHeaders');
@@ -131,6 +170,10 @@ class Security extends strongType
         return null;
     }
 
+    /**
+     * @param callable|null $checkCount
+     * @return array|null
+     */
     public static function validateRequest(callable $checkCount = null): ?array
     {
         $token = $_SERVER['HTTP_AUTHORIZATION'] ?? null;

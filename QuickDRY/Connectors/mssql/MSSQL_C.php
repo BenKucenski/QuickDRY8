@@ -9,7 +9,10 @@ class MSSQL_C extends MSSQL_Core
 {
     protected static ?MSSQL_Connection $connection = null;
 
-    protected static function _connect()
+    /**
+     * @return void
+     */
+    protected static function _connect(): void
     {
         if (!defined('MSSQLC_HOST')) {
             exit('MSSQLC_HOST');

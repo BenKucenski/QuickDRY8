@@ -9,7 +9,10 @@ class MySQL_B extends MySQL_Core
 {
     protected static ?MySQL_Connection $connection = null;
 
-    protected static function _connect()
+    /**
+     * @return void
+     */
+    protected static function _connect(): void
     {
         if (!defined('MYSQLB_HOST')) {
             exit('MYSQLB_HOST');

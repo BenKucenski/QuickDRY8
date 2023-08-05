@@ -5,6 +5,9 @@ namespace QuickDRY\Utilities;
 
 use QuickDRY\Utilities\strongType;
 
+/**
+ *
+ */
 class Chart extends strongType
 {
     public float $width;
@@ -21,6 +24,10 @@ class Chart extends strongType
     public float $chart_width;
     public float $chart_height;
 
+    /**
+     * @param $width
+     * @param $height
+     */
     public function __construct($width, $height)
     {
         $this->width = $width;
@@ -29,7 +36,14 @@ class Chart extends strongType
         imagefill($this->im, 0, 0, $this->GetColor(255, 255, 255));
     }
 
-    public function SetChart($x, $y, $width, $height)
+    /**
+     * @param $x
+     * @param $y
+     * @param $width
+     * @param $height
+     * @return void
+     */
+    public function SetChart($x, $y, $width, $height): void
     {
         $this->chart_x = $x;
         $this->chart_y = $y;
@@ -37,20 +51,37 @@ class Chart extends strongType
         $this->chart_height = $height;
     }
 
-    public function SetStartPoint($x, $y)
+    /**
+     * @param $x
+     * @param $y
+     * @return void
+     */
+    public function SetStartPoint($x, $y): void
     {
         $this->cur_x = $x;
         $this->cur_y = $this->height - $y;
     }
 
-    public function SetStartPointRatio($x, $y)
+    /**
+     * @param $x
+     * @param $y
+     * @return void
+     */
+    public function SetStartPointRatio($x, $y): void
     {
         $x = floor($x * $this->width);
         $y = floor($y * $this->height);
         $this->SetStartPoint($x, $y);
     }
 
-    public function PlotPointRatio($x, $y, $width, $height = null)
+    /**
+     * @param $x
+     * @param $y
+     * @param $width
+     * @param $height
+     * @return void
+     */
+    public function PlotPointRatio($x, $y, $width, $height = null): void
     {
         if (is_null($height))
             $height = $width;
@@ -60,7 +91,14 @@ class Chart extends strongType
         imagearc($this->im, $x, $y, $width, $height, 0, 360, $this->cur_color);
     }
 
-    public function PlotChartPointRatio($x, $y, $width, $height = null)
+    /**
+     * @param $x
+     * @param $y
+     * @param $width
+     * @param $height
+     * @return void
+     */
+    public function PlotChartPointRatio($x, $y, $width, $height = null): void
     {
         if (is_null($height))
             $height = $width;
@@ -70,7 +108,12 @@ class Chart extends strongType
         imagearc($this->im, $x, $y, $width, $height, 0, 360, $this->cur_color);
     }
 
-    public function LineToRatio($x, $y)
+    /**
+     * @param $x
+     * @param $y
+     * @return void
+     */
+    public function LineToRatio($x, $y): void
     {
         $x = floor($x * $this->width);
         $y = floor((1.0 - $y) * $this->height);
@@ -78,24 +121,46 @@ class Chart extends strongType
         imageline($this->im, $x, $y, $this->cur_x, $this->cur_y, $this->cur_color);
     }
 
-    public function SetColor($r, $g, $b)
+    /**
+     * @param $r
+     * @param $g
+     * @param $b
+     * @return void
+     */
+    public function SetColor($r, $g, $b): void
     {
         $this->cur_color = $this->GetColor($r, $g, $b);
     }
 
-    public function SetFont($x)
+    /**
+     * @param $x
+     * @return void
+     */
+    public function SetFont($x): void
     {
         $this->cur_font = $x;
     }
 
-    public function WriteRatio($str, $x, $y)
+    /**
+     * @param $str
+     * @param $x
+     * @param $y
+     * @return void
+     */
+    public function WriteRatio($str, $x, $y): void
     {
         $x = floor($x * $this->width);
         $y = floor((1.0 - $y) * $this->height);
         imagestring($this->im, $this->cur_font, $x, $y, $str, $this->cur_color);
     }
 
-    public function WriteChartRatio($str, $x, $y)
+    /**
+     * @param $str
+     * @param $x
+     * @param $y
+     * @return void
+     */
+    public function WriteChartRatio($str, $x, $y): void
     {
         $x = floor($x * $this->chart_width) + $this->chart_x;
         $y = floor((1.0 - $y) * $this->chart_height) + $this->chart_y;
@@ -103,11 +168,20 @@ class Chart extends strongType
     }
 
 
-    private function GetColor($r, $g, $b)
+    /**
+     * @param $r
+     * @param $g
+     * @param $b
+     * @return false|int
+     */
+    private function GetColor($r, $g, $b): bool|int
     {
         return imagecolorallocate($this->im, $r, $g, $b);
     }
 
+    /**
+     * @return bool
+     */
     public function GetJpeg(): bool
     {
         imagestring($this->im, 5, 1, 1, strtoupper($this->title), $this->GetColor(0, 0, 0));

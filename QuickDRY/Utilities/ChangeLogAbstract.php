@@ -18,5 +18,8 @@ abstract class ChangeLogAbstract extends strongType
     public string $object_type;
     public bool $is_deleted;
 
-    abstract public function Save();
+    /**
+     * @return mixed
+     */
+    abstract public function Save(): mixed;
 }

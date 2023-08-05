@@ -68,12 +68,12 @@ class Server
     {
         $res = [];
         foreach ($this->_VALS as $k => $v) {
-            if (!$prefix || substr($k, 0, strlen($prefix)) === $prefix) {
+            if (!$prefix || str_starts_with($k, $prefix)) {
                 $res[$k] = $this->$k;
             }
         }
         foreach ($_SERVER as $k => $v) {
-            if (!$prefix || substr($k, 0, strlen($prefix)) === $prefix) {
+            if (!$prefix || str_starts_with($k, $prefix)) {
                 $res[$k] = $this->$k;
             }
         }

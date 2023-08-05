@@ -9,7 +9,10 @@ class MySQL_C extends MySQL_Core
 {
     protected static ?MySQL_Connection $connection = null;
 
-    protected static function _connect()
+    /**
+     * @return void
+     */
+    protected static function _connect(): void
     {
         if (!defined('MYSQLC_HOST')) {
             exit('MYSQLC_HOST');

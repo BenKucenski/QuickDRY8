@@ -12,6 +12,9 @@ class Request
 
     private array $_vars = [];
 
+    /**
+     * @return array
+     */
     public function ToArray(): array
     {
         $vals = [];
@@ -41,12 +44,17 @@ class Request
      * @param string $name
      * @return array|string|null
      */
-    public function Get(string $name)
+    public function Get(string $name): array|string|null
     {
         return $this->$name;
     }
 
-    public function Set($name, $value)
+    /**
+     * @param $name
+     * @param $value
+     * @return void
+     */
+    public function Set($name, $value): void
     {
         $this->$name = $value;
     }
@@ -86,7 +94,7 @@ class Request
     /**
      * @param $serialized
      */
-    public function FromSerialized($serialized)
+    public function FromSerialized($serialized): void
     {
         if (!$serialized) {
             return;

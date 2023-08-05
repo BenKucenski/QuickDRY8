@@ -66,7 +66,7 @@ class HTTP extends strongType
      * @param $url
      * @return mixed
      */
-    public static function CheckURL($url)
+    public static function CheckURL($url): mixed
     {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_NOBODY, true);
@@ -96,9 +96,9 @@ class HTTP extends strongType
     /**
      * @param JsonStatusResult $result
      */
-    public static function ExitJSONResult(JsonStatusResult $result)
+    #[NoReturn] public static function ExitJSONResult(JsonStatusResult $result): void
     {
-        $res = $result->ToArray();
+        $res = $result->toArray();
         $json = json_decode(json_encode($res), true);
 
         self::ExitJSON($json, $result->status);
@@ -140,7 +140,7 @@ class HTTP extends strongType
     /**
      * @param string|null $url
      */
-    #[NoReturn] public static function Redirect(string $url = null)
+    #[NoReturn] public static function Redirect(string $url = null): void
     {
         if (!$url) {
             if (isset($_SERVER['HTTP_REFERER'])) {
@@ -158,7 +158,7 @@ class HTTP extends strongType
      * @param $err
      * @param string $url
      */
-    public static function RedirectError($err, string $url = '/')
+    public static function RedirectError($err, string $url = '/'): void
     {
         if (!isset($_SERVER['HTTP_HOST'])) {
             Log::Insert($err);
@@ -179,7 +179,7 @@ class HTTP extends strongType
      * @param $notice
      * @param string $url
      */
-    #[NoReturn] public static function RedirectNotice($notice, string $url = '/')
+    #[NoReturn] public static function RedirectNotice($notice, string $url = '/'): void
     {
         $_SESSION['notice'] = $notice;
 
@@ -194,7 +194,7 @@ class HTTP extends strongType
     /**
      *
      */
-    public static function ReloadPage()
+    #[NoReturn] public static function ReloadPage(): void
     {
         header('location: ' . $_SERVER['REQUEST_URI']);
         exit;
@@ -204,7 +204,7 @@ class HTTP extends strongType
      * @param $url
      * @param $title
      */
-    public static function ExitJavascript($url, $title)
+    #[NoReturn] public static function ExitJavascript($url, $title): void
     {
         echo 'Redirecting to <a id="redirect_url" href="' . $url . '">' . $title . '</a><script>
     (function() {
@@ -216,13 +216,23 @@ class HTTP extends strongType
     }
 
     // https://stackoverflow.com/questions/6041741/fastest-way-to-check-if-a-string-is-json-in-php
+
+    /**
+     * @param string $string
+     * @return bool
+     */
     public static function isJson(string $string): bool
     {
         json_decode($string);
         return json_last_error() === JSON_ERROR_NONE;
     }
 
-    public static function ExitOData($json, int $HTTP_STATUS = HTTP_STATUS_OK)
+    /**
+     * @param $json
+     * @param int $HTTP_STATUS
+     * @return void
+     */
+    #[NoReturn] public static function ExitOData($json, int $HTTP_STATUS = HTTP_STATUS_OK): void
     {
         if ($HTTP_STATUS) {
             header('HTTP/1.1 ' . $HTTP_STATUS . ': ' . HTTPStatus::GetDescription($HTTP_STATUS));
@@ -250,7 +260,7 @@ class HTTP extends strongType
      * @param $json
      * @param int $HTTP_STATUS
      */
-    public static function ExitJSON($json, int $HTTP_STATUS = HTTP_STATUS_OK)
+    #[NoReturn] public static function ExitJSON($json, int $HTTP_STATUS = HTTP_STATUS_OK): void
     {
         if($_SERVER['HTTP_HOST'] ?? null) {
             if ($HTTP_STATUS) {
@@ -282,7 +292,13 @@ class HTTP extends strongType
      * @param string|null $ContentType
      * @param bool $Download
      */
-    public static function ExitFile(string $content, string $filename, int $HTTP_STATUS = HTTP_STATUS_OK, string $ContentType = null, bool $Download = true)
+    #[NoReturn] public static function ExitFile(
+        string $content,
+        string $filename,
+        int $HTTP_STATUS = HTTP_STATUS_OK,
+        string $ContentType = null,
+        bool $Download = true
+    ): void
     {
         if ($HTTP_STATUS) {
             header('HTTP/1.1 ' . $HTTP_STATUS . ': ' . HTTPStatus::GetDescription($HTTP_STATUS));
@@ -306,7 +322,7 @@ class HTTP extends strongType
     /**
      * @param $header
      */
-    public static function AltHeader($header)
+    public static function AltHeader($header): void
     {
         if (!defined('NO_HEADERS'))
             header($header);

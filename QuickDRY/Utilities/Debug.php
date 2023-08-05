@@ -13,7 +13,7 @@ class Debug extends strongType
     /**
      * @param $class_name
      */
-    public static function HaltStatic($class_name)
+    public static function HaltStatic($class_name): void
     {
         try {
             $reflection = new ReflectionClass($class_name);
@@ -26,7 +26,7 @@ class Debug extends strongType
     /**
      * @param $class_name
      */
-    public static function CleanHaltStatic($class_name)
+    public static function CleanHaltStatic($class_name): void
     {
         try {
             $reflection = new ReflectionClass($class_name);
@@ -40,7 +40,7 @@ class Debug extends strongType
      * @param $var
      * @param null $message
      */
-    public static function CleanHalt($var, $message = null)
+    public static function CleanHalt($var, $message = null): void
     {
         static::_Debug($var, $message, true, true, false);
 
@@ -50,7 +50,7 @@ class Debug extends strongType
      * @param $var
      * @param null $message
      */
-    public static function Halt($var, $message = null)
+    public static function Halt($var, $message = null): void
     {
         static::_Debug($var, $message, true, true);
     }
@@ -59,7 +59,7 @@ class Debug extends strongType
      * @param $var
      * @param null $message
      */
-    public static function CleanHaltCL($var, $message = null)
+    public static function CleanHaltCL($var, $message = null): void
     {
         static::_DebugCL($var, $message, true, true, false);
 
@@ -69,7 +69,7 @@ class Debug extends strongType
      * @param $var
      * @param null $message
      */
-    public static function HaltCL($var, $message = null)
+    public static function HaltCL($var, $message = null): void
     {
         static::_DebugCL($var, $message, true, true);
     }
@@ -81,7 +81,7 @@ class Debug extends strongType
      * @param bool $exit
      * @param bool $backtrace
      */
-    public static function _Debug($var, $msg = null, bool $print = false, bool $exit = false, bool $backtrace = true)
+    public static function _Debug($var, $msg = null, bool $print = false, bool $exit = false, bool $backtrace = true): void
     {
         global $Web;
 
@@ -91,14 +91,10 @@ class Debug extends strongType
         }
         $finalMsg .= '<pre>';
         if (is_object($var)) {
-            switch (get_class($var)) {
-                case 'Exception':
-                    /* @var Exception $var */
-                    $finalMsg .= print_r($var->getMessage(), true);
-                    break;
-                default:
-                    $finalMsg .= print_r($var, true);
-            }
+            $finalMsg .= match (get_class($var)) {
+                'Exception' => print_r($var->getMessage(), true),
+                default => print_r($var, true),
+            };
         } else {
             $finalMsg .= print_r($var, true);
         }
@@ -153,7 +149,7 @@ class Debug extends strongType
      * @param bool $exit
      * @param bool $backtrace
      */
-    private static function _DebugCL($var, $msg = null, bool $print = false, bool $exit = false, bool $backtrace = true)
+    private static function _DebugCL($var, $msg = null, bool $print = false, bool $exit = false, bool $backtrace = true): void
     {
         $res = "\n----\n";
         if ($msg) {
@@ -184,7 +180,7 @@ class Debug extends strongType
     /**
      * @return array|false|string|string[]|null
      */
-    private static function _debug_string_backtrace()
+    private static function _debug_string_backtrace(): array|bool|string|null
     {
         ob_start();
         debug_print_backtrace();
@@ -207,22 +203,13 @@ class Debug extends strongType
      */
     public static function _convert_error_no($errno): string
     {
-        switch ($errno) {
-            case E_USER_ERROR:
-                return 'user error';
-
-            case E_USER_WARNING:
-                return 'user warning';
-
-            case E_USER_NOTICE:
-                return 'user notice';
-
-            case E_STRICT:
-                return 'strict';
-
-            default:
-                return 'unknown';
-        }
+        return match ($errno) {
+            E_USER_ERROR => 'user error',
+            E_USER_WARNING => 'user warning',
+            E_USER_NOTICE => 'user notice',
+            E_STRICT => 'strict',
+            default => 'unknown',
+        };
     }
 }
 

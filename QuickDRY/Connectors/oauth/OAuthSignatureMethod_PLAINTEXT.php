@@ -1,6 +1,7 @@
 <?php
 
-namespace QuickDRY\Connectors;
+namespace QuickDRY\Connectors\oauth;
+
 
 /**
  * The PLAINTEXT method does not provide any security protection and SHOULD only be used
@@ -9,6 +10,9 @@ namespace QuickDRY\Connectors;
  */
 class OAuthSignatureMethod_PLAINTEXT extends OAuthSignatureMethod
 {
+    /**
+     * @return string
+     */
     public function get_name(): string
     {
         return 'PLAINTEXT';

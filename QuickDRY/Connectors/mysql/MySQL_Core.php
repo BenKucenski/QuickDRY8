@@ -3,6 +3,8 @@
 namespace QuickDRY\Connectors\mysql;
 
 use Exception;
+use JetBrains\PhpStorm\ArrayShape;
+use models\CurrentUser;
 use QuickDRY\Connectors\QueryExecuteResult;
 use QuickDRY\Connectors\SQL_Base;
 use QuickDRY\Connectors\SQL_Query;
@@ -36,42 +38,65 @@ class MySQL_Core extends SQL_Base
         return static::$connection->GetTables();
     }
 
-    public static function SetDatabase($db_base)
+    /**
+     * @param string $db_base
+     * @return void
+     */
+    public static function SetDatabase(string $db_base): void
     {
         static::_connect();
 
         static::$connection->SetDatabase($db_base);
     }
 
-    public static function CopyInfoSchema()
+    /**
+     * @return void
+     */
+    public static function CopyInfoSchema(): void
     {
         static::_connect();
 
         static::$connection->CopyInfoSchema();
     }
 
-    public static function GetTableColumns($table)
+    /**
+     * @param string $table
+     * @return mixed
+     */
+    public static function GetTableColumns(string $table): mixed
     {
         static::_connect();
 
         return static::$connection->GetTableColumns($table);
     }
 
-    public static function GetIndexes($table_name)
+    /**
+     * @param string $table_name
+     * @return mixed
+     */
+    public static function GetIndexes(string $table_name): mixed
     {
         static::_connect();
 
         return static::$connection->GetIndexes($table_name);
     }
 
-    public static function GetUniqueKeys($table)
+    /**
+     * @param string $table
+     * @return mixed
+     */
+    public static function GetUniqueKeys(string $table): mixed
     {
         static::_connect();
 
         return static::$connection->GetUniqueKeys($table);
     }
 
-    public static function GetForeignKeys($table)
+    /**
+     * @param string $table
+     * @return mixed
+     */
+    public static function GetForeignKeys(string $table): mixed
     {
         static::_connect();
 
@@ -82,35 +107,51 @@ class MySQL_Core extends SQL_Base
      * @param $table
      * @return MySQL_ForeignKey[]
      */
-    public static function GetLinkedTables($table): array
+    public static function GetLinkedTables(string $table): array
     {
         static::_connect();
 
         return static::$connection->GetLinkedTables($table);
     }
 
-    public static function GetPrimaryKey($table)
+    /**
+     * @param string $table
+     * @return mixed
+     */
+    public static function GetPrimaryKey(string $table): mixed
     {
         static::_connect();
 
         return static::$connection->GetPrimaryKey($table);
     }
 
-    public static function GetStoredProcs()
+    /**
+     * @return mixed
+     */
+    public static function GetStoredProcs(): mixed
     {
         static::_connect();
 
         return static::$connection->GetStoredProcs();
     }
 
-    public static function GetStoredProcParams(string $specific_name)
+    /**
+     * @param string $specific_name
+     * @return mixed
+     */
+    public static function GetStoredProcParams(string $specific_name): mixed
     {
         static::_connect();
 
         return static::$connection->GetStoredProcParams($specific_name);
     }
 
-    public static function EscapeQuery($sql, $params)
+    /**
+     * @param string $sql
+     * @param array|null $params
+     * @return mixed
+     */
+    public static function EscapeQuery(string $sql, ?array $params = null): mixed
     {
         static::_connect();
 
@@ -123,7 +164,7 @@ class MySQL_Core extends SQL_Base
      * @param bool $large
      * @return QueryExecuteResult
      */
-    public static function Execute(string $sql, array $params = null, bool $large = false): QueryExecuteResult
+    public static function Execute(string $sql, ?array $params = null, bool $large = false): QueryExecuteResult
     {
         static::_connect();
 
@@ -150,13 +191,13 @@ class MySQL_Core extends SQL_Base
     /**
      * @param string $sql
      * @param array|null $params
-     * @param null $map_function
+     * @param callable|null $map_function
      * @return array
      */
     public static function QueryMap(
-        string $sql,
-        array  $params = null,
-               $map_function = null): array
+        string   $sql,
+        ?array   $params = null,
+        callable $map_function = null): array
     {
         $res = self::Query($sql, $params, false, $map_function);
         if (isset($res['error'])) {
@@ -169,14 +210,14 @@ class MySQL_Core extends SQL_Base
      * @param string $sql
      * @param array|null $params
      * @param bool $objects_only
-     * @param null $map_function
+     * @param callable|null $map_function
      * @return array
      */
     public static function Query(
-        string $sql,
-        array  $params = null,
-        bool   $objects_only = false,
-               $map_function = null): array
+        string   $sql,
+        array    $params = null,
+        bool     $objects_only = false,
+        callable $map_function = null): array
     {
         static::_connect();
 
@@ -244,14 +285,13 @@ class MySQL_Core extends SQL_Base
                 $where[] = $column . ' = {{}}';
                 $params[] = $this->{$column};
             }
+        } elseif (sizeof(static::$_unique) > 0) {
+            foreach (static::$_unique as $column) {
+                $where[] = $column . ' = {{}}';
+                $params[] = $this->{$column};
+            }
         } else
-            if (sizeof(static::$_unique) > 0) {
-                foreach (static::$_unique as $column) {
-                    $where[] = $column . ' = {{}}';
-                    $params[] = $this->{$column};
-                }
-            } else
-                exit('unique or primary key required');
+            exit('unique or primary key required');
 
 
         $sql = '
@@ -274,28 +314,25 @@ class MySQL_Core extends SQL_Base
      *
      * @return array
      */
-    protected static function _parse_col_val(string $col, string $val = null): array
+    #[ArrayShape(['col' => 'string', 'val' => 'null|string|string[]'])] protected static function _parse_col_val(string $col, string $val = null): array
     {
         // extra + symbols allow us to do AND on the same column
         $col = str_replace('+', '', $col);
         $col = '`' . $col . '`';
 
-        if (is_array($val)) {
-            Debug(['invalid value in query', $col, $val]);
-        }
         // adding a space to ensure that "in_" is not mistaken for an IN query
         // and the parameter must START with the special SQL command
-        if (substr($val, 0, strlen('{BETWEEN} ')) === '{BETWEEN} ') {
+        if (str_starts_with($val, '{BETWEEN} ')) {
             $val = trim(Strings::RemoveFromStart('{BETWEEN}', $val));
             $val = explode(',', $val);
             $col = $col . ' BETWEEN {{}} AND {{}}';
-        } elseif (substr($val, 0, strlen('{DATE} ')) === '{DATE} ') {
+        } elseif (str_starts_with($val, '{DATE} ')) {
             $col = 'DATE(' . $col . ') = {{}}';
             $val = trim(Strings::RemoveFromStart('{DATE}', $val));
-        } elseif (substr($val, 0, strlen('{YEAR} ')) === '{YEAR} ') {
+        } elseif (str_starts_with($val, '{YEAR} ')) {
             $col = 'YEAR(' . $col . ') = {{}}';
             $val = trim(Strings::RemoveFromStart('{YEAR}', $val));
-        } elseif (substr($val, 0, strlen('{IN} ')) === '{IN} ') {
+        } elseif (str_starts_with($val, '{IN} ')) {
             $val = explode(',', trim(Strings::RemoveFromStart('{IN} ', $val)));
             if (($key = array_search('null', $val)) !== false) {
                 $col = '(' . $col . ' IS NULL OR ' . $col . 'IN (' . Strings::StringRepeatCS('{{}}', sizeof($val) - 1) . '))';
@@ -303,16 +340,16 @@ class MySQL_Core extends SQL_Base
             } else {
                 $col = $col . 'IN (' . Strings::StringRepeatCS('{{}}', sizeof($val)) . ')';
             }
-        } elseif (substr($val, 0, strlen('{NLIKE} ')) === '{NLIKE} ') {
+        } elseif (str_starts_with($val, '{NLIKE} ')) {
             $col = $col . ' NOT LIKE {{}} ';
             $val = trim(Strings::RemoveFromStart('{NLIKE} ', $val));
-        } elseif (substr($val, 0, strlen('{NILIKE} ')) === '{NILIKE} ') {
+        } elseif (str_starts_with($val, '{NILIKE} ')) {
             $col = 'LOWER(' . $col . ')' . ' NOT ILIKE {{}} ';
             $val = strtolower(trim(Strings::RemoveFromStart('{NILIKE} ', $val)));
-        } elseif (substr($val, 0, strlen('{ILIKE} ')) === '{ILIKE} ') {
+        } elseif (str_starts_with($val, '{ILIKE} ')) {
             $col = 'LOWER(' . $col . ')' . ' ILIKE {{}} ';
             $val = strtolower(trim(Strings::RemoveFromStart('{ILIKE} ', $val)));
-        } elseif (substr($val, 0, strlen('{LIKE} ')) === '{LIKE} ') {
+        } elseif (str_starts_with($val, '{LIKE} ')) {
             $col = 'LOWER(' . $col . ')' . ' LIKE LOWER({{}}) ';
             $val = trim(Strings::RemoveFromStart('{LIKE} ', $val));
         } elseif (stristr($val, '<=') !== false) {
@@ -333,13 +370,12 @@ class MySQL_Core extends SQL_Base
         } elseif (stristr($val, '>') !== false) {
             $col = $col . ' > {{}} ';
             $val = trim(Strings::RemoveFromStart('>', $val));
+        } elseif (strtolower($val) !== 'null') {
+            $col = $col . ' = {{}} ';
         } else {
-            if (strtolower($val) !== 'null') {
-                $col = $col . ' = {{}} ';
-            } else {
-                $col = $col . ' IS NULL ';
-            }
+            $col = $col . ' IS NULL ';
         }
+
 
         return ['col' => $col, 'val' => $val];
     }
@@ -361,11 +397,10 @@ class MySQL_Core extends SQL_Base
                 foreach ($v as $vv) {
                     $params[] = $vv;
                 }
-            } else {
-                if ($v !== 'null') {
-                    $params[] = $v;
-                }
+            } elseif ($v !== 'null') {
+                $params[] = $v;
             }
+
             $t[] = $cv['col'];
         }
         $sql_where = implode(' AND ', $t);
@@ -419,11 +454,10 @@ class MySQL_Core extends SQL_Base
                     foreach ($v as $vv) {
                         $params[] = $vv;
                     }
-                } else {
-                    if ($v !== 'null') {
-                        $params[] = $v;
-                    }
+                } elseif ($v !== 'null') {
+                    $params[] = $v;
                 }
+
                 $t[] = $cv['col'];
             }
             $sql_where = implode(' AND ', $t);
@@ -464,11 +498,10 @@ class MySQL_Core extends SQL_Base
                     foreach ($v as $vv) {
                         $params[] = $vv;
                     }
-                } else {
-                    if ($v !== 'null') {
-                        $params[] = $v;
-                    }
+                } elseif ($v !== 'null') {
+                    $params[] = $v;
                 }
+
                 $t[] = $cv['col'];
             }
             $sql_where = implode(' AND ', $t);
@@ -501,7 +534,7 @@ class MySQL_Core extends SQL_Base
      *
      * @return array
      */
-    protected static function _GetAllPaginated(
+    #[ArrayShape(['count' => 'int|mixed', 'items' => 'array', 'sql' => 'string', 'res' => 'array'])] protected static function _GetAllPaginated(
         array $where = null,
         array $order_by = null,
         int   $page = null,
@@ -546,7 +579,6 @@ class MySQL_Core extends SQL_Base
 
         $sql_left = '';
         if (is_array($left_join)) {
-            $sql_left = '';
             foreach ($left_join as $join) {
                 if (!isset($join['database'])) {
                     Debug($join, 'invalid join');
@@ -609,22 +641,10 @@ class MySQL_Core extends SQL_Base
      */
     protected static function IsNumeric(string $name): bool
     {
-        switch (static::$prop_definitions[$name]['type']) {
-            case 'tinyint(1)':
-            case 'tinyint(1) unsigned':
-            case 'int(10) unsigned':
-            case 'bigint unsigned':
-            case 'decimal(18,2)':
-            case 'int(10)':
-            case 'uinit':
-                return true;
-
-            case 'date':
-            case 'timestamp':
-            case 'datetime':
-                return false;
-        }
-        return false;
+        return match (static::$prop_definitions[$name]['type']) {
+            'tinyint(1)', 'tinyint(1) unsigned', 'int(10) unsigned', 'bigint unsigned', 'decimal(18,2)', 'int(10)', 'uinit' => true,
+            default => false,
+        };
     }
 
     /**
@@ -796,7 +816,7 @@ class MySQL_Core extends SQL_Base
                 $cl->table = static::$table;
                 $cl->uuid = $uuid;
                 $cl->changes = json_encode($this->_change_log);
-                $cl->user_id = is_object($Web->CurrentUser) ? (int)$Web->CurrentUser->GetUUID() : null;
+                $cl->user_id = CurrentUser::GetUUID();
                 $cl->created_at = Dates::Timestamp();
                 $cl->object_type = static::TableToClass(static::$DatabasePrefix, static::$table, static::$LowerCaseTable, static::$DatabaseTypePrefix);
                 $cl->is_deleted = false;

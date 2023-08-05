@@ -1,7 +1,11 @@
 <?php
 
-namespace QuickDRY\Connectors;
+namespace QuickDRY\Connectors\oauth;
 
+
+/**
+ *
+ */
 class OAuthToken
 {
     // access tokens and request tokens
@@ -30,6 +34,9 @@ class OAuthToken
             OAuthUtil::urlencode_rfc3986($this->secret);
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->to_string();

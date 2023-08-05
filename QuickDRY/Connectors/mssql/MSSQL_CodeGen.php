@@ -11,6 +11,20 @@ use QuickDRY\Utilities\Log;
  */
 class MSSQL_CodeGen extends SQLCodeGen
 {
+    /**
+     * @param $database
+     * @param $database_constant
+     * @param $user_class
+     * @param $user_var
+     * @param $user_id_column
+     * @param $master_page
+     * @param $lowercase_tables
+     * @param $use_fk_column_name
+     * @param string|null $DatabaseClass
+     * @param bool $GenerateJSON
+     * @param string $DestinationFolder
+     * @return void
+     */
     public function Init(
         $database,
         $database_constant,
@@ -20,10 +34,10 @@ class MSSQL_CodeGen extends SQLCodeGen
         $master_page,
         $lowercase_tables,
         $use_fk_column_name,
-        $DatabaseClass = '',
-        $GenerateJSON = true,
-        $DestinationFolder = '../httpdocs'
-    )
+        string $DatabaseClass = null,
+        bool $GenerateJSON = true,
+        string $DestinationFolder = '../httpdocs'
+    ): void
     {
         $this->DatabaseTypePrefix = 'ms';
 
@@ -54,7 +68,10 @@ class MSSQL_CodeGen extends SQLCodeGen
         $this->CreateDirectories();
     }
 
-    public function DumpSchema()
+    /**
+     * @return void
+     */
+    public function DumpSchema(): void
     {
         $DatabaseClass = $this->DatabaseClass;
 
@@ -76,7 +93,7 @@ class MSSQL_CodeGen extends SQLCodeGen
         $definitions = $DatabaseClass::GetDefinitions();
         if ($definitions) {
             foreach ($definitions as $definition) {
-                Log::Insert('Definition: ' . $definition->object_name, true);
+                Log::Insert('Definition: ' . $definition->object_name);
                 $dest = $BaseFolder . '/_' . $definition->type_desc;
                 if (!is_dir($dest)) {
                     mkdir($dest);
@@ -135,7 +152,7 @@ class MSSQL_CodeGen extends SQLCodeGen
         foreach ($stored_procs as $sp) {
             $sp_class = SQL_Base::StoredProcToClass($this->DatabasePrefix, $sp->SPECIFIC_NAME, true, $this->DatabaseTypePrefix . '_sp');
 
-            Log::Insert('Stored Proc: ' . $sp_class, true);
+            Log::Insert('Stored Proc: ' . $sp_class);
 
             $this->GenerateSPClassFile($sp_class);
 

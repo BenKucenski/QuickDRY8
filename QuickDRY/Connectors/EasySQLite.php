@@ -1,7 +1,12 @@
 <?php
+namespace QuickDRY\Connectors;
 
 use QuickDRY\Utilities\Debug;
+use SQLite3;
 
+/**
+ *
+ */
 class EasySQLite extends SQLite3
 {
     public string $file;
@@ -17,6 +22,11 @@ class EasySQLite extends SQLite3
         //$this->open($file);
     }
 
+    /**
+     * @param string $sql
+     * @param array|null $params
+     * @return array
+     */
     private function DoPreparedQuery(string $sql, array $params = null): array
     {
         $statement = $this->prepare($sql);
@@ -31,6 +41,11 @@ class EasySQLite extends SQLite3
         return $list;
     }
 
+    /**
+     * @param string $sql
+     * @param array|null $params
+     * @return array
+     */
     public function DoQuery(string $sql, array $params = null): array
     {
         if ($params) {
@@ -52,6 +67,9 @@ class EasySQLite extends SQLite3
         return $list;
     }
 
+    /**
+     * @return array
+     */
     public function GetTables(): array
     {
         $sql = '

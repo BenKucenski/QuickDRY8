@@ -1,7 +1,11 @@
 <?php
 
-namespace QuickDRY\Connectors;
+namespace QuickDRY\Connectors\oauth;
 
+
+/**
+ *
+ */
 class OAuthServer
 {
     protected int $timestamp_threshold = 300; // in seconds, five minutes
@@ -10,12 +14,19 @@ class OAuthServer
 
     protected ?OAuthDataStore $data_store = null;
 
+    /**
+     * @param OAuthDataStore $data_store
+     */
     public function __construct(OAuthDataStore $data_store)
     {
         $this->data_store = $data_store;
     }
 
-    public function add_signature_method($signature_method)
+    /**
+     * @param $signature_method
+     * @return void
+     */
+    public function add_signature_method($signature_method): void
     {
         $this->signature_methods[$signature_method->get_name()] =
             $signature_method;
@@ -170,7 +181,7 @@ class OAuthServer
      * should guess the signature method appropriately
      * @throws OAuthException
      */
-    private function check_signature(?OAuthRequest $request, ?OAuthConsumer $consumer, OAuthToken $token)
+    private function check_signature(?OAuthRequest $request, ?OAuthConsumer $consumer, ?OAuthToken $token): void
     {
         // this should probably be in a different method
         $timestamp = $request instanceof OAuthRequest
@@ -202,7 +213,7 @@ class OAuthServer
      * check that the timestamp is new enough
      * @throws OAuthException
      */
-    private function check_timestamp(int $timestamp)
+    private function check_timestamp(int $timestamp): void
     {
         if (!$timestamp)
             throw new OAuthException(
@@ -222,7 +233,7 @@ class OAuthServer
      * check that the nonce is not repeated
      * @throws OAuthException
      */
-    private function check_nonce(OAuthConsumer $consumer, OAuthToken $token, $nonce, int $timestamp)
+    private function check_nonce(OAuthConsumer $consumer, OAuthToken $token, $nonce, int $timestamp): void
     {
         if (!$nonce)
             throw new OAuthException(

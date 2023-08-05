@@ -2,6 +2,7 @@
 
 namespace QuickDRY\Math;
 
+use JetBrains\PhpStorm\ArrayShape;
 use QuickDRY\Utilities\strongType;
 
 /**
@@ -15,7 +16,7 @@ class SnowballMath extends strongType
     /**
      * @param Debt $cc
      */
-    public function AddDebt(Debt $cc)
+    public function AddDebt(Debt $cc): void
     {
         $cc->id = $this->_last_id++;
         $this->debts[] = $cc;
@@ -24,7 +25,7 @@ class SnowballMath extends strongType
     /**
      * @param bool $desc
      */
-    public function SortByInterest(bool $desc = true)
+    public function SortByInterest(bool $desc = true): void
     {
         $list = [];
         foreach ($this->debts as $debt)
@@ -45,7 +46,7 @@ class SnowballMath extends strongType
      * @param bool $apply_rollover
      * @return array
      */
-    public function DoSnowball(bool $apply_rollover = true): array
+    #[ArrayShape(['points' => 'array', 'history' => 'array'])] public function DoSnowball(bool $apply_rollover = true): array
     {
         $debts = $this->debts;
         $points = [];

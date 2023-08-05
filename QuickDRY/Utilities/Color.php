@@ -11,6 +11,11 @@ class Color extends strongType
     public ?float $g;
     public ?float $b;
 
+    /**
+     * @param float $r
+     * @param float $g
+     * @param float $b
+     */
     public function __construct(float $r, float $g, float $b)
     {
         $this->r = $r;

@@ -13,7 +13,7 @@ class Log extends strongType
     /**
      *
      */
-    private static function _init()
+    private static function _init(): void
     {
         if (is_null(self::$_log_file)) {
             self::$_log_file = new LogFile();
@@ -24,7 +24,7 @@ class Log extends strongType
      * @param $message
      * @param bool $write_to_file
      */
-    public static function Insert($message, bool $write_to_file = true)
+    public static function Insert($message, bool $write_to_file = true): void
     {
         self::_init();
         if (!defined('GUID')) {
@@ -34,12 +34,20 @@ class Log extends strongType
         self::$_log_file->Insert($_SERVER['SCRIPT_FILENAME'], $message, $write_to_file);
     }
 
-    public static function Print($message)
+    /**
+     * @param $message
+     * @return void
+     */
+    public static function Print($message): void
     {
-        self::Insert($message, true, false);
+        self::Insert($message);
     }
 
-    public static function File($message)
+    /**
+     * @param $message
+     * @return void
+     */
+    public static function File($message): void
     {
         self::Insert($message);
     }

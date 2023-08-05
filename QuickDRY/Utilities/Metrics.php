@@ -14,7 +14,10 @@ class Metrics
 
     private static int $global_start = 0;
 
-    public static function StartGlobal()
+    /**
+     * @return void
+     */
+    public static function StartGlobal(): void
     {
         static::$global_start = microtime(true);
     }
@@ -22,7 +25,7 @@ class Metrics
     /**
      * @return float|int
      */
-    public static function GetGlobal()
+    public static function GetGlobal(): float|int
     {
         return microtime(true) - static::$global_start;
     }
@@ -70,7 +73,7 @@ class Metrics
     /**
      * @param $name
      */
-    public static function Toggle($name)
+    public static function Toggle($name): void
     {
         if (isset(self::$_running[$name])) {
             self::Stop($name);
@@ -82,7 +85,7 @@ class Metrics
     /**
      * @param $name
      */
-    public static function Start($name)
+    public static function Start($name): void
     {
         if (isset(self::$_running[$name])) {
             return;
@@ -95,7 +98,7 @@ class Metrics
     /**
      * @param $name
      */
-    public static function Stop($name)
+    public static function Stop($name): void
     {
         if (!isset(self::$_running[$name])) {
             return;
@@ -112,7 +115,10 @@ class Metrics
         unset(self::$_running[$name]);
     }
 
-    public static function Reset()
+    /**
+     * @return void
+     */
+    public static function Reset(): void
     {
         static::$_vars = [];
         static::$_count = [];

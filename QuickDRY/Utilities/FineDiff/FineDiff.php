@@ -9,6 +9,9 @@
 
 namespace QuickDRY\Utilities\FineDiff;
 
+/**
+ *
+ */
 class FineDiff
 {
 
@@ -46,11 +49,17 @@ class FineDiff
         $this->doDiff($from_text, $to_text);
     }
 
+    /**
+     * @return array
+     */
     public function getOps(): array
     {
         return $this->edits;
     }
 
+    /**
+     * @return string
+     */
     public function getOpcodes(): string
     {
         $opcodes = [];
@@ -60,7 +69,10 @@ class FineDiff
         return implode('', $opcodes);
     }
 
-    public function renderDiffToHTML()
+    /**
+     * @return bool|string
+     */
+    public function renderDiffToHTML(): bool|string
     {
         $in_offset = 0;
         ob_start();
@@ -68,9 +80,9 @@ class FineDiff
             $n = $edit->getFromLen();
             if ($edit instanceof FineDiffCopyOp) {
                 FineDiff::renderDiffToHTMLFromOpcode('c', $this->from_text, $in_offset, $n);
-            } else if ($edit instanceof FineDiffDeleteOp) {
+            } elseif ($edit instanceof FineDiffDeleteOp) {
                 FineDiff::renderDiffToHTMLFromOpcode('d', $this->from_text, $in_offset, $n);
-            } else if ($edit instanceof FineDiffInsertOp) {
+            } elseif ($edit instanceof FineDiffInsertOp) {
                 FineDiff::renderDiffToHTMLFromOpcode('i', $edit->getText(), 0, $edit->getToLen());
             } else /* if ( $edit instanceof FineDiffReplaceOp ) */ {
                 FineDiff::renderDiffToHTMLFromOpcode('d', $this->from_text, $in_offset, $n);
@@ -104,7 +116,7 @@ class FineDiff
     /**------------------------------------------------------------------------
      * Re-create the "To" string from the "From" string and an "Opcodes" string
      */
-    public static function renderToTextFromOpcodes($from, $opcodes)
+    public static function renderToTextFromOpcodes($from, $opcodes): bool|string
     {
         ob_start();
         FineDiff::renderFromOpcodes($from, $opcodes, ['FineDiff', 'renderToTextFromOpcode']);
@@ -114,7 +126,7 @@ class FineDiff
     /**------------------------------------------------------------------------
      * Render the diff to an HTML string -- UTF8 unsafe
      */
-    public static function renderDiffToHTMLFromOpcodes($from, $opcodes)
+    public static function renderDiffToHTMLFromOpcodes($from, $opcodes): bool|string
     {
         ob_start();
         FineDiff::renderFromOpcodes($from, $opcodes, ['FineDiff', 'renderDiffToHTMLFromOpcode']);
@@ -124,7 +136,7 @@ class FineDiff
     /**------------------------------------------------------------------------
      * Render the diff to an HTML string -- UTF8 safe
      */
-    public static function renderUTF8DiffToHTMLFromOpcodes($from, $opcodes)
+    public static function renderUTF8DiffToHTMLFromOpcodes($from, $opcodes): bool|string
     {
         ob_start();
         FineDiff::renderUTF8FromOpcode($from, $opcodes, ['FineDiff', 'renderDiffToHTMLFromOpcode']);
@@ -135,7 +147,7 @@ class FineDiff
      * Generic opcodes parser, user must supply callback for handling
      * single opcode
      */
-    public static function renderFromOpcodes($from, $opcodes, $callback)
+    public static function renderFromOpcodes($from, $opcodes, $callback): void
     {
         if (!is_callable($callback)) {
             return;
@@ -154,7 +166,7 @@ class FineDiff
             if ($opcode === 'c') { // copy n characters from source
                 call_user_func($callback, 'c', $from, $from_offset, $n, '');
                 $from_offset += $n;
-            } else if ($opcode === 'd') { // delete n characters from source
+            } elseif ($opcode === 'd') { // delete n characters from source
                 call_user_func($callback, 'd', $from, $from_offset, $n, '');
                 $from_offset += $n;
             } else /* if ( $opcode === 'i' ) */ { // insert n characters from opcodes
@@ -168,7 +180,7 @@ class FineDiff
      * Generic opcodes parser, user must supply callback for handling
      * single opcode
      */
-    private static function renderUTF8FromOpcode($from, $opcodes, $callback = null)
+    private static function renderUTF8FromOpcode($from, $opcodes, $callback = null): void
     {
         if (!is_callable($callback)) {
             return;
@@ -267,7 +279,7 @@ class FineDiff
     /**
      * Entry point to compute the diff.
      */
-    private function doDiff($from_text, $to_text)
+    private function doDiff($from_text, $to_text): void
     {
         $this->last_edit = false;
         $this->stackpointer = 0;
@@ -287,7 +299,7 @@ class FineDiff
      * Incrementally increasing the granularity is key to compute the
      * overall diff in a very efficient way.
      */
-    private function _processGranularity($from_segment, $to_segment)
+    private function _processGranularity($from_segment, $to_segment): void
     {
         $delimiters = $this->granularityStack[$this->stackpointer++];
         $has_next_stage = $this->stackpointer < count($this->granularityStack);
@@ -299,7 +311,7 @@ class FineDiff
                     $fragment_edit->getText()
                 );
             } // fuse copy ops whenever possible
-            else if ($fragment_edit instanceof FineDiffCopyOp && $this->last_edit instanceof FineDiffCopyOp) {
+            elseif ($fragment_edit instanceof FineDiffCopyOp && $this->last_edit instanceof FineDiffCopyOp) {
                 $this->edits[count($this->edits) - 1]->increase($fragment_edit->getFromLen());
                 $this->from_offset += $fragment_edit->getFromLen();
             } else {
@@ -354,7 +366,7 @@ class FineDiff
             if (!$from_segment_length || !$to_segment_length) {
                 if ($from_segment_length) {
                     $result[$from_segment_start * 4] = new FineDiffDeleteOp($from_segment_length);
-                } else if ($to_segment_length) {
+                } elseif ($to_segment_length) {
                     $result[$from_segment_start * 4 + 1] = new FineDiffInsertOp(substr($to_text, $to_segment_start, $to_segment_length));
                 }
                 continue;
@@ -476,8 +488,8 @@ class FineDiff
             // catch easy cases first
             if (!$from_segment_len || !$to_segment_len) {
                 if ($from_segment_len) {
-                    $result[$from_segment_start * 4 + 0] = new FineDiffDeleteOp($from_segment_len);
-                } else if ($to_segment_len) {
+                    $result[$from_segment_start * 4] = new FineDiffDeleteOp($from_segment_len);
+                } elseif ($to_segment_len) {
                     $result[$from_segment_start * 4 + 1] = new FineDiffInsertOp(substr($to_text, $to_segment_start, $to_segment_len));
                 }
                 continue;
@@ -537,7 +549,7 @@ class FineDiff
      * Careful: No check is performed as to the validity of the
      * delimiters.
      */
-    private static function extractFragments($text, $delimiters)
+    private static function extractFragments($text, $delimiters): array
     {
         // special case: split into characters
         if (empty($delimiters)) {
@@ -563,18 +575,25 @@ class FineDiff
     /**
      * Stock opcode renderers
      */
-    private static function renderToTextFromOpcode($opcode, $from, $from_offset, $from_len)
+    private static function renderToTextFromOpcode($opcode, $from, $from_offset, $from_len): void
     {
         if ($opcode === 'c' || $opcode === 'i') {
             echo substr($from, $from_offset, $from_len);
         }
     }
 
-    private static function renderDiffToHTMLFromOpcode($opcode, $from, $from_offset, $from_len)
+    /**
+     * @param $opcode
+     * @param $from
+     * @param $from_offset
+     * @param $from_len
+     * @return void
+     */
+    private static function renderDiffToHTMLFromOpcode($opcode, $from, $from_offset, $from_len): void
     {
         if ($opcode === 'c') {
             echo htmlspecialchars(substr($from, $from_offset, $from_len));
-        } else if ($opcode === 'd') {
+        } elseif ($opcode === 'd') {
             $deletion = substr($from, $from_offset, $from_len);
             if (strcspn($deletion, " \n\r") === 0) {
                 $deletion = str_replace(["\n", "\r"], ['\n', '\r'], $deletion);
@@ -585,7 +604,12 @@ class FineDiff
         }
     }
 
-    public static function String($from_text, $to_text)
+    /**
+     * @param $from_text
+     * @param $to_text
+     * @return bool|string
+     */
+    public static function String($from_text, $to_text): bool|string
     {
         $opcodes = FineDiff::getDiffOpcodes($from_text, $to_text, json_decode(FINE_DIFF_GRANULARITY_WORD));
         return FineDiff::renderDiffToHTMLFromOpcodes($from_text, $opcodes);

@@ -3,6 +3,9 @@ namespace QuickDRY\JSON;
 
 use QuickDRY\Utilities\strongType;
 
+/**
+ *
+ */
 class JsonResult extends strongType
 {
     public ?string $ContentEncoding = null;

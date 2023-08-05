@@ -37,40 +37,19 @@ class APIRequest
      */
     public function __get(string $name)
     {
-        switch ($name) {
-            case 'method':
-                return $this->_method;
-
-            case 'curl_info':
-                return $this->_curl_info;
-
-            case 'return_headers':
-                return $this->_return_headers;
-
-            case 'headers':
-                return $this->_headers;
-
-            case 'raw':
-                return $this->_raw;
-
-            case 'data':
-                return $this->_data;
-
-            case 'path':
-                return $this->_path;
-
-            case 'res':
-                return $this->_res;
-
-            case 'cache_file':
-                return $this->_cache_file;
-
-            case 'error':
-                return $this->_error;
-
-            default:
-                return $this->_res->$name ?? null;
-        }
+        return match ($name) {
+            'method' => $this->_method,
+            'curl_info' => $this->_curl_info,
+            'return_headers' => $this->_return_headers,
+            'headers' => $this->_headers,
+            'raw' => $this->_raw,
+            'data' => $this->_data,
+            'path' => $this->_path,
+            'res' => $this->_res,
+            'cache_file' => $this->_cache_file,
+            'error' => $this->_error,
+            default => $this->_res->$name ?? null,
+        };
     }
 
     /**
@@ -117,6 +96,9 @@ class APIRequest
         }
     }
 
+    /**
+     * @return void
+     */
     public function ClearCache(): void
     {
         $file = $this->_cache_file;
@@ -134,7 +116,7 @@ class APIRequest
      * @param array|null $headers
      * @param bool $post
      * @param null $custom_method
-     * @return bool|string
+     * @return bool|string|null
      */
     private function _Request(
         string $path,
@@ -194,13 +176,12 @@ class APIRequest
             if ($post) {
                 if (isset($data['raw_post_data'])) {
                     $headers[] = 'Content-length: ' . strlen($data['raw_post_data']);
+                } elseif (isset($data['json'])) {
+                    $headers[] = 'Content-length: ' . strlen(json_encode($data['json']));
                 } else {
-                    if (isset($data['json'])) {
-                        $headers[] = 'Content-length: ' . strlen(json_encode($data['json']));
-                    } else {
-                        $headers[] = 'Content-length: ' . strlen(http_build_query($data));
-                    }
+                    $headers[] = 'Content-length: ' . strlen(http_build_query($data));
                 }
+
             } else {
                 $headers[] = 'Content-length: 0';
             }
@@ -224,13 +205,12 @@ class APIRequest
             if ($post) {
                 if (isset($data['raw_post_data'])) {
                     curl_setopt($ch, CURLOPT_POSTFIELDS, $data['raw_post_data']);
+                } elseif (isset($data['json'])) {
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data['json']));
                 } else {
-                    if (isset($data['json'])) {
-                        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data['json']));
-                    } else {
-                        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-                    }
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
                 }
+
             } else {
                 $url .= (stristr($url, '?') === false ? '?' : '&') . http_build_query($data);
             }
@@ -287,9 +267,9 @@ class APIRequest
      * @param $path
      * @param null $data
      * @param null $headers
-     * @return bool|string
+     * @return bool|string|null
      */
-    protected function _Put($path, $data = null, $headers = null)
+    protected function _Put($path, $data = null, $headers = null): bool|string|null
     {
         return $this->_Request($path, $data, $headers, true, 'PUT');
     }
@@ -298,9 +278,9 @@ class APIRequest
      * @param $path
      * @param null $data
      * @param null $headers
-     * @return bool|string
+     * @return bool|string|null
      */
-    protected function _Delete($path, $data = null, $headers = null)
+    protected function _Delete($path, $data = null, $headers = null): bool|string|null
     {
         return $this->_Request($path, $data, $headers, true, 'DELETE');
     }
@@ -309,9 +289,9 @@ class APIRequest
      * @param $path
      * @param null $data
      * @param null $headers
-     * @return bool|string
+     * @return bool|string|null
      */
-    protected function _Post($path, $data = null, $headers = null)
+    protected function _Post($path, $data = null, $headers = null): bool|string|null
     {
         return $this->_Request($path, $data, $headers);
     }
@@ -320,9 +300,9 @@ class APIRequest
      * @param $path
      * @param null $data
      * @param null $headers
-     * @return bool|string
+     * @return bool|string|null
      */
-    protected function _Get($path, $data = null, $headers = null)
+    protected function _Get($path, $data = null, $headers = null): bool|string|null
     {
         return $this->_Request($path, $data, $headers, false);
     }
@@ -330,7 +310,7 @@ class APIRequest
     /**
      * @param string $Method
      */
-    protected function _Log(string $Method = 'Get')
+    protected function _Log(string $Method = 'Get'): void
     {
         global $Web;
 
@@ -376,7 +356,7 @@ class APIRequest
     /**
      * @param null $headers
      */
-    public function Post($headers = null)
+    public function Post($headers = null): void
     {
         $res = $this->_Post($this->path, $this->data, $headers);
         $this->_raw = $res;
@@ -391,7 +371,7 @@ class APIRequest
     /**
      * @param null $headers
      */
-    public function Put($headers = null)
+    public function Put($headers = null): void
     {
         $res = $this->_Put($this->path, $this->data, $headers);
         $this->_raw = $res;
@@ -406,7 +386,7 @@ class APIRequest
     /**
      * @param null $headers
      */
-    public function Delete($headers = null)
+    public function Delete($headers = null): void
     {
         $res = $this->_Delete($this->path, $this->data, $headers);
         $this->_raw = $res;
@@ -421,7 +401,7 @@ class APIRequest
     /**
      * @param null $headers
      */
-    public function Get($headers = null)
+    public function Get($headers = null): void
     {
         $res = $this->_Get($this->path, $this->data, $headers);
         $this->_raw = $res;

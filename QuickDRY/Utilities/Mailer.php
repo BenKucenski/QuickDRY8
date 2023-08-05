@@ -146,16 +146,15 @@ class Mailer extends strongType
                     if ($name === 'report_id') {
                         // don't handle this here, we need to update the email queue record
                         return 0;
-                    } else {
-                        if (is_object($path)) {
-                            if (get_class($path) == 'EmailAttachment') {
-                                $name = $path->FileName;
-                                $path = $path->FileLocation;
-                            } else {
-                                return 0;
-                            }
+                    } elseif (is_object($path)) {
+                        if (get_class($path) == 'EmailAttachment') {
+                            $name = $path->FileName;
+                            $path = $path->FileLocation;
+                        } else {
+                            return 0;
                         }
                     }
+
 
                     if (!file_exists($path)) {
                         $path = '../' . $path;
@@ -193,7 +192,12 @@ class Mailer extends strongType
         return 1;
     }
 
-    public static function Template($filename, $values)
+    /**
+     * @param string $filename
+     * @param array $values
+     * @return string
+     */
+    public static function Template(string $filename, array $values): string
     {
         if (!file_exists($filename)) {
             Debug(['error' => 'File does not exist', $filename]);

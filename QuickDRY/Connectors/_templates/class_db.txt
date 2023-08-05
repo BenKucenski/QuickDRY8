@@ -51,14 +51,8 @@ class db_[[c_name]] extends [[DatabaseClassName]]
      */
     public function __get(string $name)
     {
-        switch($name)
-        {
-            [[gets]]
+        [[gets]]
 
-            default:
-                break;
-
-        }
         return parent::__get($name);
     }
 
@@ -69,13 +63,9 @@ class db_[[c_name]] extends [[DatabaseClassName]]
      */
     public function __set(string $name, mixed $value)
     {
-        switch($name)
-        {
-            [[sets]]
+        [[sets]]
 
-            default:
-                return parent::__set($name, $value);
-        }
+        return parent::__set($name, $value);
     }
 
     /**

@@ -2,9 +2,14 @@
 
 namespace QuickDRY\Connectors\mssql;
 
+use QuickDRY\Connectors\MSSQL;
+use QuickDRY\Connectors\SQL_Query;
 use QuickDRY\Utilities\Metrics;
 use QuickDRY\Utilities\strongType;
 
+/**
+ *
+ */
 class MSSQL_Queue extends strongType
 {
     private array $_sql = [];
@@ -15,7 +20,12 @@ class MSSQL_Queue extends strongType
     public bool $IgnoreDuplicateError = false;
     private int $QueueLimit;
 
-    public function __construct($MSSQL_CLASS = MSSQL_A::class, $HaltOnError = true, $QueueLimit = 500)
+    /**
+     * @param $MSSQL_CLASS
+     * @param $HaltOnError
+     * @param int $QueueLimit
+     */
+    public function __construct($MSSQL_CLASS = MSSQL_A::class, $HaltOnError = true, int $QueueLimit = 500)
     {
         $this->MSSQL_CLASS = $MSSQL_CLASS;
         $this->HaltOnError = $HaltOnError;

@@ -12,18 +12,12 @@ class SimpleReport extends strongType
     /**
      * SimpleReport constructor.
      * @param null $row
-     * @throws ReflectionException
-     * @throws ReflectionException
      */
     public function __construct($row = null)
     {
         if ($row) {
-            $this->HaltOnError(false);
-            $this->FromRow($row);
-            if ($this->HasMissingProperties()) {
-                Halt($this->GetMissingProperties());
-            }
-            $this->HaltOnError(true);
+            $this->fromData($row);
+            $this->isMissingProperties();
         }
     }
 
@@ -36,7 +30,7 @@ class SimpleReport extends strongType
         if (!sizeof($items)) {
             return null;
         }
-        $class = get_called_class();
+        $class = static::class;
         $cols = array_keys(get_object_vars($items[0]));
         $se = new SimpleExcel();
         $se->Report = $items;
@@ -56,7 +50,13 @@ class SimpleReport extends strongType
      * @param int $limit
      * @return string
      */
-    public static function ToHTML(array &$items, string $class = '', string $style = '', bool $numbered = false, int $limit = 0): string
+    public static function ToHTML(
+        array $items,
+        string $class = '',
+        string $style = '',
+        bool $numbered = false,
+        int $limit = 0
+    ): string
     {
         if (!sizeof($items)) {
             return '';

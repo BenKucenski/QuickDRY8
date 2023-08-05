@@ -3,17 +3,27 @@
 namespace QuickDRY\Math;
 
 
+use JetBrains\PhpStorm\ArrayShape;
+
 /**
  * Class MathClass
  */
 class MathClass
 {
+    /**
+     * @param $km
+     * @return float
+     */
     public static function KMtoMiles($km): float
     {
         return $km * 0.621371;
     }
 
-    public static function Mean($arr)
+    /**
+     * @param $arr
+     * @return float
+     */
+    public static function Mean($arr): float
     {
         if (!sizeof($arr)) {
             return 0;
@@ -23,9 +33,9 @@ class MathClass
 
     /**
      * @param $arr
-     * @return float|int
+     * @return float
      */
-    public static function Median($arr)
+    public static function Median($arr): float
     {
         $count = count($arr); //total numbers in array
         $middleval = floor(($count - 1) / 2); // find the middle value, or the lowest middle value
@@ -41,9 +51,9 @@ class MathClass
 
     /**
      * @param $arr
-     * @return int|string
+     * @return int
      */
-    public static function Mode($arr)
+    public static function Mode($arr):int
     {
         $summary = [];
         foreach ($arr as $val) {
@@ -53,7 +63,7 @@ class MathClass
             $summary[$val]++;
         }
         $maxs = array_keys($summary, max($summary));
-        return $maxs[0];
+        return (int)$maxs[0];
     }
 
     /**
@@ -70,9 +80,9 @@ class MathClass
      * @param $rate
      * @param $principal
      * @param $periods
-     * @return float|int
+     * @return float
      */
-    public static function AccruedInterest($rate, $principal, $periods)
+    public static function AccruedInterest($rate, $principal, $periods): float
     {
         return $principal * pow(1 + $rate, $periods) - $principal;
     }
@@ -120,9 +130,9 @@ class MathClass
      * @param $rate
      * @param $principal
      * @param $term
-     * @return float|int
+     * @return float
      */
-    public static function MonthlyPayment($rate, $principal, $term)
+    public static function MonthlyPayment($rate, $principal, $term): float
     {
         return self::MonthlyPaymentForPeriod($rate, $principal, $term, 12);
     }
@@ -153,9 +163,9 @@ class MathClass
      * @param $principal
      * @param $term
      * @param $periods
-     * @return float|int
+     * @return float
      */
-    public static function MonthlyPaymentForPeriod($rate, $principal, $term, $periods)
+    public static function MonthlyPaymentForPeriod($rate, $principal, $term, $periods): float
     {
         if ($rate == 0)
             return $principal / ($term * $periods);
@@ -322,7 +332,7 @@ class MathClass
      * @param Debt[] $debts
      * @return array
      */
-    public static function Snowball(array $debts): array
+    #[ArrayShape(['points' => 'array', 'history' => 'array'])] public static function Snowball(array $debts): array
     {
         $points = [];
         $point = new PrincipalInterest();
@@ -422,7 +432,14 @@ class MathClass
         return ['points' => $points, 'history' => $history];
     }
 
-    public static function APY($current_time, $current_price, $start_time, $start_price)
+    /**
+     * @param $current_time
+     * @param $current_price
+     * @param $start_time
+     * @param $start_price
+     * @return float
+     */
+    public static function APY($current_time, $current_price, $start_time, $start_price): float
     {
         if ($start_price == 0) {
             return 0;
@@ -445,7 +462,15 @@ class MathClass
                 ($start_price), 1.0 / (($current_time - $start_time) * 1.0 / (365.0 * 24.0 * 3600.0))) - 100.0;
     }
 
-    public static function GetFutureValue($present_value, $payment, $interest_rate, $years, $payments_per_year)
+    /**
+     * @param $present_value
+     * @param $payment
+     * @param $interest_rate
+     * @param $years
+     * @param $payments_per_year
+     * @return float|int
+     */
+    public static function GetFutureValue($present_value, $payment, $interest_rate, $years, $payments_per_year): float|int
     {
         $interest_rate /= 100;
         $rk = $interest_rate / $payments_per_year;
@@ -461,7 +486,7 @@ class MathClass
      * @param $payments_per_year
      * @return float|int
      */
-    public static function GetYearsToFutureValue($present_value, $future_value, $payment, $interest_rate, $payments_per_year)
+    public static function GetYearsToFutureValue($present_value, $future_value, $payment, $interest_rate, $payments_per_year): float|int
     {
         $interest_rate /= 100.0;
         $rk = $interest_rate / $payments_per_year;
@@ -476,7 +501,14 @@ class MathClass
 
     }
 
-    public static function GetAdditionalPayment($present_value, $current_payment, $interest_rate, $months)
+    /**
+     * @param $present_value
+     * @param $current_payment
+     * @param $interest_rate
+     * @param $months
+     * @return float
+     */
+    public static function GetAdditionalPayment($present_value, $current_payment, $interest_rate, $months): float
     {
         // https://www.sapling.com/8609716/calculate-months-pay-off-loan
         $interest_rate /= 100.0;

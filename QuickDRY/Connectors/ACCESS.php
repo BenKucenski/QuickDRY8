@@ -13,14 +13,22 @@ class ACCESS
     protected ?string $ACCESS_USER = null;
     protected ?string $ACCESS_PASS = null;
 
+    /**
+     *
+     */
     public function __destruct()
     {
         odbc_close($this->connection);
     }
 
-    public function EscapeQuery($sql, $params)
+    /**
+     * @param string $sql
+     * @param array|null $params
+     * @return string
+     */
+    public function EscapeQuery(string $sql, ?array $params = null): string
     {
-        if ($params && is_array($params)) {
+        if ($params) {
             foreach ($params as $k => $v) {
                 $v = str_replace('\'', '\'\'', $v);
                 if(is_numeric($v) && strcasecmp($v, $v * 1) === 0) {
@@ -33,6 +41,11 @@ class ACCESS
         return $sql;
     }
 
+    /**
+     * @param string $file
+     * @param string|null $user
+     * @param string|null $pass
+     */
     public function __construct(string $file, string $user = null, string $pass = null)
     {
         if(!file_exists($file)) {
@@ -42,7 +55,7 @@ class ACCESS
         while(file_exists(str_ireplace('.tmo', '.ldb', $file))) {
             // https://stackoverflow.com/questions/15322371/php-wait-for-input-from-command-line
             echo 'Database in Use By Another Program.  Please Exit All Instances of TMO' . PHP_EOL;
-            $handle = fopen ("php://stdin","r");
+            $handle = fopen ('php://stdin', 'r');
             fgets($handle);
             fclose($handle);
         }
@@ -54,6 +67,11 @@ class ACCESS
         $this->connection = odbc_connect('Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=' . $file, $user, $pass);
     }
 
+    /**
+     * @param $sql
+     * @param $params
+     * @return array
+     */
     public function Query($sql, $params = null): array
     {
         if (!$this->connection) {
@@ -62,7 +80,7 @@ class ACCESS
 
         $query = $this->EscapeQuery($sql, $params);
 
-        $res = @odbc_exec($this->connection, $query);
+        $res = odbc_exec($this->connection, $query);
         if (odbc_error($this->connection)) {
             Debug([
                 'sql' => $sql,
@@ -80,6 +98,11 @@ class ACCESS
         return $list;
     }
 
+    /**
+     * @param $sql
+     * @param $params
+     * @return void
+     */
     public function Execute($sql, $params = null): void
     {
         if (!$this->connection) {
@@ -88,7 +111,7 @@ class ACCESS
 
         $query = $this->EscapeQuery($sql, $params);
 
-        @odbc_exec($this->connection, $query);
+        odbc_exec($this->connection, $query);
         if (odbc_error($this->connection)) {
             Debug([
                 'sql' => $sql,
@@ -100,7 +123,14 @@ class ACCESS
         }
     }
 
-    public function QueryMap($sql, $params, $func, $return = true): array
+    /**
+     * @param string $sql
+     * @param array|null $params
+     * @param callable $func
+     * @param bool $return
+     * @return array
+     */
+    public function QueryMap(string $sql, ?array $params, callable $func, bool $return = true): array
     {
         if (!$this->connection) {
             Debug('Not Connected');
@@ -108,7 +138,7 @@ class ACCESS
 
         $query = $this->EscapeQuery($sql, $params);
 
-        $res = @odbc_exec($this->connection, $query);
+        $res = odbc_exec($this->connection, $query);
         if (odbc_error($this->connection)) {
             Debug([
                 'sql' => $sql,

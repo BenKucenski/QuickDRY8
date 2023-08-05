@@ -13,6 +13,7 @@ namespace QuickDRY\Utilities;
  * http://www.opensource.org/licenses/MIT
  */
 
+use JetBrains\PhpStorm\ArrayShape;
 use QuickDRYInstance\Common\FileClass;
 
 /**
@@ -74,7 +75,7 @@ class UploadHandler
      *
      * @return array|string|string[]|null
      */
-    protected function upcount_name($name)
+    protected function upcount_name($name): array|string|null
     {
         return preg_replace_callback(
             '/(?:(?: \(([\d]+)\))?(\.[^.]+))?$/',
@@ -87,16 +88,16 @@ class UploadHandler
     /**
      * @param $name
      * @param $type
-     * @return array|string|string[]|null
+     * @return string
      */
-    protected function trim_file_name($name, $type)
+    protected function trim_file_name($name, $type): string
     {
         // Remove path information and dots around the filename, to prevent uploading
         // into different directories or replacing hidden system files.
         // Also remove control characters and spaces (\x00..\x20) around the filename:
         $file_name = trim(basename(stripslashes($name)), ".\x00..\x20");
         // Add missing file extension for known image types:
-        if (strpos($file_name, '.') === false &&
+        if (!str_contains($file_name, '.') &&
             preg_match('/^image\/(gif|jpe?g|png)/', $type, $matches)) {
             $file_name .= '.' . $matches[1];
         }
@@ -118,7 +119,7 @@ class UploadHandler
      *
      * @return array
      */
-    protected function handle_file_upload($uploaded_file, $name, $size, $type, $entity_id, $entity_type_id): array
+    #[ArrayShape(['url' => 'string', 'thumbnail_url' => 'string', 'name' => 'mixed', 'size' => 'mixed', 'id' => 'mixed', 'entity_id' => 'mixed', 'entity_type_id' => 'mixed'])] protected function handle_file_upload($uploaded_file, $name, $size, $type, $entity_id, $entity_type_id): array
     {
         $fileArray = [
             'name' => $name,
@@ -136,7 +137,7 @@ class UploadHandler
      * @param null $entity_id
      * @param null $entity_type_id
      */
-    public function post($entity_id = null, $entity_type_id = null)
+    public function post($entity_id = null, $entity_type_id = null): void
     {
         if (isset($_REQUEST['_method']) && $_REQUEST['_method'] === 'DELETE') {
             return;
@@ -177,7 +178,7 @@ class UploadHandler
             return;
         }
         if (isset($_SERVER['HTTP_ACCEPT']) &&
-            (strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+            (str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'))) {
             header('Content-type: application/json');
         } else {
             header('Content-type: text/plain');
@@ -190,7 +191,7 @@ class UploadHandler
      * @param int|null $user_id
      * @return array
      */
-    public static function UploadFiles(array $fileArray, int $user_id = null): array
+    #[ArrayShape(['url' => 'string', 'thumbnail_url' => 'string', 'name' => 'mixed', 'size' => 'mixed', 'id' => 'mixed', 'entity_id' => 'mixed', 'entity_type_id' => 'mixed'])] public static function UploadFiles(array $fileArray, int $user_id = null): array
     {
         $file = new FileClass();
         $file->user_id = $user_id;

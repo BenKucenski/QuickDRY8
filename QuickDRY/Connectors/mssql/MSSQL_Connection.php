@@ -38,6 +38,11 @@ class MSSQL_Connection extends strongType
     protected ?string $DB_USER;
     protected ?string $DB_PASS;
 
+    /**
+     * @param string $host
+     * @param string $user
+     * @param string $pass
+     */
     public function __construct(string $host, string $user, string $pass)
     {
         $this->DB_HOST = $host;
@@ -46,7 +51,10 @@ class MSSQL_Connection extends strongType
     }
 
 
-    private function _connect()
+    /**
+     * @return void
+     */
+    private function _connect(): void
     {
         // p: means persistent
         if (!is_null($this->current_db)) {
@@ -67,7 +75,7 @@ class MSSQL_Connection extends strongType
         $t = explode('_', $database . '_' . $table);
         $type = '';
         foreach ($t as $w)
-            $type .= preg_replace('/[^a-z0-9]/si', '', ucfirst($w));
+            $type .= preg_replace('/[^a-z0-9]/i', '', ucfirst($w));
         $type .= 'Class';
         if (is_numeric($type[0]))
             $type = 'i' . $type;
@@ -198,7 +206,7 @@ class MSSQL_Connection extends strongType
      * @param int $time
      * @param null $err
      */
-    private function Log(string $sql, ?array $params = null, int $time = 0, $err = null)
+    private function Log(string $sql, ?array $params = null, int $time = 0, $err = null): void
     {
         if (!static::$use_log)
             return;
@@ -231,6 +239,9 @@ class MSSQL_Connection extends strongType
 
     }
 
+    /**
+     * @return string
+     */
     private static function SQLErrorsToString(): string
     {
         $errs = sqlsrv_errors();
@@ -249,7 +260,7 @@ class MSSQL_Connection extends strongType
      * @param null $map_function
      * @return array|mixed
      */
-    private function QueryWindows($sql, array $params = null, $map_function = null)
+    private function QueryWindows($sql, array $params = null, $map_function = null): mixed
     {
         Metrics::Start('MSSQL');
 
@@ -351,7 +362,7 @@ class MSSQL_Connection extends strongType
      * @param null $map_function
      * @return array|mixed
      */
-    public function Query($sql, array $params = null, $map_function = null)
+    public function Query($sql, array $params = null, $map_function = null): mixed
     {
         $this->_connect();
 
@@ -398,7 +409,7 @@ class MSSQL_Connection extends strongType
             if (defined('QUERY_RETRY')) {
                 $count = 0;
                 while (!$result && $count <= QUERY_RETRY) {
-                    $result = @mssql_query($query, $this->db);
+                    $result = mssql_query($query, $this->db);
                     if (!$result) {
                         if (mssql_get_last_message()) {
                             break;
@@ -412,7 +423,7 @@ class MSSQL_Connection extends strongType
                     $count++;
                 }
             } else {
-                $result = @mssql_query($query, $this->db);
+                $result = mssql_query($query, $this->db);
             }
             if (!$result) {
                 $returnval = ['error' => print_r(mssql_get_last_message(), true), 'query' => $query, 'params' => $params, 'sql' => $sql];
@@ -517,17 +528,17 @@ class MSSQL_Connection extends strongType
                 $cmd = 'sqlcmd ' . implode(' ', $opts);
 
                 if (self::$keep_files) {
-                    Log::Insert('ExecuteWindows: cmd ' . $cmd, true);
+                    Log::Insert('ExecuteWindows: cmd ' . $cmd);
                 }
 
                 $res = exec($cmd, $output);
                 if (self::$keep_files) {
-                    Log::Insert(['ExecuteWindows: output' => $output], true);
+                    Log::Insert(['ExecuteWindows: output' => $output]);
                 }
 
                 $returnval['error'] = [];
                 foreach ($output as $i => $line) {
-                    if (preg_match('/Msg \d+, Level \d+, State \d+/si', $line)) {
+                    if (preg_match('/Msg \d+, Level \d+, State \d+/i', $line)) {
                         $error = implode(', ', [$line, $output[$i + 1], $fname]);
                         if ($this->IgnoreDuplicateError && stristr($error, 'The duplicate key value is') !== false) {
                             continue;
@@ -549,16 +560,15 @@ class MSSQL_Connection extends strongType
                     );
                 if (!self::$keep_files) {
                     unlink($fname);
+                } elseif (stristr($returnval['exec'], 'Timeout expired') !== false) {
+                    $newname = 'sql/timeout.' . str_replace('sql\\', '', $fname) . '.txt';
+                    rename($fname, $newname);
+                    $returnval['error'] = 'timeout';
+                    $returnval['query'] = $query;
                 } else {
-                    if (stristr($returnval['exec'], 'Timeout expired') !== false) {
-                        $newname = 'sql/timeout.' . str_replace('sql\\', '', $fname) . '.txt';
-                        rename($fname, $newname);
-                        $returnval['error'] = 'timeout';
-                        $returnval['query'] = $query;
-                    } else {
-                        rename($fname, $fname . '.txt');
-                    }
+                    rename($fname, $fname . '.txt');
                 }
+
             } else {
                 $result = sqlsrv_query($this->db, $query);
                 if (!$result) {
@@ -593,25 +603,17 @@ class MSSQL_Connection extends strongType
      * @param string $sql
      * @param ?array $params
      * @param bool $large
-     * @return array
+     * @return QueryExecuteResult
      */
     public function Execute(string $sql, array $params = null, bool $large = false): QueryExecuteResult
     {
         Metrics::Start('MSSQL');
 
-        // $start = microtime(true);
         if (!is_null($params) && sizeof($params)) {
             $query = MSSQL::EscapeQuery($sql, $params);
         } else {
             $query = $sql;
         }
-
-//    $returnval = [
-//      'error' => 'command not executed',
-//      'numrows' => 0,
-//      'data' => [],
-//      'query' => $query,
-//    ];
 
         $this->_connect();
 
@@ -630,6 +632,9 @@ class MSSQL_Connection extends strongType
         return $res['data'][0]['lid'] ?? null;
     }
 
+    /**
+     * @return array
+     */
     public function GetDatabases(): array
     {
         $sql = 'SELECT * FROM sys.databases ORDER BY name';
@@ -640,7 +645,7 @@ class MSSQL_Connection extends strongType
         }
         foreach ($res['data'] as $row) {
             $t = $row['name'];
-            if (substr($t, 0, strlen('TEMP')) === 'TEMP')
+            if (str_starts_with($t, 'TEMP'))
                 continue;
 
             $list[] = $t;
@@ -662,7 +667,7 @@ class MSSQL_Connection extends strongType
 
         foreach ($res['data'] as $row) {
             $t = $row['TABLE_NAME'];
-            if (substr($t, 0, strlen('TEMP')) === 'TEMP')
+            if (str_starts_with($t, 'TEMP'))
                 continue;
 
             $list[] = $t;
@@ -753,7 +758,7 @@ class MSSQL_Connection extends strongType
      * @param $table_name
      * @return mixed
      */
-    public function GetIndexes($table_name)
+    public function GetIndexes($table_name): mixed
     {
         if (is_null(self::$_Indexes)) {
             $this->GetUniqueKeys($table_name);
@@ -768,7 +773,7 @@ class MSSQL_Connection extends strongType
      * @param $table_name
      * @return mixed
      */
-    public function GetUniqueKeys($table_name)
+    public function GetUniqueKeys($table_name): mixed
     {
         if (is_null(self::$_UniqueKeys)) {
             self::$_UniqueKeys = [];
@@ -836,7 +841,11 @@ ORDER BY
     // https://stackoverflow.com/questions/483193/how-can-i-list-all-foreign-keys-referencing-a-given-table-in-sql-server
     // Note: SYS Tables are far more reliable for this.  Using the information schema table, you will not accurately get
     // foreign keys that link to UNIQUE indexes, only ones that link to PRIMARY Keys
-    public function GetForeignKeys($table_name)
+    /**
+     * @param $table_name
+     * @return mixed
+     */
+    public function GetForeignKeys($table_name): mixed
     {
         if (!isset(self::$_ForeignKeys[$this->current_db])) {
 
@@ -886,7 +895,11 @@ ORDER BY obj.name, fkc.referenced_column_id
 
     private static ?array $_LinkedTables = null;
 
-    public function GetLinkedTables($table_name)
+    /**
+     * @param $table_name
+     * @return mixed
+     */
+    public function GetLinkedTables($table_name): mixed
     {
         if (!isset(self::$_LinkedTables[$this->current_db])) {
             $sql = '
@@ -1086,7 +1099,7 @@ select
             $this->_StoredProcParams[$row['StoredProc']][] = new MSSQL_StoredProcParam($row);
         }
 
-        Log::Insert('Got Stored Procs', true);
+        Log::Insert('Got Stored Procs');
         return $this->_StoredProcParams[$stored_proc] ?? [];
     }
 }

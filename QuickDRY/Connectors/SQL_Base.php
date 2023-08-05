@@ -30,7 +30,11 @@ class SQL_Base
     public static bool $UseLog = false;
     public static array $Log = [];
 
-    public static function GetType(string $property)
+    /**
+     * @param string $property
+     * @return mixed|null
+     */
+    public static function GetType(string $property): mixed
     {
         return static::$prop_definitions[$property]['type'] ?? null;
     }
@@ -123,6 +127,10 @@ class SQL_Base
         $this->props = self::GetVars();
     }
 
+    /**
+     * @param string $column_name
+     * @return string
+     */
     private static function ColumnNameToNiceName(string $column_name): string
     {
         return $column_name;
@@ -247,10 +255,8 @@ class SQL_Base
                     $this->_history = $this->_history();
                 }
                 return $this->_history;
-
-            default:
-                return $this->GetProperty($name);
         }
+        return $this->GetProperty($name);
     }
 
     /**
@@ -260,10 +266,7 @@ class SQL_Base
      */
     public function __set(string $name, mixed $value)
     {
-        switch ($name) {
-            default:
-                $this->SetProperty($name, $value);
-        }
+        $this->SetProperty($name, $value);
         return $value;
     }
 
@@ -399,7 +402,7 @@ class SQL_Base
      * @param string|null $name
      * @return mixed|null
      */
-    protected function GetProperty(string $name = null)
+    protected function GetProperty(string $name = null): mixed
     {
         if (array_key_exists($name, $this->props)) {
             return $this->props[$name];
@@ -408,6 +411,9 @@ class SQL_Base
         return null;
     }
 
+    /**
+     * @return void
+     */
     public function ClearProps(): void
     {
         foreach ($this->props as $n => $v) {
@@ -488,35 +494,29 @@ class SQL_Base
         if (is_null($old_val) && !is_null($new_val)) {
             $changed = true;
             $change_reason = 'old = null, new not null';
-        } else {
-            if (!is_null($old_val) && is_null($new_val)) {
-                $changed = true;
-                $change_reason = 'old not null, new null';
-            } else {
-                if (strlen($old_val) != strlen($new_val)) {
-                    $changed = true;
-                    $change_reason = '"' . $new_val . '" "' . $old_val . '" ' . strlen($new_val) . ' ' . strlen($old_val) . ': strcmp = ' . strcmp($new_val, $old_val);
-                } else {
-                    if (is_numeric($old_val) && is_numeric($new_val)) {
+        } elseif (!is_null($old_val) && is_null($new_val)) {
+            $changed = true;
+            $change_reason = 'old not null, new null';
+        } elseif (strlen($old_val) != strlen($new_val)) {
+            $changed = true;
+            $change_reason = '"' . $new_val . '" "' . $old_val . '" ' . strlen($new_val) . ' ' . strlen($old_val) . ': strcmp = ' . strcmp($new_val, $old_val);
+        } elseif (is_numeric($old_val) && is_numeric($new_val)) {
 
-                        if (abs($new_val - $old_val) > 0.000000001) {
-                            /**
-                             * [new] => 5270.6709775679 -- PHP thinks these two numbers are different, so we need to compare to a very small number, not equal
-                             * [old] => 5270.6709775679
-                             * // from PHP's manual "never trust floating number results to the last digit, and do not compare floating point numbers directly for equality" - https://www.php.net/manual/en/language.types.float.php
-                             */
-                            $changed = true;
-                            $change_reason = 'diff = ' . abs($new_val - $old_val);
-                        }
-                    } else {
-                        if (strcmp($new_val, $old_val) != 0) {
-                            $changed = true;
-                            $change_reason = '"' . $new_val . '" "' . $old_val . '" ' . strlen($new_val) . ' ' . strlen($old_val) . ': strcmp = ' . strcmp($new_val, $old_val);
-                        }
-                    }
-                }
+            if (abs($new_val - $old_val) > 0.000000001) {
+                /**
+                 * [new] => 5270.6709775679 -- PHP thinks these two numbers are different, so we need to compare to a very small number, not equal
+                 * [old] => 5270.6709775679
+                 * // from PHP's manual "never trust floating number results to the last digit, and do not compare floating point numbers directly for equality" - https://www.php.net/manual/en/language.types.float.php
+                 */
+                $changed = true;
+                $change_reason = 'diff = ' . abs($new_val - $old_val);
             }
+        } elseif (strcmp($new_val, $old_val) != 0) {
+            $changed = true;
+            $change_reason = '"' . $new_val . '" "' . $old_val . '" ' . strlen($new_val) . ' ' . strlen($old_val) . ': strcmp = ' . strcmp($new_val, $old_val);
         }
+
+
         if ($changed) {
             if (is_null($new_val)) {
                 $new_val = 'null';
@@ -611,24 +611,27 @@ class SQL_Base
             $ignore = [];
         }
 
-        foreach ($props as $name => $info)
-            if (!in_array($name, $ignore))
-                if ($sortable)
+        foreach ($props as $name => $info) {
+            if (!in_array($name, $ignore)) {
+                if ($sortable) {
                     $columns[$name] = '<th><a href="' . CURRENT_PAGE . '?sort_by=' . $name . '&dir=' . (strcasecmp($sort_by, $name) == 0 ? $not_dir : 'asc') . '&per_page=' . PER_PAGE . '&' . $add_params . '">' . static::ColumnNameToNiceName($name) . '</a>' . (strcasecmp($sort_by, $name) == 0 ? ' ' . $arrow : '') . '</th>';
-                else
+                } else {
                     $columns[$name] = '<th>' . static::ColumnNameToNiceName($name) . '</th>';
-
-        if (sizeof($add) > 0)
-            foreach ($add as $header => $value) {
-                if (is_array($value) && $sortable)
-                    $columns[$value['value']] = '<th><a href="' . CURRENT_PAGE . '?sort_by=' . $value['sort_by'] . '&dir=' . ($sort_by == $value['sort_by'] ? $not_dir : 'asc') . '&per_page=' . PER_PAGE . '&' . $add_params . '">' . $header . '</a>' . ($sort_by == $value['sort_by'] ? ' ' . $arrow : '') . '</th>';
-                else {
-                    if (is_array($value))
-                        $columns[$value['value']] = '<th>' . $header . '</th>';
-                    else
-                        $columns[$value] = '<th>' . $header . '</th>';
                 }
             }
+        }
+
+        if (sizeof($add) > 0) {
+            foreach ($add as $header => $value) {
+                if (is_array($value) && $sortable) {
+                    $columns[$value['value']] = '<th><a href="' . CURRENT_PAGE . '?sort_by=' . $value['sort_by'] . '&dir=' . ($sort_by == $value['sort_by'] ? $not_dir : 'asc') . '&per_page=' . PER_PAGE . '&' . $add_params . '">' . $header . '</a>' . ($sort_by == $value['sort_by'] ? ' ' . $arrow : '') . '</th>';
+                } elseif (is_array($value)) {
+                    $columns[$value['value']] = '<th>' . $header . '</th>';
+                } else {
+                    $columns[$value] = '<th>' . $header . '</th>';
+                }
+            }
+        }
 
         if (sizeof($column_order) > 0) {
             foreach ($column_order as $order)
@@ -666,14 +669,14 @@ class SQL_Base
 
         if (sizeof($add) > 0)
             foreach ($add as $header => $value) {
-                if (is_array($value) && $sortable)
+                if (is_array($value) && $sortable) {
                     $columns[$value['value']] = '<th>' . $header . '</th>' . "\r\n";
-                else {
-                    if (is_array($value))
-                        $columns[$value['value']] = '<th>' . $header . '</th>' . "\r\n";
-                    else
-                        $columns[$value] = '<th>' . $header . '</th>' . "\r\n";
+                } elseif (is_array($value)) {
+                    $columns[$value['value']] = '<th>' . $header . '</th>' . "\r\n";
+                } else {
+                    $columns[$value] = '<th>' . $header . '</th>' . "\r\n";
                 }
+
             }
 
         if (sizeof($column_order) > 0) {
@@ -688,7 +691,13 @@ class SQL_Base
         return $res . '</tr></thead>';
     }
 
-    public function ValueToNiceValue(string $column_name, $value = null, bool $force_value = false)
+    /**
+     * @param string $column_name
+     * @param $value
+     * @param bool $force_value
+     * @return mixed|null
+     */
+    public function ValueToNiceValue(string $column_name, $value = null, bool $force_value = false): mixed
     {
         return $value;
     }
@@ -726,27 +735,27 @@ class SQL_Base
             $ignore = [];
         }
 
-        foreach ($this->props as $name => $value)
+        foreach ($this->props as $name => $value) {
             if (!in_array($name, $ignore)) {
-                if (array_key_exists($name, $swap))
+                if (array_key_exists($name, $swap)) {
                     $value = $this->{$swap[$name]};
-                else
+                } else {
                     $value = $this->ValueToNiceValue($name, $this->$name);
+                }
 
 
                 if (!is_object($value)) {
-                    if (is_array($value))
+                    if (is_array($value)) {
                         $value = implode(',', $value);
-                    $columns[$name] = '<td>' . $value . '</td>';
-                } else {
-                    if ($value instanceof DateTime) {
-                        $columns[$name] = '<td>' . Dates::Timestamp($value) . '</td>';
-                    } else {
-                        $columns[$name] = '<td><i>Object: </i>' . get_class($value) . '</td>';
                     }
+                    $columns[$name] = '<td>' . $value . '</td>';
+                } elseif ($value instanceof DateTime) {
+                    $columns[$name] = '<td>' . Dates::Timestamp($value) . '</td>';
+                } else {
+                    $columns[$name] = '<td><i>Object: </i>' . get_class($value) . '</td>';
                 }
-
             }
+        }
 
         if (sizeof($add) > 0)
             foreach ($add as $value) {
@@ -764,8 +773,9 @@ class SQL_Base
                 $columns[$name] = '<td>' . $value . '</td>';
             }
         if (sizeof($column_order) > 0) {
-            foreach ($column_order as $name)
+            foreach ($column_order as $name) {
                 $res .= $columns[$name];
+            }
         } else {
             $res = '<tr>' . implode('', $columns);
         }
@@ -838,10 +848,8 @@ class SQL_Base
                 if (static::$prop_definitions[$name]['type'] === 'datetime') {
                     if (!$value) {
                         $value = null;
-                    } else {
-                        if (strtotime($value)) {
-                            $value = Dates::Timestamp(strtotime(Dates::Timestamp($value)) + $User->hours_diff * 3600);
-                        }
+                    } elseif (strtotime($value)) {
+                        $value = Dates::Timestamp(strtotime(Dates::Timestamp($value)) + $User->hours_diff * 3600);
                     }
                 }
             }
@@ -857,6 +865,9 @@ class SQL_Base
         }
     }
 
+    /**
+     * @return QueryExecuteResult
+     */
     public function Save(): QueryExecuteResult
     {
         return new QueryExecuteResult();

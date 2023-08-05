@@ -20,7 +20,10 @@ class ChangeLog extends strongType
     public string $object_type;
     public bool $is_deleted;
 
-    public function Save()
+    /**
+     * @return void
+     */
+    public function Save(): void
     {
         if (class_exists('QuickDRYInstance\Common\ChangeLogHandler')) {
             ChangeLogHandler::Save($this);

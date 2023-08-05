@@ -1,11 +1,23 @@
 <?php
 namespace QuickDRY\Utilities\FineDiff;
 
+/**
+ *
+ */
 abstract class FineDiffOp
 {
-    abstract public function getFromLen();
+    /**
+     * @return mixed
+     */
+    abstract public function getFromLen(): mixed;
 
-    abstract public function getToLen();
+    /**
+     * @return mixed
+     */
+    abstract public function getToLen(): mixed;
 
-    abstract public function getOpcode();
+    /**
+     * @return mixed
+     */
+    abstract public function getOpcode(): mixed;
 }

@@ -12,7 +12,7 @@ class ExceptionHandler
     /**
      * @param string $err
      */
-    public static function Exception(string $err)
+    public static function Exception(string $err): void
     {
         if (defined('SHOW_ERRORS') && SHOW_ERRORS) {
             Debug($err);
@@ -20,7 +20,14 @@ class ExceptionHandler
         self::LogError(-1, $err, '', '');
     }
 
-    public static function LogError(string $errno, string $errstr, string $errfile, string $errline)
+    /**
+     * @param string $errno
+     * @param string $errstr
+     * @param string $errfile
+     * @param string $errline
+     * @return void
+     */
+    public static function LogError(string $errno, string $errstr, string $errfile, string $errline): void
     {
         Log::Insert([$errno, $errstr, $errfile, $errline]);
     }
@@ -48,7 +55,7 @@ class ExceptionHandler
     /**
      *
      */
-    public static function Fatal()
+    public static function Fatal(): void
     {
         $error = error_get_last();
         if (isset($error['type'])) {
@@ -62,7 +69,10 @@ class ExceptionHandler
         }
     }
 
-    public static function Init()
+    /**
+     * @return void
+     */
+    public static function Init(): void
     {
         register_shutdown_function(['QuickDRY\Utilities\ExceptionHandler', 'Fatal']);
 

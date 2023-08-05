@@ -11,6 +11,9 @@ class Encrypt extends strongType
     public static int $PublicKeySize = 16; // 128-bit
     public static string $EncryptionMethod = 'AES-256-CBC';
 
+    /**
+     * @return array
+     */
     public static function GetEncryptionMethods(): array
     {
         return openssl_get_cipher_methods();
@@ -27,17 +30,28 @@ class Encrypt extends strongType
         return base64_encode($encryption_key);
     }
 
+    /**
+     * @param $data
+     * @return string
+     */
     public static function pkcs7_pad($data): string
     {
         $length = self::$KeySize - strlen($data) % self::$KeySize;
         return $data . str_repeat(chr($length), $length);
     }
 
-    public static function pkcs7_unpad($data)
+    /**
+     * @param $data
+     * @return string
+     */
+    public static function pkcs7_unpad($data): string
     {
         return substr($data, 0, -ord($data[strlen($data) - 1]));
     }
 
+    /**
+     * @return string
+     */
     public static function GetPublicKey(): string
     {
         $strong = true;
@@ -46,6 +60,12 @@ class Encrypt extends strongType
         return base64_encode($encryption_key);
     }
 
+    /**
+     * @param $data
+     * @param $private_key
+     * @param $public_key
+     * @return string
+     */
     public static function EncryptData($data, $private_key, $public_key): string
     {
         return base64_encode(openssl_encrypt(
@@ -64,7 +84,7 @@ class Encrypt extends strongType
      * @param $public_key
      * @return string
      */
-    public static function DecryptData($data, $private_key, $public_key)
+    public static function DecryptData($data, $private_key, $public_key): string
     {
         return self::pkcs7_unpad(openssl_decrypt(
             base64_decode($data),

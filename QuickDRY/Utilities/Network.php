@@ -52,7 +52,7 @@ class Network
      * @param $cidr
      * @return bool|string
      */
-    public static function cidr2netmask($cidr)
+    public static function cidr2netmask($cidr): bool|string
     {
         $bin = '';
         for ($i = 1; $i <= 32; $i++) {

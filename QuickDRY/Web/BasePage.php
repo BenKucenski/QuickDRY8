@@ -28,59 +28,92 @@ class BasePage extends strongType
     public static ?string $CurrentPage = null;
 
 
+    /**
+     * @return void
+     */
     public static function Get()
     {
 
     }
 
+    /**
+     * @return string|null
+     */
     public static function getMasterPage(): ?string
     {
         return self::$MasterPage;
     }
 
+    /**
+     * @return string|null
+     */
     public static function getMetaTitle(): ?string
     {
         return self::$MetaTitle;
     }
 
+    /**
+     * @return void
+     */
     public static function Post()
     {
 
     }
 
 
-    public static function Init()
+    /**
+     * @return void
+     */
+    public static function Init(): void
     {
         $temp = parse_url($_SERVER['REQUEST_URI']);
         self::$CurrentPage = $temp['path'] ?? '/';
         self::$PostData = json_decode(file_get_contents('php://input')); // return a standard object
     }
 
+    /**
+     * @return void
+     */
     public static function Put()
     {
 
     }
 
+    /**
+     * @return void
+     */
     public static function Patch()
     {
 
     }
 
+    /**
+     * @return void
+     */
     public static function Options()
     {
 
     }
 
+    /**
+     * @return void
+     */
     public static function Delete()
     {
 
     }
 
+    /**
+     * @return void
+     */
     public static function Find()
     {
 
     }
 
+    /**
+     * @return void
+     */
     public static function History()
     {
 
@@ -94,27 +127,42 @@ class BasePage extends strongType
         return get_called_class();
     }
 
-    public static function ExportToXLS()
+    /**
+     * @return void
+     */
+    public static function ExportToXLS(): void
     {
         Debug('QuickDRY Error: DoExportToXLS is not implemented');
     }
 
-    public static function ExportToPDF()
+    /**
+     * @return void
+     */
+    public static function ExportToPDF(): void
     {
         Debug('QuickDRY Error: DoExportToPDF is not implemented');
     }
 
-    public static function ExportToDOCX()
+    /**
+     * @return void
+     */
+    public static function ExportToDOCX(): void
     {
         Debug('QuickDRY Error: DoExportToDOCX is not implemented');
     }
 
-    public static function ExportToCSV()
+    /**
+     * @return void
+     */
+    public static function ExportToCSV(): void
     {
         Debug('QuickDRY Error: DoExportToCSV is not implemented');
     }
 
-    public static function ExportToJSON()
+    /**
+     * @return void
+     */
+    public static function ExportToJSON(): void
     {
         Debug('QuickDRY Error: DoExportToJSON is not implemented');
     }

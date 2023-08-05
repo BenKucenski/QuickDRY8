@@ -17,7 +17,7 @@ class MySQL_TableColumn
     /**
      * @param array $row
      */
-    public function FromRow(array $row)
+    public function FromRow(array $row): void
     {
         foreach ($row as $key => $value) {
             switch ($key) {

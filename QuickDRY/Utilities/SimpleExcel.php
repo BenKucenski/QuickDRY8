@@ -29,7 +29,7 @@ class SimpleExcel extends strongType
     /**
      * @param Worksheet $sheet
      */
-    private static function SetDefaultSecurity(Worksheet $sheet)
+    private static function SetDefaultSecurity(Worksheet $sheet): void
     {
         // when marking a sheet protected, there are a number of settings that should not be set by default
         $protection = $sheet->getProtection();
@@ -53,7 +53,7 @@ class SimpleExcel extends strongType
      * Safe Mode means that the values are cleaned up of any characters not found
      * on a standard US keyboard
      */
-    public static function ExportSpreadsheet(SimpleExcel $se, bool $SafeMode = false)
+    public static function ExportSpreadsheet(SimpleExcel $se, bool $SafeMode = false): void
     {
         if (!$se->Filename) {
             Debug('QuickDRY Error: Filename required');
@@ -92,13 +92,12 @@ class SimpleExcel extends strongType
                 try { // need to use try catch so that magic __get columns are accessible
                     if (!$is_std) { // if the class type is not a stdClass, then let the class type handle errors
                         $value = $SafeMode ? Strings::KeyboardOnly($item->{$column->Property}) : $item->{$column->Property};
+                    } elseif (isset($item->{$column->Property})) { // otherwise, check to see if properties exist or set the value to an empty string
+                        $value = $SafeMode ? Strings::KeyboardOnly($item->{$column->Property}) : $item->{$column->Property};
                     } else {
-                        if (isset($item->{$column->Property})) { // otherwise, check to see if properties exist or set the value to an empty string
-                            $value = $SafeMode ? Strings::KeyboardOnly($item->{$column->Property}) : $item->{$column->Property};
-                        } else {
-                            $value = '';
-                        }
+                        $value = '';
                     }
+
                 } catch (Exception $ex) {
                     $value = '';
                 }
@@ -134,7 +133,12 @@ class SimpleExcel extends strongType
      * @param bool $SafeMode
      * @throws Exception
      */
-    public static function ExportSpreadsheets(string $filename, array $ses, bool $exit_on_error = true, bool $SafeMode = false)
+    public static function ExportSpreadsheets(
+        string $filename,
+        array  $ses,
+        bool   $exit_on_error = true,
+        bool   $SafeMode = false
+    ): void
     {
         $spreadsheet = new Spreadsheet();
 
@@ -142,7 +146,7 @@ class SimpleExcel extends strongType
 
         foreach ($ses as $sheet => $report) {
             if (!isset($_SERVER['HTTP_HOST'])) {
-                Log::Insert(($sheet + 1) . ' / ' . $total_sheets . ' : ' . $report->Title, true);
+                Log::Insert(($sheet + 1) . ' / ' . $total_sheets . ' : ' . $report->Title);
             }
             if ($sheet > 0) {
                 try {
@@ -229,7 +233,7 @@ class SimpleExcel extends strongType
      * @param SimpleExcel $se
      * @param string $delimiter
      */
-    public static function ExportCSV(SimpleExcel $se, string $delimiter = ',')
+    public static function ExportCSV(SimpleExcel $se, string $delimiter = ','): void
     {
         $spreadsheet = new Spreadsheet();
         $sheet = null;
@@ -287,7 +291,7 @@ class SimpleExcel extends strongType
                   $sheet_column,
                   $sheet_row,
                   $value,
-        int       $property_type = 0)
+        int       $property_type = 0): void
     {
         if (!$value) {
             return;

@@ -15,6 +15,10 @@ class SQL_Query extends strongType
     public string $SQL;
     public ?array $Params;
 
+    /**
+     * @param string $sql
+     * @param array|null $params
+     */
     public function __construct(string $sql, array $params = null)
     {
         $this->SQL = $sql;

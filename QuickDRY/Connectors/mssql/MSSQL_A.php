@@ -9,7 +9,10 @@ class MSSQL_A extends MSSQL_Core
 {
     protected static ?MSSQL_Connection $connection = null;
 
-    protected static function _connect()
+    /**
+     * @return void
+     */
+    protected static function _connect(): void
     {
         if (!defined('MSSQL_HOST')) {
             exit('MSSQL_HOST');
@@ -32,7 +35,7 @@ class MSSQL_A extends MSSQL_Core
     /**
      * @param bool $val
      */
-    public static function SetIgnoreDuplicateError(bool $val)
+    public static function SetIgnoreDuplicateError(bool $val): void
     {
         self::_connect();
         self::$connection->IgnoreDuplicateError = $val;

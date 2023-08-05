@@ -17,7 +17,7 @@ class MSSQL_TableColumn
     /**
      * @param $row
      */
-    public function FromRow($row)
+    public function FromRow($row): void
     {
         foreach ($row as $key => $value) {
             switch ($key) {

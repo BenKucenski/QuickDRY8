@@ -145,7 +145,7 @@ class SQLCodeGen extends strongType
     /**
      * @param $sp_class
      */
-    public function GenerateSPClassFile($sp_class)
+    public function GenerateSPClassFile($sp_class): void
     {
         $template = file_get_contents(__DIR__ . '/_templates/sp.txt');
         $vars = [
@@ -176,7 +176,7 @@ class SQLCodeGen extends strongType
         $this->GenerateDatabaseClass();
 
         foreach ($this->Tables as $table_name) {
-            Log::Insert($table_name, true);
+            Log::Insert($table_name);
 
             $DatabaseClass = $this->DatabaseClass;
 
@@ -209,7 +209,7 @@ class SQLCodeGen extends strongType
         $class_props = [];
 
         $c_name = SQL_Base::TableToClass($this->DatabasePrefix, $table_name, $this->LowerCaseTables, $this->DatabaseTypePrefix);
-        Log::Insert($c_name, true);
+        Log::Insert($c_name);
 
         if (!method_exists($DatabaseClass, 'GetUniqueKeys')) {
             exit("$DatabaseClass::GetUniqueKeys");
@@ -282,7 +282,7 @@ class SQLCodeGen extends strongType
             $var = 'fk_' . preg_replace('/[^a-z0-9]/si', '_', str_replace(' ', '_', $fk->foreign_table_name) . $column_name);
 
             if (in_array($var, $seens_vars)) {
-                Log::Insert(['duplicate FK', $fk], true);
+                Log::Insert(['duplicate FK', $fk]);
                 continue;
             }
             $seens_vars[] = $var;
@@ -340,7 +340,7 @@ class SQLCodeGen extends strongType
 
 
             if (in_array($var, $seens_vars)) {
-                Log::Insert(['duplicate FK', $fk], true);
+                Log::Insert(['duplicate FK', $fk]);
                 continue;
             }
             $seens_vars[] = $var;
@@ -428,8 +428,16 @@ class SQLCodeGen extends strongType
             'DatabaseTypePrefix' => $this->DatabaseTypePrefix,
             'LowerCaseTable' => ($this->LowerCaseTables ? 1 : 0),
             'foreign_key_props' => implode("\r\n\t", $foreign_key_props),
-            'gets' => implode("\r\n        ", $gets),
-            'sets' => implode("\r\n        ", $sets),
+            'gets' => sizeof($gets) ? '
+        switch($name)
+        {
+            ' . implode("\r\n        ", $gets) . '
+        }' : '',
+            'sets' => sizeof($sets) ? '
+        switch($name)
+        {
+            ' . implode("\r\n        ", $sets) . '
+        }' : '',
             'UserClass' => $this->UserClass,
             'IsReferenced' => (sizeof($fk_counts) == 0 ? 'false' : '!($this->' . implode(' + $this->', $fk_counts) . ' == 0)'),
             'HasUserLink' => $HasUserLink ? '
@@ -489,7 +497,7 @@ class SQLCodeGen extends strongType
      * @param $data
      * @param bool $force
      */
-    public static function SaveFile(string $base_folder, string $file_name, $data, bool $force = false)
+    public static function SaveFile(string $base_folder, string $file_name, $data, bool $force = false): void
     {
         $file = $base_folder . '/' . $file_name . '.php';
         if (!$force) {
@@ -524,7 +532,7 @@ class SQLCodeGen extends strongType
     /**
      * @return void
      */
-    public function GenerateJSON()
+    public function GenerateJSON(): void
     {
         if (!$this->GenerateJSON) {
             return;
@@ -534,8 +542,7 @@ class SQLCodeGen extends strongType
         $DatabaseClass = $this->DatabaseClass;
 
         foreach ($this->Tables as $table_name) {
-            Log::Insert($table_name, true);
-            // $c_name = SQL_Base::TableToClass($this->DatabasePrefix, $table_name, $this->LowerCaseTables, $this->DatabaseTypePrefix);
+            Log::Insert($table_name);
 
             $this->PagesJSONFolder = $this->PagesBaseJSONFolder . '/' . $this->DatabaseTypePrefix . '_' . strtolower($this->DatabasePrefix);
 
@@ -610,7 +617,13 @@ class SQLCodeGen extends strongType
         $this->CRUDClass($c_name, $table_nice_name, $primary);
     }
 
-    protected function CRUDClass($c_name, $table_nice_name, $primary)
+    /**
+     * @param $c_name
+     * @param $table_nice_name
+     * @param $primary
+     * @return void
+     */
+    protected function CRUDClass($c_name, $table_nice_name, $primary): void
     {
         if (!sizeof($primary)) {
             return;
@@ -672,7 +685,15 @@ class SQLCodeGen extends strongType
         self::SaveFile($this->PagesJSONFolder . '/base', $table_nice_name . 'Base', $include_php, true);
     }
 
-    protected function Add(string $c_name, string $table_name, array $cols, array $primary, string $table_nice_name)
+    /**
+     * @param string $c_name
+     * @param string $table_name
+     * @param array $cols
+     * @param array $primary
+     * @param string $table_nice_name
+     * @return void
+     */
+    protected function Add(string $c_name, string $table_name, array $cols, array $primary, string $table_nice_name): void
     {
         if (!sizeof($cols)) {
             return;
@@ -716,13 +737,13 @@ class SQLCodeGen extends strongType
                 if ($col->field === 'user_id') {
                     continue;
                 }
-                if (substr($col->field, strlen($col->field) - 6, 6) === '_by_id') {
+                if (str_ends_with($col->field, '_by_id')) {
                     continue;
                 }
-                if (substr($col->field, strlen($col->field) - 3, 3) === '_at') {
+                if (str_ends_with($col->field, '_at')) {
                     continue;
                 }
-                if (substr($col->field, strlen($col->field) - 5, 5) === '_file') {
+                if (str_ends_with($col->field, '_file')) {
                     continue;
                 }
 
@@ -820,7 +841,7 @@ class SQLCodeGen extends strongType
      * @param string $table_nice_name
      * @param array $primary
      */
-    protected function History(string $c_name, string $table_nice_name, array $primary)
+    protected function History(string $c_name, string $table_nice_name, array $primary): void
     {
         if (!sizeof($primary)) {
             return;
@@ -863,7 +884,7 @@ class SQLCodeGen extends strongType
      * @param $table_nice_name
      * @param $primary
      */
-    protected function Manage($c_name, $table_nice_name, $primary)
+    protected function Manage($c_name, $table_nice_name, $primary): void
     {
         if (!sizeof($primary)) {
             return;

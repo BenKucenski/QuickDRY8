@@ -18,7 +18,7 @@ class MySQL extends strongType
      *
      * @return array|string|string[]|null
      */
-    public static function EscapeQuery($conn, $sql, $params)
+    public static function EscapeQuery($conn, $sql, $params): array|string|null
     {
 
         if (is_null($conn)) {
@@ -67,13 +67,18 @@ class MySQL extends strongType
                     return 'null';
                 }
 
-                Debug::Halt([$sql, $params], $result[0] . ' does not having a matching parameter (mysql_escape_query).');
+                Debug([$sql, $params], $result[0] . ' does not having a matching parameter (mysql_escape_query).');
             }
             return null;
         }, $sql);
     }
 
-    public static function PasswordHash($input, $hex = true): string
+    /**
+     * @param $input
+     * @param bool $hex
+     * @return string
+     */
+    public static function PasswordHash($input, bool $hex = true): string
     {
         $sha1_stage1 = sha1($input, true);
         $output = sha1($sha1_stage1, !$hex);

@@ -5,7 +5,7 @@ namespace QuickDRY\Utilities;
 /**
  * Class BarcodeClass
  */
-class BarcodeClass
+class BarcodeClass extends strongType
 {
     /**
      * @param $root
@@ -18,7 +18,7 @@ class BarcodeClass
      */
     public static function Generate($root, $width, $height, $code, $font_size = null, bool $debug = false)
     {
-        if (substr($root, -8) !== 'barcode/') {
+        if (!str_ends_with($root, 'barcode/')) {
             $root .= 'barcode/';
         }
 

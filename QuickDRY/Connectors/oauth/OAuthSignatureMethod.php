@@ -1,6 +1,7 @@
 <?php
 
-namespace QuickDRY\Connectors;
+namespace QuickDRY\Connectors\oauth;
+
 
 /**
  * A class for implementing a Signature Method

@@ -13,9 +13,9 @@ class Navigation
     public ?array $Legend = null;
 
     /**
-     * @param $_ADD
+     * @param array $_ADD
      */
-    public function Combine($_ADD)
+    public function Combine(array $_ADD): void
     {
         foreach ($_ADD as $link) {
             if (!in_array($link, $this->_PERMISSIONS)) {
@@ -25,9 +25,9 @@ class Navigation
     }
 
     /**
-     * @param $menu
+     * @param array $menu
      */
-    public function SetMenu($menu)
+    public function SetMenu(array $menu): void
     {
         $this->_MENU = $menu;
     }
@@ -41,10 +41,6 @@ class Navigation
     {
         if ($_CUR_PAGE == '/' || $_CUR_PAGE == '')
             return true;
-
-        if (is_array($_CUR_PAGE)) {
-            Halt($_CUR_PAGE);
-        }
 
         $t = explode('/', $_CUR_PAGE);
         if (stristr($t[sizeof($t) - 1], 'json') !== FALSE) {
@@ -88,11 +84,10 @@ class Navigation
                         if (!$this->CheckPermissions($url, true)) {
                             continue;
                         }
-                    } else {
-                        if (!$this->CheckPermissions($url['link'], true)) {
-                            continue;
-                        }
+                    } elseif (!$this->CheckPermissions($url['link'], true)) {
+                        continue;
                     }
+
 
                     $has_visible = true;
                     break;
@@ -125,31 +120,25 @@ class Navigation
                                 }
                             }
                             $_MENU_HTML .= '</ul>' . PHP_EOL;
-                        } else {
-                            if (isset($url['onclick'])) {
-                                $_MENU_HTML .= '<li><a href="#" onclick="' . $url['onclick'] . '">' . $name . '</a></li>';
-                            } else {
-                                if (isset($url['link'])) {
-                                    if (!$this->CheckPermissions($url['link'], true)) {
-                                        continue;
-                                    }
-
-                                    $_MENU_HTML .= '<li><a href="' . $url['link'] . '">' . $link_name . '</a></li>' . PHP_EOL;
-                                }
+                        } elseif (isset($url['onclick'])) {
+                            $_MENU_HTML .= '<li><a href="#" onclick="' . $url['onclick'] . '">' . $name . '</a></li>';
+                        } elseif (isset($url['link'])) {
+                            if (!$this->CheckPermissions($url['link'], true)) {
+                                continue;
                             }
+
+                            $_MENU_HTML .= '<li><a href="' . $url['link'] . '">' . $link_name . '</a></li>' . PHP_EOL;
                         }
+
+
                     }
                 }
                 $_MENU_HTML .= '</ul></li>' . PHP_EOL;
-            } else {
-                if (isset($values['onclick'])) {
-                    $_MENU_HTML .= '<li><a href="#" onclick="' . $values['onclick'] . '">' . $name . '</a></li>';
-                } else {
-                    if (isset($values['link'])) {
-                        if ($this->CheckPermissions($values['link'], true)) {
-                            $_MENU_HTML .= '<li><a href="' . $values['link'] . '"><b>' . $name . '</b></a></li>' . PHP_EOL;
-                        }
-                    }
+            } elseif (isset($values['onclick'])) {
+                $_MENU_HTML .= '<li><a href="#" onclick="' . $values['onclick'] . '">' . $name . '</a></li>';
+            } elseif (isset($values['link'])) {
+                if ($this->CheckPermissions($values['link'], true)) {
+                    $_MENU_HTML .= '<li><a href="' . $values['link'] . '"><b>' . $name . '</b></a></li>' . PHP_EOL;
                 }
             }
         }
@@ -183,10 +172,8 @@ class Navigation
                         if (!$this->CheckPermissions($url, true)) {
                             continue;
                         }
-                    } else {
-                        if (!$this->CheckPermissions($url['link'], true)) {
-                            continue;
-                        }
+                    } elseif (!$this->CheckPermissions($url['link'], true)) {
+                        continue;
                     }
 
                     $has_visible = true;
@@ -220,31 +207,23 @@ class Navigation
                                 }
                             }
                             $_MENU_HTML .= '</ul>' . PHP_EOL;
-                        } else {
-                            if (isset($url['onclick'])) {
-                                $_MENU_HTML .= '<li class="dropdown nav-item"><a class="nav-link" href="#" onclick="' . $url['onclick'] . '">' . $name . '</a></li>';
-                            } else {
-                                if (isset($url['link'])) {
-                                    if (!$this->CheckPermissions($url['link'], true)) {
-                                        continue;
-                                    }
-
-                                    $_MENU_HTML .= '<li class="dropdown nav-item"><a class="nav-link" href="' . $url['link'] . '">' . $link_name . '</a></li>' . PHP_EOL;
-                                }
+                        } elseif (isset($url['onclick'])) {
+                            $_MENU_HTML .= '<li class="dropdown nav-item"><a class="nav-link" href="#" onclick="' . $url['onclick'] . '">' . $name . '</a></li>';
+                        } elseif (isset($url['link'])) {
+                            if (!$this->CheckPermissions($url['link'], true)) {
+                                continue;
                             }
+
+                            $_MENU_HTML .= '<li class="dropdown nav-item"><a class="nav-link" href="' . $url['link'] . '">' . $link_name . '</a></li>' . PHP_EOL;
                         }
                     }
                 }
                 $_MENU_HTML .= '</ul></li>' . PHP_EOL;
-            } else {
-                if (isset($values['onclick'])) {
-                    $_MENU_HTML .= '<li class="dropdown nav-item"><a class="nav-link" href="#" onclick="' . $values['onclick'] . '">' . $name . '</a></li>';
-                } else {
-                    if (isset($values['link'])) {
-                        if ($this->CheckPermissions($values['link'], true)) {
-                            $_MENU_HTML .= '<li class="dropdown nav-item"><a class="nav-link" href="' . $values['link'] . '"><b>' . $name . '</b></a></li>' . PHP_EOL;
-                        }
-                    }
+            } elseif (isset($values['onclick'])) {
+                $_MENU_HTML .= '<li class="dropdown nav-item"><a class="nav-link" href="#" onclick="' . $values['onclick'] . '">' . $name . '</a></li>';
+            } elseif (isset($values['link'])) {
+                if ($this->CheckPermissions($values['link'], true)) {
+                    $_MENU_HTML .= '<li class="dropdown nav-item"><a class="nav-link" href="' . $values['link'] . '"><b>' . $name . '</b></a></li>' . PHP_EOL;
                 }
             }
         }
@@ -362,7 +341,7 @@ class Navigation
             }
 
             if ($has_visible) {
-                $_MENU_HTML .= '<li>' . $name . '';
+                $_MENU_HTML .= '<li>' . $name;
                 ksort($values['links']);
                 reset($values['links']);
                 $_MENU_HTML .= '<ul>';
@@ -376,33 +355,24 @@ class Navigation
 
                         if (isset($url['links']) && sizeof($url['links'])) {
 
-                            $_MENU_HTML .= '<li>' . $name . '';
+                            $_MENU_HTML .= '<li>' . $name;
                             $_MENU_HTML .= '<ul>' . PHP_EOL;
                             foreach ($url['links'] as $sub_name => $sub_url) {
                                 $_MENU_HTML .= '<li><a href="' . $sub_url . '">' . $sub_name . '</a></li>' . PHP_EOL;
                             }
                             $_MENU_HTML .= '</ul>' . PHP_EOL;
-                        } else {
-                            if (isset($url['onclick'])) {
-                                $_MENU_HTML .= '<li><a href="#" onclick="' . $url['onclick'] . '">' . $name . '</a></li>';
-                            } else {
-                                if (isset($url['link'])) {
-
-                                    $_MENU_HTML .= '<li><a href="' . $url['link'] . '">' . $link_name . '</a></li>' . PHP_EOL;
-                                }
-                            }
+                        } elseif (isset($url['onclick'])) {
+                            $_MENU_HTML .= '<li><a href="#" onclick="' . $url['onclick'] . '">' . $name . '</a></li>';
+                        } elseif (isset($url['link'])) {
+                            $_MENU_HTML .= '<li><a href="' . $url['link'] . '">' . $link_name . '</a></li>' . PHP_EOL;
                         }
                     }
                 }
                 $_MENU_HTML .= '</ul></li>' . PHP_EOL;
-            } else {
-                if (isset($values['onclick'])) {
-                    $_MENU_HTML .= '<li><a href="#" onclick="' . $values['onclick'] . '">' . $name . '</a></li>';
-                } else {
-                    if (isset($values['link'])) {
-                        $_MENU_HTML .= '<li><a href="' . $values['link'] . '"><b>' . $name . '</b></a></li>' . PHP_EOL;
-                    }
-                }
+            } elseif (isset($values['onclick'])) {
+                $_MENU_HTML .= '<li><a href="#" onclick="' . $values['onclick'] . '">' . $name . '</a></li>';
+            } elseif (isset($values['link'])) {
+                $_MENU_HTML .= '<li><a href="' . $values['link'] . '"><b>' . $name . '</b></a></li>' . PHP_EOL;
             }
         }
         return $_MENU_HTML;

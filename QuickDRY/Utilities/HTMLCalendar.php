@@ -5,6 +5,9 @@
 # License: http://keithdevens.com/software/license
 namespace QuickDRY\Utilities;
 
+/**
+ *
+ */
 class HTMLCalendar
 {
 
@@ -32,7 +35,7 @@ class HTMLCalendar
             $day_names[$n] = ucfirst(gmstrftime('%A', $t)); #%A means full textual day name
 
         list($month, $year, $month_name, $weekday) = explode(',', gmstrftime('%m,%Y,%B,%w', $first_of_month));
-        $weekday = ($weekday + 7 - $first_day) % 7; #adjust for $first_day
+        $weekday = ((int)$weekday + 7 - $first_day) % 7; #adjust for $first_day
         $title = htmlentities(ucfirst($month_name)) . '&nbsp;' . $year;  #note that some locales don't capitalize month and day names
 
         #Begin calendar. Uses a real <caption>. See http://diveintomark.org/archives/2002/07/03
@@ -63,7 +66,7 @@ class HTMLCalendar
                 if (isset($days[$day]['content'])) {
                     $link = $days[$day]['link'] ?? null;
                     $classes = $days[$day]['classes'] ?? null;
-                    $content = $days[$day]['content'] ?? null;
+                    $content = $days[$day]['content'];
 
                     $calendar .= '
 					<td class="calendar_day ' . ($classes ? htmlspecialchars($classes) : '') . ' droppable" id="cal_' . Dates::Datestamp($month . '/' . $day . '/' . $year) . '">

@@ -1,6 +1,7 @@
 <?php
 
-namespace QuickDRY\Connectors;
+namespace QuickDRY\Connectors\oauth;
+
 
 /**
  * The HMAC-SHA1 signature method uses the HMAC-SHA1 signature algorithm as defined in [RFC2104]
@@ -11,11 +12,20 @@ namespace QuickDRY\Connectors;
  */
 class OAuthSignatureMethod_HMAC_SHA1 extends OAuthSignatureMethod
 {
+    /**
+     * @return string
+     */
     public function get_name(): string
     {
         return 'HMAC-SHA1';
     }
 
+    /**
+     * @param OAuthRequest $request
+     * @param OAuthConsumer $consumer
+     * @param OAuthToken|null $token
+     * @return string
+     */
     public function build_signature(OAuthRequest $request, OAuthConsumer $consumer, ?OAuthToken $token): string
     {
         $base_string = $request->get_signature_base_string();

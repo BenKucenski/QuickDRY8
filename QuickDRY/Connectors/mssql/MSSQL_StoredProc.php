@@ -4,6 +4,9 @@ namespace QuickDRY\Connectors\mssql;
 
 use QuickDRY\Utilities\strongType;
 
+/**
+ *
+ */
 class MSSQL_StoredProc extends strongType
 {
     public ?string $SPECIFIC_CATALOG;
@@ -59,10 +62,13 @@ class MSSQL_StoredProc extends strongType
     public ?string $LAST_ALTERED;
     public ?string $SOURCE_CODE;
 
+    /**
+     * @param $row
+     */
     public function __construct($row = null)
     {
         if ($row) {
-            $this->FromRow($row);
+            $this->fromData($row);
         }
     }
 }

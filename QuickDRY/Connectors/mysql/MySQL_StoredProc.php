@@ -4,6 +4,9 @@ namespace QuickDRY\Connectors\mysql;
 
 use QuickDRY\Utilities\strongType;
 
+/**
+ *
+ */
 class MySQL_StoredProc extends strongType
 {
     public ?string $SPECIFIC_CATALOG;
@@ -61,10 +64,13 @@ class MySQL_StoredProc extends strongType
     // extra
     public ?string $PARAMETERS;
 
+    /**
+     * @param $row
+     */
     public function __construct($row = null)
     {
         if ($row) {
-            $this->FromRow($row);
+            $this->fromData($row);
         }
     }
 }

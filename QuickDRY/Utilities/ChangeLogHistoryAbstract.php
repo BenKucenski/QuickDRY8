@@ -4,6 +4,9 @@
 namespace QuickDRY\Utilities;
 
 
+/**
+ *
+ */
 abstract class ChangeLogHistoryAbstract extends strongType
 {
     public ?array $changes = null;

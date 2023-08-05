@@ -111,7 +111,7 @@ class Web extends strongType
     /**
      * @param string[] $MasterPages
      */
-    public function SetSecureMasterPages(array $MasterPages)
+    public function SetSecureMasterPages(array $MasterPages): void
     {
         $this->SecureMasterPages = $MasterPages;
     }
@@ -173,7 +173,7 @@ class Web extends strongType
         string $default_page,
         string $default_user_page,
         string $script_dir
-    )
+    ): void
     {
         $this->DefaultPage = $default_page;
         $this->DefaultUserPage = $default_user_page;

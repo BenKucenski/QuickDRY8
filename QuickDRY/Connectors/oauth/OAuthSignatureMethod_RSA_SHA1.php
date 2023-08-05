@@ -1,6 +1,7 @@
 <?php
 
-namespace QuickDRY\Connectors;
+namespace QuickDRY\Connectors\oauth;
+
 
 /**
  * The RSA-SHA1 signature method uses the RSASSA-PKCS1-v1_5 signature algorithm as defined in
@@ -12,6 +13,9 @@ namespace QuickDRY\Connectors;
  */
 abstract class OAuthSignatureMethod_RSA_SHA1 extends OAuthSignatureMethod
 {
+    /**
+     * @return string
+     */
     public function get_name(): string
     {
         return 'RSA-SHA1';
@@ -23,14 +27,28 @@ abstract class OAuthSignatureMethod_RSA_SHA1 extends OAuthSignatureMethod
     // (3) some sort of specific discovery code based on request
     //
     // Either way should return a string representation of the certificate
-    abstract protected function fetch_public_cert(&$request);
+    /**
+     * @param $request
+     * @return mixed
+     */
+    abstract protected function fetch_public_cert(&$request): mixed;
 
     // Up to the SP to implement this lookup of keys. Possible ideas are:
     // (1) do a lookup in a table of trusted certs keyed off of consumer
     //
     // Either way should return a string representation of the certificate
-    abstract protected function fetch_private_cert(&$request);
+    /**
+     * @param $request
+     * @return mixed
+     */
+    abstract protected function fetch_private_cert(&$request): mixed;
 
+    /**
+     * @param OAuthRequest $request
+     * @param OAuthConsumer $consumer
+     * @param OAuthToken $token
+     * @return string
+     */
     public function build_signature(
         OAuthRequest  $request,
         OAuthConsumer $consumer,
@@ -54,6 +72,13 @@ abstract class OAuthSignatureMethod_RSA_SHA1 extends OAuthSignatureMethod
         return base64_encode($signature);
     }
 
+    /**
+     * @param OAuthRequest $request
+     * @param OAuthConsumer $consumer
+     * @param OAuthToken $token
+     * @param string $signature
+     * @return bool
+     */
     public function check_signature(OAuthRequest $request, OAuthConsumer $consumer, OAuthToken $token, string $signature): bool
     {
         $decoded_sig = base64_decode($signature);

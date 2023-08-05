@@ -4,6 +4,7 @@ namespace QuickDRY\Connectors\mssql;
 
 use DateTime;
 use Exception;
+use JetBrains\PhpStorm\ArrayShape;
 use QuickDRY\Connectors\MSSQL;
 use QuickDRY\Connectors\QueryExecuteResult;
 use QuickDRY\Connectors\SQL_Base;
@@ -12,6 +13,9 @@ use QuickDRY\Connectors\SQL_Query;
 use QuickDRY\Utilities\Dates;
 use QuickDRY\Utilities\Strings;
 
+/**
+ *
+ */
 class MSSQL_Core extends SQL_Base
 {
     protected static array $prop_definitions = [];
@@ -50,6 +54,10 @@ class MSSQL_Core extends SQL_Base
         return $list;
     }
 
+    /**
+     * @param $database
+     * @return array
+     */
     public static function _GetTables($database): array
     {
         $sql = 'SELECT * FROM [' . $database . '].information_schema.tables WHERE "TABLE_TYPE" <> \'VIEW\' ORDER BY "TABLE_NAME"';
@@ -63,7 +71,7 @@ class MSSQL_Core extends SQL_Base
         }
         foreach ($res['data'] as $row) {
             $t = $row['TABLE_NAME'];
-            if (substr($t, 0, strlen('TEMP')) === 'TEMP') {
+            if (str_starts_with($t, 'TEMP')) {
                 continue;
             }
 
@@ -72,6 +80,10 @@ class MSSQL_Core extends SQL_Base
         return $list;
     }
 
+    /**
+     * @param $exclude
+     * @return array
+     */
     public static function _GetDatabases($exclude = null): array
     {
         $sql = '
@@ -107,55 +119,86 @@ class MSSQL_Core extends SQL_Base
         return static::$connection->GetTables();
     }
 
-    public static function GetDatabases()
+    /**
+     * @return mixed
+     */
+    public static function GetDatabases(): mixed
     {
         static::_connect();
         return static::$connection->GetDatabases();
     }
 
-    public static function SetDatabase($db_base)
+    /**
+     * @param string $db_base
+     * @return void
+     */
+    public static function SetDatabase(string $db_base): void
     {
         static::_connect();
 
         static::$connection->SetDatabase($db_base);
     }
 
-    public static function GetTableColumns($table_name)
+    /**
+     * @param string $table_name
+     * @return mixed
+     */
+    public static function GetTableColumns(string $table_name): mixed
     {
         static::_connect();
 
         return static::$connection->GetTableColumns($table_name);
     }
 
-    public static function GetTableIndexes($table_name)
+    /**
+     * @param string $table_name
+     * @return mixed
+     */
+    public static function GetTableIndexes(string $table_name): mixed
     {
         static::_connect();
 
         return static::$connection->GetTableIndexes($table_name);
     }
 
-    public static function GetUniqueKeys($table_name)
+    /**
+     * @param string $table_name
+     * @return mixed
+     */
+    public static function GetUniqueKeys(string $table_name): mixed
     {
         static::_connect();
 
         return static::$connection->GetUniqueKeys($table_name);
     }
 
-    public static function GetIndexes($table_name)
+    /**
+     * @param string $table_name
+     * @return mixed
+     */
+    public static function GetIndexes(string $table_name): mixed
     {
         static::_connect();
 
         return static::$connection->GetIndexes($table_name);
     }
 
-    public static function GetForeignKeys($table_name)
+    /**
+     * @param string $table_name
+     * @return mixed
+     */
+    public static function GetForeignKeys(string $table_name): mixed
     {
         static::_connect();
 
         return static::$connection->GetForeignKeys($table_name);
     }
 
-    public static function GetLinkedTables($table_name)
+    /**
+     * @param string $table_name
+     * @return mixed
+     */
+    public static function GetLinkedTables(string $table_name): mixed
     {
         static::_connect();
 
@@ -204,7 +247,11 @@ class MSSQL_Core extends SQL_Base
     }
 
 
-    public static function GetPrimaryKey($table_name)
+    /**
+     * @param string $table_name
+     * @return mixed
+     */
+    public static function GetPrimaryKey(string $table_name): mixed
     {
         static::_connect();
 
@@ -230,15 +277,16 @@ class MSSQL_Core extends SQL_Base
         } catch (Exception $ex) {
             Debug($ex);
         }
+        return null;
     }
 
     /**
-     * @param $sql
-     * @param $params
-     * @param $map_function
+     * @param string $sql
+     * @param array|null $params
+     * @param callable $map_function
      * @return mixed
      */
-    public static function QueryMap($sql, $params, $map_function)
+    public static function QueryMap(string $sql, ?array $params, callable $map_function): mixed
     {
         static::_connect();
 
@@ -253,10 +301,10 @@ class MSSQL_Core extends SQL_Base
      * @param string $sql
      * @param array|null $params
      * @param bool $objects_only
-     * @param null $map_function
+     * @param callable|null $map_function
      * @return array
      */
-    public static function Query(string $sql, array $params = null, bool $objects_only = false, $map_function = null): array
+    public static function Query(string $sql, array $params = null, bool $objects_only = false, callable $map_function = null): array
     {
         static::_connect();
 
@@ -276,7 +324,10 @@ class MSSQL_Core extends SQL_Base
         return static::$connection->Query($sql, $params, $map_function);
     }
 
-    public static function GUID()
+    /**
+     * @return mixed
+     */
+    public static function GUID(): mixed
     {
         $sql = 'SELECT UPPER(SUBSTRING(master.dbo.fn_varbintohexstr(HASHBYTES(\'MD5\',cast(NEWID() as varchar(36)))), 3, 32)) AS guid';
 
@@ -295,7 +346,7 @@ class MSSQL_Core extends SQL_Base
     /**
      * @return int|string
      */
-    public static function LastID()
+    public static function LastID(): int|string
     {
         static::_connect();
 
@@ -375,7 +426,7 @@ class MSSQL_Core extends SQL_Base
      *
      * @return array
      */
-    protected static function _parse_col_val($col, $val): array
+    #[ArrayShape(['col' => 'string', 'val' => 'mixed'])] protected static function _parse_col_val($col, $val): array
     {
         // extra + symbols allow us to do AND on the same column
         $col = str_replace('+', '', $col);
@@ -383,39 +434,39 @@ class MSSQL_Core extends SQL_Base
         if (is_object($val)) {
             Debug(['QuickDRY Error' => '$val is object', $val]);
         }
-        if (substr($val, 0, strlen('{BETWEEN} ')) === '{BETWEEN} ') {
+        if (str_starts_with($val, '{BETWEEN} ')) {
             $val = trim(Strings::RemoveFromStart('{BETWEEN}', $val));
             $val = explode(',', $val);
             $col = $col . ' BETWEEN @ AND @';
-        } elseif (substr($val, 0, strlen('{IN} ')) === '{IN} ') {
+        } elseif (str_starts_with($val, '{IN} ')) {
             $val = trim(Strings::RemoveFromStart('{IN}', $val));
             $val = explode(',', $val);
             $col = $col . ' IN (' . Strings::StringRepeatCS('@', sizeof($val)) . ')';
-        } elseif (substr($val, 0, strlen('{DATE} ')) === '{DATE} ') {
+        } elseif (str_starts_with($val, '{DATE} ')) {
             $col = 'CONVERT(date, ' . $col . ') = @';
             $val = trim(Strings::RemoveFromStart('{DATE}', $val));
-        } elseif (substr($val, 0, strlen('{YEAR} ')) === '{YEAR} ') {
+        } elseif (str_starts_with($val, '{YEAR} ')) {
             $col = 'DATEPART(yyyy, ' . $col . ') = @';
             $val = trim(Strings::RemoveFromStart('{YEAR}', $val));
-        } elseif (substr($val, 0, strlen('NLIKE ')) === 'NLIKE ') {
+        } elseif (str_starts_with($val, 'NLIKE ')) {
             $col = $col . ' NOT LIKE @';
             $val = trim(Strings::RemoveFromStart('NLIKE', $val));
-        } elseif (substr($val, 0, strlen('NILIKE ')) === 'NILIKE ') {
+        } elseif (str_starts_with($val, 'NILIKE ')) {
             $col = 'LOWER(' . $col . ')' . ' NOT LIKE LOWER(@) ';
             $val = trim(Strings::RemoveFromStart('NILIKE', $val));
-        } elseif (substr($val, 0, strlen('ILIKE ')) === 'ILIKE ') {
+        } elseif (str_starts_with($val, 'ILIKE ')) {
             $col = 'LOWER(' . $col . ')' . ' ILIKE LOWER(@) ';
             $val = trim(Strings::RemoveFromStart('ILIKE', $val));
-        } elseif (substr($val, 0, strlen('LIKE ')) === 'LIKE ') {
+        } elseif (str_starts_with($val, 'LIKE ')) {
             $col = $col . ' LIKE @';
             $val = trim(Strings::RemoveFromStart('LIKE', $val));
-        } elseif (substr($val, 0, strlen('<= ')) === '<= ') {
+        } elseif (str_starts_with($val, '<= ')) {
             $col = $col . ' <= @ ';
             $val = trim(Strings::RemoveFromStart('<=', $val));
-        } elseif (substr($val, 0, strlen('>= ')) === '>= ') {
+        } elseif (str_starts_with($val, '>= ')) {
             $col = $col . ' >= @ ';
             $val = trim(Strings::RemoveFromStart('>=', $val));
-        } elseif (substr($val, 0, strlen('<> ')) === '<> ') {
+        } elseif (str_starts_with($val, '<> ')) {
             $val = trim(Strings::RemoveFromStart('<>', $val));
             if (strtolower($val) !== 'null') {
                 $col = $col . ' <> @ ';
@@ -423,10 +474,10 @@ class MSSQL_Core extends SQL_Base
                 $col = $col . ' IS NOT NULL';
                 $val = null;
             }
-        } elseif (substr($val, 0, strlen('< ')) === '< ') {
+        } elseif (str_starts_with($val, '< ')) {
             $col = $col . ' < @ ';
             $val = trim(Strings::RemoveFromStart('<', $val));
-        } elseif (substr($val, 0, strlen('> ')) === '> ') {
+        } elseif (str_starts_with($val, '> ')) {
             $col = $col . ' > @ ';
             $val = trim(Strings::RemoveFromStart('>', $val));
         } else {
@@ -437,43 +488,32 @@ class MSSQL_Core extends SQL_Base
     }
 
     /**
-     * @param      $id
-     * @param null $col
-     *
+     * @param array|null $where
      * @return mixed
      */
-    protected static function _Get($id, $col = null)
+    protected static function _Get(array $where = null): mixed
     {
         $params = [];
-        if (is_array($id)) {
-            $t = [];
-            foreach ($id as $c => $v) {
-                $cv = self::_parse_col_val($c, $v);
-                $v = $cv['val'];
+        $t = [];
+        foreach ($where as $c => $v) {
+            $cv = self::_parse_col_val($c, $v);
+            $v = $cv['val'];
 
-                if (!is_array($v) && strtolower($v) === 'null') {
-                    $t[] = $c . ' IS NULL';
-                } else {
-                    $t[] = $cv['col'];
-                    if (is_array($v)) {
-                        foreach ($v as $a) {
-                            $params[] = $a;
-                        }
-                    } else {
-                        if (!is_null($v)) {
-                            $params[] = $v;
-                        }
+            if (!is_array($v) && strtolower($v) === 'null') {
+                $t[] = $c . ' IS NULL';
+            } else {
+                $t[] = $cv['col'];
+                if (is_array($v)) {
+                    foreach ($v as $a) {
+                        $params[] = $a;
                     }
+                } elseif (!is_null($v)) {
+                    $params[] = $v;
                 }
+
             }
-            $where_sql = implode(' AND ', $t);
-        } else {
-            if (is_null($col)) {
-                $col = static::$_primary[0] ?? 'id';
-            }
-            $where_sql = '' . $col . ' = @';
-            $params[] = $id;
         }
+        $where_sql = implode(' AND ', $t);
 
         $type = get_called_class();
 
@@ -534,7 +574,7 @@ class MSSQL_Core extends SQL_Base
         if (is_array($order_by)) {
             $sql_order = [];
             foreach ($order_by as $col => $dir) {
-                $sql_order[] .= '' . trim($col) . ' ' . $dir;
+                $sql_order[] .= trim($col) . ' ' . $dir;
             }
             $sql_order = 'ORDER BY ' . implode(', ', $sql_order);
         }
@@ -555,10 +595,8 @@ class MSSQL_Core extends SQL_Base
                         foreach ($v as $a) {
                             $params[] = $a;
                         }
-                    } else {
-                        if (!is_null($v)) {
-                            $params[] = $v;
-                        }
+                    } elseif (!is_null($v)) {
+                        $params[] = $v;
                     }
                 }
             }
@@ -622,10 +660,8 @@ class MSSQL_Core extends SQL_Base
                         foreach ($v as $a) {
                             $params[] = $a;
                         }
-                    } else {
-                        if (!is_null($v)) {
-                            $params[] = $v;
-                        }
+                    } elseif (!is_null($v)) {
+                        $params[] = $v;
                     }
                 }
             }
@@ -679,7 +715,7 @@ class MSSQL_Core extends SQL_Base
      *
      * @return array
      */
-    protected static function _GetAllPaginated(
+    #[ArrayShape(['count' => 'int|mixed', 'items' => 'array', 'sql' => 'string'])] protected static function _GetAllPaginated(
         array $where = null,
         array $order_by = null,
         int   $page = 0,
@@ -722,10 +758,8 @@ class MSSQL_Core extends SQL_Base
                         foreach ($v as $a) {
                             $params[] = $a;
                         }
-                    } else {
-                        if (!is_null($v)) {
-                            $params[] = $v;
-                        }
+                    } elseif (!is_null($v)) {
+                        $params[] = $v;
                     }
                 }
             }
@@ -734,9 +768,9 @@ class MSSQL_Core extends SQL_Base
 
         $sql_left = '';
         if (is_array($left_join)) {
-            $sql_left = '';
-            foreach ($left_join as $join)
+            foreach ($left_join as $join) {
                 $sql_left .= 'LEFT JOIN  [' . $join['database'] . '].dbo.[' . $join['table'] . '] AS ' . $join['as'] . ' WITH (NOLOCK) ON ' . $join['on'] . "\r\n";
+            }
         }
 
 
@@ -809,32 +843,19 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
      */
     protected static function IsNumeric($name): bool
     {
-        switch (static::$prop_definitions[$name]['type']) {
-
-            case 'tinyint(1)':
-            case 'numeric':
-            case 'tinyint(1) unsigned':
-            case 'int(10) unsigned':
-            case 'bigint unsigned':
-            case 'decimal(18,2)':
-            case 'int(10)':
-                return true;
-
-            case 'date':
-            case 'timestamp':
-            case 'datetime':
-                return false;
-        }
-        return false;
+        return match (static::$prop_definitions[$name]['type']) {
+            'tinyint(1)', 'numeric', 'tinyint(1) unsigned', 'int(10) unsigned', 'bigint unsigned', 'decimal(18,2)', 'int(10)' => true,
+            default => false,
+        };
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @param $value
      * @param bool $just_checking
-     * @return float|int|null
+     * @return float|int|string|null
      */
-    protected static function StrongType($name, $value, bool $just_checking = false)
+    protected static function StrongType(string $name, $value, bool $just_checking = false): float|int|string|null
     {
         if ($value === '#NULL!') { // Excel files may have this
             $value = null;
@@ -915,9 +936,9 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
     /**
      * @param bool $force_insert
      * @param bool $return_query
-     * @return QueryExecuteResult
+     * @return QueryExecuteResult|SQL_Query|array
      */
-    protected function _Save(bool $force_insert = false, bool $return_query = false): QueryExecuteResult
+    protected function _Save(bool $force_insert = false, bool $return_query = false): QueryExecuteResult|SQL_Query|array
     {
         global $Web;
 
@@ -1031,9 +1052,7 @@ WHERE
             }
 
             if ($return_query) {
-                $v = new QueryExecuteResult();
-                $v->SQL_Query = new SQL_Query($sql, $params);
-                return $v;
+                return new SQL_Query($sql, $params);
             }
             $res = static::Execute($sql, $params);
 
@@ -1072,7 +1091,7 @@ SET
                 }
             }
             if (!sizeof($props)) {
-                return new QueryExecuteResult();
+                return ['error' => ''];
             }
 
             $sql .= implode(',', $props);
@@ -1083,9 +1102,7 @@ WHERE
 ';
 
             if ($return_query) {
-                $v = new QueryExecuteResult();
-                $v->SQL_Query = new SQL_Query($sql, $params);
-                return $v;
+                return new SQL_Query($sql, $params);
             }
             $res = static::Execute($sql, $params);
         }
@@ -1112,9 +1129,9 @@ WHERE
     /**
      * @param bool $return_query
      *
-     * @return QueryExecuteResult|null
+     * @return QueryExecuteResult|SQL_Query|null
      */
-    protected function _Insert(bool $return_query = false): ?QueryExecuteResult
+    protected function _Insert(bool $return_query = false): SQL_Query|QueryExecuteResult|null
     {
         $primary = static::$_primary ?? [];
         $primary_set = true;
@@ -1153,9 +1170,7 @@ INSERT INTO
 
 
         if ($return_query) {
-            $v = new QueryExecuteResult();
-            $v->SQL_Query = new SQL_Query($sql, $params);
-            return $v;
+            return new SQL_Query($sql, $params);
         }
         $res = static::Execute($sql, $params);
 
@@ -1174,9 +1189,9 @@ INSERT INTO
 
     /**
      * @param bool $return_query
-     * @return QueryExecuteResult|null
+     * @return QueryExecuteResult|SQL_Query|null
      */
-    protected function _Update(bool $return_query = false): ?QueryExecuteResult
+    protected function _Update(bool $return_query = false): SQL_Query|QueryExecuteResult|null
     {
         if (!sizeof($this->_change_log)) {
             return null;
@@ -1240,9 +1255,7 @@ WHERE
         }
 
         if ($return_query) {
-            $v = new QueryExecuteResult();
-            $v->SQL_Query = new SQL_Query($sql, $params);
-            return $v;
+            return new SQL_Query($sql, $params);
         }
 
 

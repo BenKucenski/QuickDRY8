@@ -14,7 +14,7 @@ class Strings extends strongType
     /**
      * @param array $arr
      */
-    public static function SortArrayByValueLength(array &$arr)
+    public static function SortArrayByValueLength(array &$arr): void
     {
         usort($arr, function ($a, $b) {
             return strlen($b) - strlen($a);
@@ -31,12 +31,21 @@ class Strings extends strongType
         return preg_replace('~^[\'"]?(.*?)[\'"]?$~', '$1', $str);
     }
 
+    /**
+     * @param $str
+     * @return string
+     */
     public static function ExcelTitleOnly($str): string
     {
-        return self::Truncate(preg_replace('/\s+/si', ' ', preg_replace('/[^a-z0-9\s]/si', ' ', trim($str))), 31, false, false);
+        return self::Truncate(preg_replace('/\s+/i', ' ', preg_replace('/[^a-z0-9\s]/i', ' ', trim($str))), 31, false, false);
     }
 
     // https://stackoverflow.com/questions/3109978/display-numbers-with-ordinal-suffix-in-php
+
+    /**
+     * @param $number
+     * @return string
+     */
     public static function Ordinal($number): string
     {
         $ends = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
@@ -55,7 +64,7 @@ class Strings extends strongType
      */
     public static function CSVToAssociativeArray($filename, bool $clean_header = false, bool $has_header = true): array
     {
-        if(!file_exists($filename)) {
+        if (!file_exists($filename)) {
             return [];
         }
         return self::CSVArrayToAssociativeArray(file($filename), $clean_header, $has_header);
@@ -81,8 +90,8 @@ class Strings extends strongType
         $header = array_shift($rows);
         if ($clean_header) {
             foreach ($header as $i => $item) {
-                $item = preg_replace('/[^a-z0-9]/si', ' ', $item);
-                $item = preg_replace('/\s+/si', ' ', $item);
+                $item = preg_replace('/[^a-z0-9]/i', ' ', $item);
+                $item = preg_replace('/\s+/i', ' ', $item);
                 $item = trim($item);
                 $item = str_replace(' ', '_', $item);
                 $header[$i] = strtolower($item);
@@ -104,6 +113,11 @@ class Strings extends strongType
      */
     public static string $_SEPARATOR;
 
+    /**
+     * @param $tsv
+     * @param string $separator
+     * @return array
+     */
     public static function TSVToArray($tsv, string $separator = "\t"): array
     {
         self::$_SEPARATOR = $separator;
@@ -152,11 +166,11 @@ class Strings extends strongType
         foreach ($rows as $row) {
             $m = sizeof($row);
             for ($j = $m; $j < $n; $j++) {
-                $row[] = ''; // fill in missing fields with emptry strings
+                $row[] = ''; // fill in missing fields with empty strings
             }
             if (sizeof($row) != $n) {
                 if (!$ignore_errors) {
-                    Halt([$header, $row]);
+                    Debug([$header, $row]);
                 }
             }
             if ($mapping_function) {
@@ -170,19 +184,19 @@ class Strings extends strongType
 
     /**
      * @param $str
-     * @return null|string|string[]
+     * @return string
      */
-    public static function KeyboardOnly($str)
+    public static function KeyboardOnly($str): string
     {
-        $str = preg_replace('/[^a-z0-9\!\@\#\$\%\^\&\*\(\)\-\=\_\+\[\]\\\{\}\|\;\'\:\"\,\.\/\<\>\\\?\ \r\n]/si', '', $str);
-        return preg_replace('/\s+/si', ' ', $str);
+        $str = preg_replace('/[^a-z0-9\!\@\#\$\%\^\&\*\(\)\-\=\_\+\[\]\\\{\}\|\;\'\:\"\,\.\/\<\>\\\?\ \r\n]/i', '', $str);
+        return preg_replace('/\s+/i', ' ', $str);
     }
 
     /**
      * @param $xml
      * @return mixed
      */
-    public static function SimpleXMLToArray($xml)
+    public static function SimpleXMLToArray($xml): mixed
     {
         $xml = simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA);
         $json = json_encode($xml);
@@ -193,7 +207,7 @@ class Strings extends strongType
      * @param $XML
      * @return array|string
      */
-    public static function XMLtoArray($XML)
+    public static function XMLtoArray($XML): array|string
     {
         // https://stackoverflow.com/questions/3630866/php-parse-xml-string
 
@@ -295,7 +309,7 @@ class Strings extends strongType
      * @param $string
      * @return string
      */
-    public static function RemoveFromStart($remove, $string)
+    public static function RemoveFromStart($remove, $string): string
     {
         $remove_length = strlen($remove);
 
@@ -307,7 +321,7 @@ class Strings extends strongType
      * @param $string
      * @return string
      */
-    public static function RemoveFromEnd($remove, $string)
+    public static function RemoveFromEnd($remove, $string): string
     {
         $remove_length = strlen($remove);
 
@@ -320,39 +334,27 @@ class Strings extends strongType
      */
     public static function JSONErrorCodeToString(int $err_code): string
     {
-        switch ($err_code) {
-            case JSON_ERROR_NONE:
-                return ' - No errors';
-            case JSON_ERROR_DEPTH:
-                return ' - Maximum stack depth exceeded';
-            case JSON_ERROR_STATE_MISMATCH:
-                return ' - Underflow or the modes mismatch';
-            case JSON_ERROR_CTRL_CHAR:
-                return ' - Unexpected control character found';
-            case JSON_ERROR_SYNTAX:
-                return ' - Syntax error, malformed JSON';
-            case JSON_ERROR_UTF8:
-                return ' - Malformed UTF-8 characters, possibly incorrectly encoded';
-            case JSON_ERROR_RECURSION:
-                return ' - One or more recursive references in the value to be encoded';
-            case JSON_ERROR_INF_OR_NAN:
-                return ' - One or more NAN or INF values in the value to be encoded';
-            case JSON_ERROR_UNSUPPORTED_TYPE:
-                return ' - 	A value of a type that cannot be encoded was given';
-            case JSON_ERROR_INVALID_PROPERTY_NAME:
-                return ' - A property name that cannot be encoded was given';
-            case JSON_ERROR_UTF16:
-                return ' - Malformed UTF-16 characters, possibly incorrectly encoded';
-            default:
-                return ' - Unknown error';
-        }
+        return match ($err_code) {
+            JSON_ERROR_NONE => ' - No errors',
+            JSON_ERROR_DEPTH => ' - Maximum stack depth exceeded',
+            JSON_ERROR_STATE_MISMATCH => ' - Underflow or the modes mismatch',
+            JSON_ERROR_CTRL_CHAR => ' - Unexpected control character found',
+            JSON_ERROR_SYNTAX => ' - Syntax error, malformed JSON',
+            JSON_ERROR_UTF8 => ' - Malformed UTF-8 characters, possibly incorrectly encoded',
+            JSON_ERROR_RECURSION => ' - One or more recursive references in the value to be encoded',
+            JSON_ERROR_INF_OR_NAN => ' - One or more NAN or INF values in the value to be encoded',
+            JSON_ERROR_UNSUPPORTED_TYPE => ' - 	A value of a type that cannot be encoded was given',
+            JSON_ERROR_INVALID_PROPERTY_NAME => ' - A property name that cannot be encoded was given',
+            JSON_ERROR_UTF16 => ' - Malformed UTF-16 characters, possibly incorrectly encoded',
+            default => ' - Unknown error',
+        };
     }
 
     /**
      * @param $value
-     * @return array|string|string[]
+     * @return string
      */
-    public static function FormFilter($value)
+    public static function FormFilter($value): string
     {
         return str_replace('"', '\\"', $value);
     }
@@ -472,7 +474,7 @@ class Strings extends strongType
      *
      * @return array|string|string[]
      */
-    public static function EscapeXml($str)
+    public static function EscapeXml($str): array|string
     {
         $str = str_replace('&', '&amp;', $str);
         $str = str_replace('>', '&gt;', $str);
@@ -499,7 +501,7 @@ class Strings extends strongType
      *
      * @return array|string|string[]|null
      */
-    public static function RemoveStringVar($url, $key)
+    public static function RemoveStringVar($url, $key): array|string|null
     {
         return preg_replace('/' . $key . '=[^&]+?(&)(.*)/i', '$2', $url);
     }
@@ -511,7 +513,7 @@ class Strings extends strongType
      *
      * @return array|string|string[]
      */
-    public static function ReplaceSpecialChar($arg, $replaceWith)
+    public static function ReplaceSpecialChar($arg, $replaceWith): array|string
     {
         $replaceArr = ['&', '/', "\\", '*', '?', "\"", "\'", '<', '>', '|', ':', ' ', "'", '#', '%'];
         return str_replace($replaceArr, $replaceWith, $arg);
@@ -519,9 +521,9 @@ class Strings extends strongType
 
     /**
      * @param $val
-     * @return float|string
+     * @return float|int|string
      */
-    public static function Numeric($val)
+    public static function Numeric($val): float|int|string
     {
         // handle scientific notation, force into decimal format
         if (stristr($val, 'E')) {
@@ -532,7 +534,7 @@ class Strings extends strongType
             }
         }
         // handle basic numbers
-        $val = preg_replace('/[^0-9\.-]/si', '', $val);
+        $val = preg_replace('/[^0-9\.-]/i', '', $val);
         if (is_numeric($val)) {
             $res = trim($val * 1.0);
             if ($res) {
@@ -549,7 +551,7 @@ class Strings extends strongType
      */
     public static function NumbersOnly($val, bool $return_orig_on_zero = true)
     {
-        $res = trim(preg_replace('/[^0-9\.]/si', '', $val));
+        $res = trim(preg_replace('/[^0-9\.]/i', '', $val));
         if (!$res) {
             return $return_orig_on_zero ? $val : 0;
         }
@@ -562,7 +564,7 @@ class Strings extends strongType
      */
     public static function NumericPhone($val): string
     {
-        $res = trim(preg_replace('/[^0-9]/si', '', $val) * 1.0);
+        $res = trim(preg_replace('/[^0-9]/i', '', $val) * 1.0);
         if (!$res) {
             return $val;
         }
@@ -606,7 +608,7 @@ class Strings extends strongType
      */
     public static function WordCount($val): int
     {
-        return sizeof(explode(' ', preg_replace('/\s+/si', ' ', $val)));
+        return sizeof(explode(' ', preg_replace('/\s+/i', ' ', $val)));
     }
 
     /**
@@ -676,7 +678,7 @@ class Strings extends strongType
      * @param $json
      * @return array|string
      */
-    public static function FixJSON($json)
+    public static function FixJSON($json): array|string
     {
         if (!is_array($json)) {
             return iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($json));
@@ -689,16 +691,12 @@ class Strings extends strongType
                 if (is_object($row)) {
                     if ($row instanceof DateTime) {
                         $json[$i] = Dates::SolrTime($row);
+                    } elseif ($row instanceof strongType) {
+                        $json[$i] = $row->toArray();
+                    } elseif ($row instanceof stdClass) {
+                        $json[$i] = json_decode(json_encode($row), true);
                     } else {
-                        if ($row instanceof strongType) {
-                            $json[$i] = $row->ToArray();
-                        } else {
-                            if ($row instanceof stdClass) {
-                                $json[$i] = json_decode(json_encode($row), true);
-                            } else {
-                                Halt(['error' => 'fix_json unknown object', $row]);
-                            }
-                        }
+                        Debug(['error' => 'fix_json unknown object', $row]);
                     }
                 }
                 if (!is_array($json[$i])) {
@@ -715,7 +713,7 @@ class Strings extends strongType
      *
      * @return array|string|string[]
      */
-    public static function InlineSafe($txt)
+    public static function InlineSafe($txt): array|string
     {
         $txt = str_replace('"', '\\"', str_replace("'", "\\'", $txt));
         $txt = str_replace("\r", '', $txt);
@@ -739,6 +737,10 @@ class Strings extends strongType
     }
 
 
+    /**
+     * @param $company
+     * @return string
+     */
     public static function CleanCompanyName($company): string
     {
         $company = strtolower($company);
@@ -779,7 +781,6 @@ class Strings extends strongType
                 //'cty',
                 //'gvmt',
                 //'govt',
-                'inst',
                 'limited',
                 'pvt',
                 'and',
@@ -827,13 +828,13 @@ class Strings extends strongType
     }
 
     /**
-     * @param $text
+     * @param string $text
      * @param string $replacement
      * @return array|string|string[]|null
      */
-    public static function ToSearchable($text, string $replacement = '')
+    public static function ToSearchable(string $text, string $replacement = ''): array|string|null
     {
-        return preg_replace('/[^a-z0-9]/si', $replacement, strtolower($text));
+        return preg_replace('/[^a-z0-9]/i', $replacement, strtolower($text));
     }
 
     /**
@@ -841,7 +842,7 @@ class Strings extends strongType
      *
      * @return float|int
      */
-    public static function NumberOfZeros($num)
+    public static function NumberOfZeros($num): float|int
     {
         return $num != 0 ? floor(log10(abs($num))) : 1;
 
@@ -859,7 +860,7 @@ class Strings extends strongType
             return '';
         }
 
-        $number = preg_replace('/[^0-9]/si', '', $number);
+        $number = preg_replace('/[^0-9]/i', '', $number);
 
         $m = strlen($number);
         $last = substr($number, $m - 4, 4);
@@ -886,7 +887,7 @@ class Strings extends strongType
     public static function StringToHTML($text, bool $convert_urls = false): string
     {
         $text = str_replace("\r", '', $text);
-        $text = preg_replace('/\n+/si', "\n", $text);
+        $text = preg_replace('/\n+/i', "\n", $text);
 
         if ($convert_urls) {
             // https://stackoverflow.com/questions/1960461/convert-plain-text-urls-into-html-hyperlinks-in-php
@@ -901,7 +902,7 @@ class Strings extends strongType
      * @param string $html
      * @return array|string|string[]|null
      */
-    public static function HTMLToString(string $html)
+    public static function HTMLToString(string $html): array|string|null
     {
         $html = trim(strip_tags($html, '<p><br>'));
         $html = str_replace("\r", ' ', $html);
@@ -1003,6 +1004,10 @@ class Strings extends strongType
         return $var ? htmlspecialchars_decode($var) : $default;
     }
 
+    /**
+     * @param $background_color
+     * @return string
+     */
     public static function FontColor($background_color): string
     {
         $rgb = Color::HexToRGB($background_color);
@@ -1025,11 +1030,17 @@ class Strings extends strongType
         return implode(' ', $results[0]);
     }
 
-    public static function FlattenArray($array, $parents = null, &$dest = null)
+    /**
+     * @param $array
+     * @param $parents
+     * @param $dest
+     * @return void
+     */
+    public static function FlattenArray($array, $parents = null, &$dest = null): void
     {
         foreach ($array as $k => $v) {
 
-            $k = preg_replace('/[^a-z0-9]/si', '', $k);
+            $k = preg_replace('/[^a-z0-9]/i', '', $k);
 
             if (!is_array($v)) {
                 $dest[$parents . $k] = $v;

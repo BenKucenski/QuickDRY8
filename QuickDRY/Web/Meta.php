@@ -27,7 +27,7 @@ class Meta
      * @param null $val
      * @return mixed|null
      */
-    public static function Description($val = null)
+    public static function Description($val = null): mixed
     {
         if (is_null($val))
             return str_replace('"', '\\"', self::$description);
@@ -39,7 +39,7 @@ class Meta
      * @param null $val
      * @return mixed|null
      */
-    public static function Keywords($val = null)
+    public static function Keywords($val = null): mixed
     {
         if (is_null($val))
             return str_replace('"', '\\"', self::$keywords);

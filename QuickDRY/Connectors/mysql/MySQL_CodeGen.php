@@ -11,6 +11,20 @@ use QuickDRY\Utilities\Log;
  */
 class MySQL_CodeGen extends SQLCodeGen
 {
+    /**
+     * @param $database
+     * @param $database_constant
+     * @param $user_class
+     * @param $user_var
+     * @param $user_id_column
+     * @param $master_page
+     * @param $lowercase_tables
+     * @param $use_fk_column_name
+     * @param string|null $DatabaseClass
+     * @param bool $GenerateJSON
+     * @param string $DestinationFolder
+     * @return void
+     */
     public function Init(
         $database,
         $database_constant,
@@ -20,10 +34,10 @@ class MySQL_CodeGen extends SQLCodeGen
         $master_page,
         $lowercase_tables,
         $use_fk_column_name,
-        $DatabaseClass = '',
-        $GenerateJSON = true,
-        $DestinationFolder = '../httpdocs'
-    )
+        string $DatabaseClass = null,
+        bool $GenerateJSON = true,
+        string $DestinationFolder = '../httpdocs'
+    ): void
     {
         $this->DatabaseTypePrefix = 'my';
 
@@ -50,7 +64,7 @@ class MySQL_CodeGen extends SQLCodeGen
 
         $DatabaseClass::SetDatabase($this->Database);
 
-        Log::Insert('$this->Tables = ' . $DatabaseClass . '::GetTables();', true);
+        Log::Insert('$this->Tables = ' . $DatabaseClass . '::GetTables();');
         $this->Tables = $DatabaseClass::GetTables();
 
         $this->CreateDirectories();
@@ -83,7 +97,7 @@ class MySQL_CodeGen extends SQLCodeGen
                 $this->DatabaseTypePrefix . '_sp'
             );
 
-            Log::Insert($sp_class, true);
+            Log::Insert($sp_class);
 
             $this->GenerateSPClassFile($sp_class);
 

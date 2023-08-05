@@ -7,12 +7,12 @@ namespace QuickDRY\Utilities;
  */
 class SimpleExcel_Column extends strongType
 {
-    const SIMPLE_EXCEL_PROPERTY_TYPE_CALCULATED = 0;
-    const SIMPLE_EXCEL_PROPERTY_TYPE_AS_GIVEN = 1;
-    const SIMPLE_EXCEL_PROPERTY_TYPE_DATE = 2;
-    const SIMPLE_EXCEL_PROPERTY_TYPE_DATETIME = 3;
-    const SIMPLE_EXCEL_PROPERTY_TYPE_CURRENCY = 4;
-    const SIMPLE_EXCEL_PROPERTY_TYPE_HYPERLINK = 5;
+    public const SIMPLE_EXCEL_PROPERTY_TYPE_CALCULATED = 0;
+    public const SIMPLE_EXCEL_PROPERTY_TYPE_AS_GIVEN = 1;
+    public const SIMPLE_EXCEL_PROPERTY_TYPE_DATE = 2;
+    public const SIMPLE_EXCEL_PROPERTY_TYPE_DATETIME = 3;
+    public const SIMPLE_EXCEL_PROPERTY_TYPE_CURRENCY = 4;
+    public const SIMPLE_EXCEL_PROPERTY_TYPE_HYPERLINK = 5;
 
     public ?string $Header;
     public ?string $Property;
@@ -37,7 +37,7 @@ class SimpleExcel_Column extends strongType
     /**
      * @param $PropertyType
      */
-    public function SetPropertyType($PropertyType)
+    public function SetPropertyType($PropertyType): void
     {
         $this->PropertyType = $PropertyType;
     }

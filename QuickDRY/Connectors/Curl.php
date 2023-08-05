@@ -30,6 +30,13 @@ class Curl
     public ?array $Params = null;
     public ?array $SentHeader = null;
 
+    /**
+     * @param ResponseInterface $response
+     * @param string $path
+     * @param array|null $params
+     * @param array|null $additional_headers
+     * @return Curl
+     */
     private static function getResFromGuzzle(
         ResponseInterface $response,
         string            $path,

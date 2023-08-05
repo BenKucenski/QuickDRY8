@@ -9,6 +9,9 @@ class FormClass
 {
     public static array $_options = [];
 
+    /**
+     * @return array
+     */
     public static function Options(): array
     {
         return static::$_options;
