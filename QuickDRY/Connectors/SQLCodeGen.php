@@ -118,6 +118,7 @@ class SQLCodeGen extends strongType
 
             case 'tinyint unsigned':
             case 'bigint unsigned':
+            case 'int unsigned zerofill':
             case 'long':
             case 'bit':
             case 'bigint':
