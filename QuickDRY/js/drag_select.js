@@ -29,19 +29,19 @@
 (function ($) {
     $.fn.drag_drop_selectable = function (options) {
         $.fn.captureKeys();
-        var settings = $.extend({}, $.fn.drag_drop_selectable.defaults, options || {});
+        let settings = $.extend({}, $.fn.drag_drop_selectable.defaults, options || {});
         return $(this).each(function (i) {
-            var $list = $(this);
-            var list_id = $.fn.drag_drop_selectable.unique++;
+            let $list = $(this);
+            let list_id = $.fn.drag_drop_selectable.unique++;
             $.fn.drag_drop_selectable.stack[list_id] = {"selected": [], "all": []};//we hold all as well as selected so we can invert and stuff...
             $list.attr('dds', list_id);
             $.fn.drag_drop_selectable.settings[list_id] = settings;
             $list.find('li.dds')
                 //make all list elements selectable with click and ctrl+click.
                 .each(function () {
-                    var $item = $(this);
+                    let $item = $(this);
                     //add item to list!
-                    var item_id = $.fn.drag_drop_selectable.unique++;
+                    let item_id = $.fn.drag_drop_selectable.unique++;
                     $item.attr('dds', item_id);
                     $.fn.drag_drop_selectable.stack[list_id].all.push(item_id);
                     $(this).bind('click.dds_select', function (e) {
@@ -66,13 +66,13 @@
                 //OK so they are selectable. now I need to make them draggable, in such a way that they pick up their friends when dragged. hmmm how do I do that?
                 .draggable({
                     helper: function () {
-                        var $clicked = $(this);
+                        let $clicked = $(this);
                         if (!$clicked.hasClass('dds_selected')) {
                             //trigger the click function.
                             $clicked.trigger('click.dds_select');
                         }
-                        var list = $.fn.drag_drop_selectable.getListId($clicked.attr('dds'));
-                        var $helper = $('<div class="dds" dds_list="' + list + '"><div style="margin-top:-' + $.fn.drag_drop_selectable.getMarginForDragging($clicked) + 'px;" /></div>').append($.fn.drag_drop_selectable.getSelectedForDragging($clicked.attr('dds')));
+                        let list = $.fn.drag_drop_selectable.getListId($clicked.attr('dds'));
+                        let $helper = $('<div class="dds" dds_list="' + list + '"><div style="margin-top:-' + $.fn.drag_drop_selectable.getMarginForDragging($clicked) + 'px;" /></div>').append($.fn.drag_drop_selectable.getSelectedForDragging($clicked.attr('dds')));
                         $.fn.drag_drop_selectable.getListItems(list).filter('.dds_selected').addClass($.fn.drag_drop_selectable.settings[list].ghostClass);
                         return $helper;
                     },
@@ -80,15 +80,15 @@
                     revert: 'invalid',
                     cursor: 'move',
                     stop: function (e, ui) {
-                        var list = $.fn.drag_drop_selectable.getListId($clicked.attr('dds'));
+                        let list = $.fn.drag_drop_selectable.getListId($clicked.attr('dds'));
                         $.fn.drag_drop_selectable.getListItems(list).filter('.dds_selected').removeClass($.fn.drag_drop_selectable.settings[list].ghostClass);
                     }
                 });
             $list.droppable({
                 drop: function (e, ui) {
-                    var oldlist = parseInt(ui.helper.attr('dds_list'));
+                    let oldlist = parseInt(ui.helper.attr('dds_list'));
                     ui.helper.find('li.dds_selected').each(function () {
-                        var iid = parseInt($(this).attr('dds_drag'));
+                        let iid = parseInt($(this).attr('dds_drag'));
                         $.fn.drag_drop_selectable.moveBetweenLists(iid, oldlist, list_id);
                     });
 
@@ -178,7 +178,7 @@
     };
     $.fn.drag_drop_selectable.selectAll = function (list_id) {
         $.fn.drag_drop_selectable.getListItems(list_id).each(function () {
-            if ($(this).css('display') != 'none')
+            if ($(this).css('display') !== 'none')
                 $.fn.drag_drop_selectable.select($(this).attr('dds'));
         });
         return false;
@@ -238,38 +238,38 @@
         }
     });
 
-    var CTRL_KEY = 17;
-    var ALT_KEY = 18;
-    var SHIFT_KEY = 16;
-    var META_KEY = 92;
+    let CTRL_KEY = 17;
+    let ALT_KEY = 18;
+    let SHIFT_KEY = 16;
+    let META_KEY = 92;
     $.fn.captureKeys = function () {
         if ($.fn.captureKeys.capturing) {
             return;
         }
-        $(document).keydown(function (e) {
-            if (e.keyCode == CTRL_KEY) {
+        $(document).on('keydown', function (e) {
+            if (e.keyCode === CTRL_KEY) {
                 $.fn.captureKeys.stack.CTRL_KEY = true;
             }
-            if (e.keyCode == SHIFT_KEY) {
+            if (e.keyCode === SHIFT_KEY) {
                 $.fn.captureKeys.stack.SHIFT_KEY = true;
             }
-            if (e.keyCode == ALT_KEY) {
+            if (e.keyCode === ALT_KEY) {
                 $.fn.captureKeys.stack.ALT_KEY = true;
             }
-            if (e.keyCode == META_KEY) {
+            if (e.keyCode === META_KEY) {
                 $.fn.captureKeys.stack.META_KEY = true;
             }
         }).keyup(function (e) {
-            if (e.keyCode == CTRL_KEY) {
+            if (e.keyCode === CTRL_KEY) {
                 $.fn.captureKeys.stack.CTRL_KEY = false;
             }
-            if (e.keyCode == SHIFT_KEY) {
+            if (e.keyCode === SHIFT_KEY) {
                 $.fn.captureKeys.stack.SHIFT_KEY = false;
             }
-            if (e.keyCode == ALT_KEY) {
+            if (e.keyCode === ALT_KEY) {
                 $.fn.captureKeys.stack.ALT_KEY = false;
             }
-            if (e.keyCode == META_KEY) {
+            if (e.keyCode === META_KEY) {
                 $.fn.captureKeys.stack.META_KEY = false;
             }
         });
@@ -294,8 +294,8 @@
 
 
 $(function () {
-    var mychange = function ($list) {
-        var values = $.dds.serialize($list.attr('id'));
+    let mychange = function ($list) {
+        let values = $.dds.serialize($list.attr('id'));
         values = values.replace(/list_[a-z_]+_\d+_item_/gi, '');
         $('#' + $list.attr('id') + '_serialised').val(values);
     };

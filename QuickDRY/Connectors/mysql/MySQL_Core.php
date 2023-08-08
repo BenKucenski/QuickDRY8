@@ -104,7 +104,7 @@ class MySQL_Core extends SQL_Base
     }
 
     /**
-     * @param $table
+     * @param string $table
      * @return MySQL_ForeignKey[]
      */
     public static function GetLinkedTables(string $table): array

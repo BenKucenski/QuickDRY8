@@ -46,16 +46,7 @@ class LogFile
             $f = preg_replace('/[^a-z0-9]/si', '_', $filename) . '.' . Dates::Datestamp();
             $log_path = DATA_FOLDER . '/logs/' . $f . '.log';
 
-            $fp = fopen($log_path, 'a');
-
-            if (false === $fp) {
-                $error = error_get_last();
-                error_log('Unable to log to ' . $log_path . ' -- Please check permissions: ' . $error);
-                return;
-            }
-
-            fwrite($fp, $msg . PHP_EOL);
-            fclose($fp);
+            file_put_contents($log_path, $msg . PHP_EOL, FILE_APPEND);
         }
 
         if (SHOW_ERRORS || SHOW_NOTICES) {

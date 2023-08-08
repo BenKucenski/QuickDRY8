@@ -35,7 +35,7 @@ var GoogleCharts = {
             legend = 'none';
         }
 
-        var options = {
+        let options = {
             title: title,
             width: width,
             height: height,
@@ -47,7 +47,7 @@ var GoogleCharts = {
         }
 
         // Instantiate and draw our chart, passing in some options.
-        var chart = new google.visualization.LineChart(document.getElementById(element_id));
+        let chart = new google.visualization.LineChart(document.getElementById(element_id));
 
         $('#' + element_id).after('<div style="text-align: center;" id="' + element_id + '_png"></div>');
 
@@ -65,7 +65,7 @@ var GoogleCharts = {
             legend = 'none';
         }
 
-        var options = {
+        let options = {
             title: title,
             width: width,
             height: height,
@@ -77,7 +77,7 @@ var GoogleCharts = {
         }
 
         // Instantiate and draw our chart, passing in some options.
-        var chart = new google.visualization.ColumnChart(document.getElementById(element_id));
+        let chart = new google.visualization.ColumnChart(document.getElementById(element_id));
 
         if (!hide_print) {
             $('#' + element_id).after('<div style="text-align: center;" id="' + element_id + '_png"></div>');
@@ -94,7 +94,7 @@ var GoogleCharts = {
     },
 
     PieChart: function (title, data, element_id, width, height, show_legend) {
-        var options = {
+        let options = {
             title: title,
             width: width,
             height: height,
@@ -106,7 +106,7 @@ var GoogleCharts = {
         }
 
         // Instantiate and draw our chart, passing in some options.
-        var chart = new google.visualization.PieChart(document.getElementById(element_id));
+        let chart = new google.visualization.PieChart(document.getElementById(element_id));
 
         $('#' + element_id).after('<div style="text-align: center;" id="' + element_id + '_png"></div>');
 
@@ -124,14 +124,14 @@ var GoogleCharts = {
             pie_hole = 0.7;
         }
 
-        var data = [
+        let data = [
             ['c', 'p']
             , ['c', percent_complete]
             , ['nc', 100 - percent_complete]
 
         ];
 
-        var options = {
+        let options = {
             pieSliceBorderColor: "transparent",
             backgroundColor: {fill: 'transparent'},
             pieSliceText: "none",
@@ -147,7 +147,7 @@ var GoogleCharts = {
         };
 
         // Instantiate and draw our chart, passing in some options.
-        var chart = new google.visualization.PieChart(document.getElementById(element_id));
+        let chart = new google.visualization.PieChart(document.getElementById(element_id));
 
         chart.draw(google.visualization.arrayToDataTable(data), options);
     }

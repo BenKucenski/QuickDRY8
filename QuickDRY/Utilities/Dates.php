@@ -172,6 +172,7 @@ class Dates extends strongType
         // http://webdesign.anmari.com/1956/calculate-date-from-day-of-year-in-php/
 
         $DayInYear = floor($DayInYear);
+        $d = null;
         try {
             $d = new DateTime($year . '-01-01');
         } catch (Exception $e) {

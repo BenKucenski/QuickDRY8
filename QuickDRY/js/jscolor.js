@@ -10,7 +10,7 @@
  */
 
 
-var jscolor = {
+let jscolor = {
 
 
     dir: '', // location of jscolor directory (leave empty to autodetect)
@@ -36,7 +36,7 @@ var jscolor = {
 
     getDir: function () {
         if (!jscolor.dir) {
-            var detected = jscolor.detectDir();
+            let detected = jscolor.detectDir();
             jscolor.dir = detected !== false ? detected : 'jscolor/';
         }
         return jscolor.dir;
@@ -44,20 +44,20 @@ var jscolor = {
 
 
     detectDir: function () {
-        var base = location.href;
+        let base = location.href;
 
-        var e = document.getElementsByTagName('base');
-        for (var i = 0; i < e.length; i += 1) {
+        let e = document.getElementsByTagName('base');
+        for (let i = 0; i < e.length; i += 1) {
             if (e[i].href) {
                 base = e[i].href;
             }
         }
 
-        var e = document.getElementsByTagName('script');
-        for (var i = 0; i < e.length; i += 1) {
+        e = document.getElementsByTagName('script');
+        for (let i = 0; i < e.length; i += 1) {
             if (e[i].src && /(^|\/)jscolor\.js([?#].*)?$/i.test(e[i].src)) {
-                var src = new jscolor.URI(e[i].src);
-                var srcAbs = src.toAbsolute(base);
+                let src = new jscolor.URI(e[i].src);
+                let srcAbs = src.toAbsolute(base);
                 srcAbs.path = srcAbs.path.replace(/[^\/]+$/, ''); // remove filename
                 srcAbs.query = null;
                 srcAbs.fragment = null;
@@ -69,12 +69,12 @@ var jscolor = {
 
 
     bind: function () {
-        var matchClass = new RegExp('(^|\\s)(' + jscolor.bindClass + ')\\s*(\\{[^}]*\\})?', 'i');
-        var e = document.getElementsByTagName('input');
-        for (var i = 0; i < e.length; i += 1) {
-            var m;
+        let matchClass = new RegExp('(^|\\s)(' + jscolor.bindClass + ')\\s*(\\{[^}]*\\})?', 'i');
+        let e = document.getElementsByTagName('input');
+        for (let i = 0; i < e.length; i += 1) {
+            let m;
             if (!e[i].color && e[i].className && (m = e[i].className.match(matchClass))) {
-                var prop = {};
+                let prop = {};
                 if (m[3]) {
                     try {
                         eval('prop=' + m[3]);
@@ -88,7 +88,7 @@ var jscolor = {
 
 
     preload: function () {
-        for (var fn in jscolor.imgRequire) {
+        for (let fn in jscolor.imgRequire) {
             if (jscolor.imgRequire.hasOwnProperty(fn)) {
                 jscolor.loadImage(fn);
             }
@@ -140,10 +140,10 @@ var jscolor = {
             return;
         }
         if (document.createEventObject) {
-            var ev = document.createEventObject();
+            let ev = document.createEventObject();
             el.fireEvent('on' + evnt, ev);
         } else if (document.createEvent) {
-            var ev = document.createEvent('HTMLEvents');
+            let ev = document.createEvent('HTMLEvents');
             ev.initEvent(evnt, true, true);
             el.dispatchEvent(ev);
         } else if (el['on' + evnt]) { // alternatively use the traditional event model (IE5)
@@ -153,8 +153,8 @@ var jscolor = {
 
 
     getElementPos: function (e) {
-        var e1 = e, e2 = e;
-        var x = 0, y = 0;
+        let e1 = e, e2 = e;
+        let x = 0, y = 0;
         if (e1.offsetParent) {
             do {
                 x += e1.offsetLeft;
@@ -224,7 +224,7 @@ var jscolor = {
         this.fragment = null;
 
         this.parse = function (uri) {
-            var m = uri.match(/^(([A-Za-z][0-9A-Za-z+.-]*)(:))?((\/\/)([^\/?#]*))?([^?#]*)((\?)([^#]*))?((#)(.*))?/);
+            let m = uri.match(/^(([A-Za-z][0-9A-Za-z+.-]*)(:))?((\/\/)([^\/?#]*))?([^?#]*)((\?)([^#]*))?((#)(.*))?/);
             this.scheme = m[3] ? m[2] : null;
             this.authority = m[5] ? m[6] : null;
             this.path = m[7];
@@ -234,7 +234,7 @@ var jscolor = {
         };
 
         this.toString = function () {
-            var result = '';
+            let result = '';
             if (this.scheme !== null) {
                 result = result + this.scheme + ':';
             }
@@ -254,9 +254,9 @@ var jscolor = {
         };
 
         this.toAbsolute = function (pBase) {
-            var base = new jscolor.URI(pBase);
-            var r = this;
-            var t = new jscolor.URI;
+            let base = new jscolor.URI(pBase);
+            let r = this;
+            let t = new jscolor.URI;
 
             if (base.scheme === null) {
                 return false;
@@ -307,7 +307,7 @@ var jscolor = {
         };
 
         function removeDotSegments(path) {
-            var out = '';
+            let out = '';
             while (path) {
                 if (path.substr(0, 3) === '../' || path.substr(0, 2) === './') {
                     path = path.replace(/^\.+/, '').substr(1);
@@ -319,7 +319,7 @@ var jscolor = {
                 } else if (path === '.' || path === '..') {
                     path = '';
                 } else {
-                    var rm = path.match(/^\/?[^\/]*/)[0];
+                    let rm = path.match(/^\/?[^\/]*/)[0];
                     path = path.substr(rm.length);
                     out = out + rm;
                 }
@@ -363,7 +363,7 @@ var jscolor = {
         this.pickerZIndex = 10000;
 
 
-        for (var p in prop) {
+        for (let p in prop) {
             if (prop.hasOwnProperty(p)) {
                 this[p] = prop[p];
             }
@@ -379,15 +379,15 @@ var jscolor = {
 
         this.showPicker = function () {
             if (!isPickerOwner()) {
-                var tp = jscolor.getElementPos(target); // target pos
-                var ts = jscolor.getElementSize(target); // target size
-                var vp = jscolor.getViewPos(); // view pos
-                var vs = jscolor.getViewSize(); // view size
-                var ps = [ // picker size
+                let tp = jscolor.getElementPos(target); // target pos
+                let ts = jscolor.getElementSize(target); // target size
+                let vp = jscolor.getViewPos(); // view pos
+                let vs = jscolor.getViewSize(); // view size
+                let ps = [ // picker size
                     2 * this.pickerBorder + 4 * this.pickerInset + 2 * this.pickerFace + jscolor.images.pad[0] + 2 * jscolor.images.arrow[0] + jscolor.images.sld[0],
                     2 * this.pickerBorder + 2 * this.pickerInset + 2 * this.pickerFace + jscolor.images.pad[1]
                 ];
-                var a, b, c;
+                let a, b, c;
                 switch (this.pickerPosition.toLowerCase()) {
                     case 'left':
                         a = 1;
@@ -410,8 +410,8 @@ var jscolor = {
                         c = 1;
                         break;
                 }
-                var l = (ts[b] + ps[b]) / 2;
-                var pp = [ // picker pos
+                let l = (ts[b] + ps[b]) / 2;
+                let pp = [ // picker pos
                     -vp[a] + tp[a] + ps[a] > vs[a] ?
                         (-vp[a] + tp[a] + ts[a] / 2 > vs[a] / 2 && tp[a] + ts[a] - ps[a] >= 0 ? tp[a] + ts[a] - ps[a] : tp[a]) :
                         tp[a],
@@ -451,7 +451,7 @@ var jscolor = {
 
         this.exportColor = function (flags) {
             if (!(flags & leaveValue) && valueElement) {
-                var value = this.toString();
+                let value = this.toString();
                 if (this.caps) {
                     value = value.toUpperCase();
                 }
@@ -495,7 +495,7 @@ var jscolor = {
             r < 0 && (r = 0) || r > 1 && (r = 1);
             g < 0 && (g = 0) || g > 1 && (g = 1);
             b < 0 && (b = 0) || b > 1 && (b = 1);
-            var hsv = RGB_HSV(
+            let hsv = RGB_HSV(
                 r === null ? this.rgb[0] : (this.rgb[0] = r),
                 g === null ? this.rgb[1] : (this.rgb[1] = g),
                 b === null ? this.rgb[2] : (this.rgb[2] = b)
@@ -512,7 +512,7 @@ var jscolor = {
 
 
         this.fromString = function (hex, flags) {
-            var m = hex.match(/^\W*([0-9A-F]{3}([0-9A-F]{3})?)\W*$/i);
+            let m = hex.match(/^\W*([0-9A-F]{3}([0-9A-F]{3})?)\W*$/i);
             if (!m) {
                 return false;
             } else {
@@ -546,13 +546,13 @@ var jscolor = {
 
 
         function RGB_HSV(r, g, b) {
-            var n = Math.min(Math.min(r, g), b);
-            var v = Math.max(Math.max(r, g), b);
-            var m = v - n;
+            let n = Math.min(Math.min(r, g), b);
+            let v = Math.max(Math.max(r, g), b);
+            let m = v - n;
             if (m === 0) {
                 return [null, 0, v];
             }
-            var h = r === n ? 3 + (b - g) / m : (g === n ? 5 + (r - b) / m : 1 + (g - r) / m);
+            let h = r === n ? 3 + (b - g) / m : (g === n ? 5 + (r - b) / m : 1 + (g - r) / m);
             return [h === 6 ? 0 : h, m / v, v];
         }
 
@@ -561,10 +561,10 @@ var jscolor = {
             if (h === null) {
                 return [v, v, v];
             }
-            var i = Math.floor(h);
-            var f = i % 2 ? h - i : 1 - (h - i);
-            var m = v * (1 - s);
-            var n = v * (1 - s * f);
+            let i = Math.floor(h);
+            let f = i % 2 ? h - i : 1 - (h - i);
+            let m = v * (1 - s);
+            let n = v * (1 - s * f);
             switch (i) {
                 case 6:
                 case 0:
@@ -601,8 +601,8 @@ var jscolor = {
                     sldB: document.createElement('div'),
                     sldM: document.createElement('div')
                 };
-                for (var i = 0, segSize = 4; i < jscolor.images.sld[1]; i += segSize) {
-                    var seg = document.createElement('div');
+                for (let i = 0, segSize = 4; i < jscolor.images.sld[1]; i += segSize) {
+                    let seg = document.createElement('div');
                     seg.style.height = segSize + 'px';
                     seg.style.fontSize = '1px';
                     seg.style.lineHeight = '0';
@@ -617,7 +617,7 @@ var jscolor = {
                 jscolor.picker.boxB.appendChild(jscolor.picker.box);
             }
 
-            var p = jscolor.picker;
+            let p = jscolor.picker;
 
             // recompute controls positions
             posPad = [
@@ -720,7 +720,7 @@ var jscolor = {
             }
 
             // load images in optimal order
-            var padImg;
+            let padImg;
             switch (modeID) {
                 case 0:
                     padImg = 'hs.png';
@@ -743,7 +743,7 @@ var jscolor = {
 
 
         function redrawPad() {
-            var yComponent;
+            let yComponent;
 
             // redraw the pad pointer
             switch (modeID) {
@@ -754,19 +754,21 @@ var jscolor = {
                     yComponent = 2;
                     break;
             }
-            var x = Math.round((THIS.hsv[0] / 6) * (jscolor.images.pad[0] - 1));
-            var y = Math.round((1 - THIS.hsv[yComponent]) * (jscolor.images.pad[1] - 1));
+            let x = Math.round((THIS.hsv[0] / 6) * (jscolor.images.pad[0] - 1));
+            let y = Math.round((1 - THIS.hsv[yComponent]) * (jscolor.images.pad[1] - 1));
             jscolor.picker.padM.style.backgroundPosition =
                 (THIS.pickerFace + THIS.pickerInset + x - Math.floor(jscolor.images.cross[0] / 2)) + 'px ' +
                 (THIS.pickerFace + THIS.pickerInset + y - Math.floor(jscolor.images.cross[1] / 2)) + 'px';
 
             // redraw the slider image
-            var seg = jscolor.picker.sld.childNodes;
+            let seg = jscolor.picker.sld.childNodes;
+            let rgb = null;
+            let i = null;
 
             switch (modeID) {
                 case 0:
-                    var rgb = HSV_RGB(THIS.hsv[0], THIS.hsv[1], 1);
-                    for (var i = 0; i < seg.length; i += 1) {
+                    rgb = HSV_RGB(THIS.hsv[0], THIS.hsv[1], 1);
+                    for (i = 0; i < seg.length; i += 1) {
                         seg[i].style.backgroundColor = 'rgb(' +
                             (rgb[0] * (1 - i / seg.length) * 100) + '%,' +
                             (rgb[1] * (1 - i / seg.length) * 100) + '%,' +
@@ -774,9 +776,9 @@ var jscolor = {
                     }
                     break;
                 case 1:
-                    var rgb, s, c = [THIS.hsv[2], 0, 0];
-                    var i = Math.floor(THIS.hsv[0]);
-                    var f = i % 2 ? THIS.hsv[0] - i : 1 - (THIS.hsv[0] - i);
+                    [rgb, s, c] = [THIS.hsv[2], 0, 0];
+                    i = Math.floor(THIS.hsv[0]);
+                    let f = i % 2 ? THIS.hsv[0] - i : 1 - (THIS.hsv[0] - i);
                     switch (i) {
                         case 6:
                         case 0:
@@ -798,8 +800,8 @@ var jscolor = {
                             rgb = [0, 2, 1];
                             break;
                     }
-                    for (var i = 0; i < seg.length; i += 1) {
-                        s = 1 - 1 / (seg.length - 1) * i;
+                    for (i = 0; i < seg.length; i += 1) {
+                        let s = 1 - 1 / (seg.length - 1) * i;
                         c[1] = c[0] * (1 - s * f);
                         c[2] = c[0] * (1 - s);
                         seg[i].style.backgroundColor = 'rgb(' +
@@ -814,15 +816,16 @@ var jscolor = {
 
         function redrawSld() {
             // redraw the slider pointer
+            let yComponent = null;
             switch (modeID) {
                 case 0:
-                    var yComponent = 2;
+                    yComponent = 2;
                     break;
                 case 1:
-                    var yComponent = 1;
+                    yComponent = 1;
                     break;
             }
-            var y = Math.round((1 - THIS.hsv[yComponent]) * (jscolor.images.sld[1] - 1));
+            let y = Math.round((1 - THIS.hsv[yComponent]) * (jscolor.images.sld[1] - 1));
             jscolor.picker.sldM.style.backgroundPosition =
                 '0 ' + (THIS.pickerFace + THIS.pickerInset + y - Math.floor(jscolor.images.arrow[1] / 2)) + 'px';
         }
@@ -851,9 +854,9 @@ var jscolor = {
 
 
         function setPad(e) {
-            var posM = jscolor.getMousePos(e);
-            var x = posM[0] - posPad[0];
-            var y = posM[1] - posPad[1];
+            let posM = jscolor.getMousePos(e);
+            let x = posM[0] - posPad[0];
+            let y = posM[1] - posPad[1];
             switch (modeID) {
                 case 0:
                     THIS.fromHSV(x * (6 / (jscolor.images.pad[0] - 1)), 1 - y / (jscolor.images.pad[1] - 1), null, leaveSld);
@@ -866,8 +869,8 @@ var jscolor = {
 
 
         function setSld(e) {
-            var posM = jscolor.getMousePos(e);
-            var y = posM[1] - posPad[1];
+            let posM = jscolor.getMousePos(e);
+            let y = posM[1] - posPad[1];
             switch (modeID) {
                 case 0:
                     THIS.fromHSV(null, null, 1 - y / (jscolor.images.sld[1] - 1), leavePad);
@@ -879,19 +882,19 @@ var jscolor = {
         }
 
 
-        var THIS = this;
-        var modeID = this.pickerMode.toLowerCase() === 'hvs' ? 1 : 0;
-        var abortBlur = false;
-        var
+        let THIS = this;
+        let modeID = this.pickerMode.toLowerCase() === 'hvs' ? 1 : 0;
+        let abortBlur = false;
+        let
             valueElement = jscolor.fetchElement(this.valueElement),
             styleElement = jscolor.fetchElement(this.styleElement);
-        var
+        let
             holdPad = false,
             holdSld = false;
-        var
+        let
             posPad,
             posSld;
-        var
+        let
             leaveValue = 1 << 0,
             leaveStyle = 1 << 1,
             leavePad = 1 << 2,
@@ -916,7 +919,7 @@ var jscolor = {
 
         // valueElement
         if (valueElement) {
-            var updateField = function () {
+            let updateField = function () {
                 THIS.fromString(valueElement.value, leaveValue);
             };
             jscolor.addEvent(valueElement, 'keyup', updateField);

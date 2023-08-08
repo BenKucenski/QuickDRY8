@@ -1,8 +1,8 @@
-$(document).ready(function () {
+$(function () {
     $('#wait_dialog').hide();
 });
 
-var WaitDialogControl = {
+let WaitDialogControl = {
     _callback: null,
     Load: function (title, text, callback) {
         QuickDRY.CloseDialogIfOpen('wait_dialog');

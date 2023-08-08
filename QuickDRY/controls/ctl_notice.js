@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(function () {
     $('#notice_dialog').hide();
 });
 

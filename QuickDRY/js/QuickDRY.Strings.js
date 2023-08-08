@@ -1,4 +1,4 @@
-var Strings = {
+let Strings = {
     /**
      *
      * @param date
@@ -15,13 +15,13 @@ var Strings = {
         //stringToDate("9/17/2014","mm/dd/yyyy","/");
         //stringToDate("9-17-2014","mm-dd-yyyy","-");
 
-        var formatLowerCase = _format.toLowerCase();
-        var formatItems = formatLowerCase.split(_delimiter);
-        var dateItems = _date.split(_delimiter);
-        var monthIndex = formatItems.indexOf("mm");
-        var dayIndex = formatItems.indexOf("dd");
-        var yearIndex = formatItems.indexOf("yyyy");
-        var month = parseInt(dateItems[monthIndex]);
+        let formatLowerCase = _format.toLowerCase();
+        let formatItems = formatLowerCase.split(_delimiter);
+        let dateItems = _date.split(_delimiter);
+        let monthIndex = formatItems.indexOf("mm");
+        let dayIndex = formatItems.indexOf("dd");
+        let yearIndex = formatItems.indexOf("yyyy");
+        let month = parseInt(dateItems[monthIndex]);
         month -= 1;
         return new Date(dateItems[yearIndex], month, dateItems[dayIndex]);
     },
@@ -47,11 +47,11 @@ var Strings = {
         });
     },
     formatNumber: function (number) {
-        var results = '';
-        var numbers = number.replace(/\D/g, '');
-        var char = {0: '(', 3: ') ', 6: '-'};
+        let results = '';
+        let numbers = number.replace(/\D/g, '');
+        let char = {0: '(', 3: ') ', 6: '-'};
         this.value = '';
-        for (var i = 0; i < numbers.length; i++) {
+        for (let i = 0; i < numbers.length; i++) {
             results += (char[i] || '') + numbers[i];
         }
 
@@ -86,7 +86,7 @@ var Strings = {
      * @constructor
      */
     Timestamp: function () {
-        var d = new Date();
+        let d = new Date();
         return Strings.twoDigits(1 + d.getMonth()) + "/" + Strings.twoDigits(d.getDate()) + "/" + d.getFullYear() + " " + Strings.twoDigits(d.getHours()) + ":" + Strings.twoDigits(d.getMinutes()) + ":00";
     },
     money2num: function (strMoney) {
@@ -95,7 +95,7 @@ var Strings = {
         }
 
         //var newnum = strMoney.replace("$","").replace(",","");
-        var newnum = strMoney.replace("$", "").replace(/[',]/gi, '');
+        let newnum = strMoney.replace("$", "").replace(/[',]/gi, '');
         if (!isNaN(newnum))
             return (newnum);
         else
@@ -105,8 +105,8 @@ var Strings = {
 
     num2money: function (n_value, prefix, elementId, dec, retval) {
         dec = (dec) ? dec : false;
-        var oNval = n_value.toString();
-        var elem = null;
+        let oNval = n_value.toString();
+        let elem = null;
 
         if (typeof (n_value) === "string") {
             n_value = money2num(n_value);
@@ -127,27 +127,27 @@ var Strings = {
             }
             return;
         }
-        var pre = (!prefix) ? "$" : prefix;
+        let pre = (!prefix) ? "$" : prefix;
 
         if (isNaN(Number(n_value)))
             return 'ERROR';
 
-        var b_negative = Boolean(n_value < 0);
+        let b_negative = Boolean(n_value < 0);
         n_value = Math.abs(n_value);
 
         // ROUND TO 1/100 PRECISION, ADD ENDING ZEROES IF NEEDED
-        var roundPt = null;
+        let roundPt = null;
         if (dec && dec > 2) {
             dec = parseInt(oNval.substr(oNval.indexOf('.')).length - 1);
-            var divd = parseInt(eval('1e' + dec));
+            let divd = parseInt(eval('1e' + dec));
             roundPt = (Math.round(n_value * divd) % divd > 9) ? (Math.round(n_value * divd) % divd) : ('0' + Math.round(n_value * divd) % divd);
         } else {
             roundPt = (Math.round(n_value * 1e2) % 1e2 > 9) ? (Math.round(n_value * 1e2) % 1e2) : ('0' + Math.round(n_value * 1e2) % 1e2);
         }
-        var s_result = String(roundPt + '00').substring(0, dec);
+        let s_result = String(roundPt + '00').substring(0, dec);
         // SEPARATE ALL ORDERS
-        var b_first = true;
-        var s_subresult;
+        let b_first = true;
+        let s_subresult;
         while (n_value >= 1) {
             s_subresult = (n_value >= 1e3 ? '00' : '') + Math.floor(n_value % 1e3);
             s_result = s_subresult.slice(-3) + (b_first ? '.' : ',') + s_result;
@@ -165,7 +165,7 @@ var Strings = {
         }
         if (elementId != null) {
             elem = $("#" + elementId);
-            if (elem.type == "text") {
+            if (elem.type === "text") {
                 elem.val(b_negative ? '-' + pre + s_result + '' : pre + s_result);
             } else {
                 elem.html(b_negative ? '-' + pre + s_result + '' : pre + s_result);
@@ -176,7 +176,7 @@ var Strings = {
             : pre + s_result;
     },
     chkOnlyEmailIsValid: function (sEmail) {
-        var filter = /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+        let filter = /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
         return filter.test(sEmail);
     }
 };

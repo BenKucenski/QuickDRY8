@@ -1,4 +1,4 @@
-var ConfirmDialogControl = {
+let ConfirmDialogControl = {
     _cc_vars: null,
     _cc_callback: null,
     Load: function (title, text, action, action_callback, vars) {

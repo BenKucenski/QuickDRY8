@@ -547,9 +547,9 @@ class Strings extends strongType
     /**
      * @param $val
      * @param bool $return_orig_on_zero
-     * @return float|string
+     * @return float|int|string
      */
-    public static function NumbersOnly($val, bool $return_orig_on_zero = true)
+    public static function NumbersOnly($val, bool $return_orig_on_zero = true): float|int|string
     {
         $res = trim(preg_replace('/[^0-9\.]/i', '', $val));
         if (!$res) {
