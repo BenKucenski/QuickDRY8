@@ -5,4 +5,4 @@ const SESSION_NAME = 'QuickDRY8';
 
 const DATA_FOLDER = __DIR__;
 
-const SHOW_ERRORS = 1;=
+const SHOW_ERRORS = 1;
