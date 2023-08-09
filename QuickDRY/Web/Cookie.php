@@ -2,23 +2,14 @@
 
 namespace QuickDRY\Web;
 
+use QuickDRY\Utilities\strongType;
+
 /**
  * Class Cookie
  */
-class Cookie
+class Cookie extends strongType
 {
     private static array $_VALS = [];
-
-    /**
-     * @param $name
-     * @param $value
-     */
-    public function __set($name, $value)
-    {
-        setcookie($name, $value, 0, '/', HTTP_HOST);
-        Cookie::$_VALS[$name] = $value;
-        $_COOKIE[$name] = $value;
-    }
 
     /**
      * @param string $name
@@ -39,17 +30,7 @@ class Cookie
      * @param string $name
      * @return string|null
      */
-    public function Get(string $name): ?string
-    {
-        return $this->$name;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return string|null
-     */
-    public function __get(string $name)
+    public static function Get(string $name): ?string
     {
         if (isset(Cookie::$_VALS[$name]))
             return Cookie::$_VALS[$name];
@@ -63,15 +44,15 @@ class Cookie
      *
      * @return bool
      */
-    public function __isset($name)
+    public function isset($name): bool
     {
-        return isset($_COOKIE[$name]);
+        return isset($_COOKIE[$name]) || isset(self::$_VALS[$name]);
     }
 
     /**
      * @param $name
      */
-    public function __unset($name)
+    public static function unset($name): void
     {
         if (!isset($_COOKIE[$name]))
             return;

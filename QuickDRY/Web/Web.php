@@ -14,10 +14,7 @@ use QuickDRY\Utilities\strongType;
  * @property string ControllerFile
  * @property string ViewFile
  * @property string PageClass
- * @property Request Request
- * @property Session Session
  * @property Cookie Cookie
- * @property Server Server
  * @property Navigation Navigation
  * @property bool AccessDenied
  * @property bool IsJSON
@@ -52,11 +49,6 @@ class Web extends strongType
     public ?string $ViewFile = null;
     public ?string $PageClass = null;
     public ?bool $IsJSON = null;
-
-    public Request $Request;
-    public Session $Session;
-    public Cookie $Cookie;
-    public Server $Server;
     public ?Navigation $Navigation = null;
     public ?bool $AccessDenied = null;
     public ?string $MasterPage = null;
@@ -94,9 +86,6 @@ class Web extends strongType
     public ?string $DOCXPageOrientation = null;
     public ?string $DOCXFileName = null;
 
-    public ?string $StaticModel = null;
-    public ?string $InstanceModel = null;
-
     public string $Verb;
     public int $StartTime;
     public int $InitTime;
@@ -132,13 +121,8 @@ class Web extends strongType
     {
         $this->StartTime = time();
         $this->RenderPDF = false;
-
-        $this->Request = new Request();
-        $this->Session = new Session();
-        $this->Cookie = new Cookie();
-        $this->Server = new Server();
-
-        if (isset($this->Server->REQUEST_URI)) {
+        
+        if (isset($_SERVER['REQUEST_URI'])) {
             if (!defined('HTTP_HOST')) {
                 if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
                     $host = explode(',', $_SERVER['HTTP_X_FORWARDED_HOST']);
@@ -184,18 +168,19 @@ class Web extends strongType
         }
         define('DOC_ROOT_PATH', $t);
 
-        define('SORT_BY', (string)$this->Request->Get('sort_by') ?? null);
-        define('SORT_DIR', (string)$this->Request->Get('sort_dir') ?? 'asc');
+        define('SORT_BY', $_REQUEST['sort_by'] ?? null);
+        define('SORT_DIR', $_REQUEST['sort_dir'] ?? 'asc');
 
-        define('PAGE', (int)$this->Request->Get('page') ?: 0);
-        define('PER_PAGE', (int)$this->Request->Get('per_page') ?: 20);
+        define('PAGE', (int)($_REQUEST['page'] ?? 0));
+        define('PER_PAGE', (int)($_REQUEST['per_page'] ?? 20));
 
-        $url = strtok($this->Server->REQUEST_URI, '?');
 
-        $this->Session->Set('last_url', $url);
+        $qs = $_SERVER['QUERY_STRING'] ?? null;
+        $ru = $_SERVER['REQUEST_URI'] ?? null;
 
-        $qs = $this->Server->QUERY_STRING;
-        $ru = $this->Server->REQUEST_URI;
+        $url = strtok($ru, '?');
+
+        $_SESSION['last_url'] = $url;
 
         define('JSON_REQUEST', stristr($ru, '.json') !== false);
 
@@ -276,7 +261,9 @@ class Web extends strongType
         $temp = explode('.', $this->CurrentPageName);
         $this->PageClass = $this->Namespace . '\\' . $temp[0];
 
-        $this->Verb = strtoupper($this->Request->Get('verb') ?: $this->Server->REQUEST_METHOD);
+        $this->Verb = strtoupper($_REQUEST['verb'] ?? $_SERVER['REQUEST_METHOD']);
+
+        $this->SetURLs();
     }
 
     /**
@@ -285,7 +272,7 @@ class Web extends strongType
     public function SetURLs(): void
     {
         // this must be done after the settings file is loaded to support proxy situations
-        define('FULL_URL', (HTTP::IsSecure() ? 'https://' : 'http://') . HTTP_HOST . $this->Server->REQUEST_URI);
+        define('FULL_URL', (HTTP::IsSecure() ? 'https://' : 'http://') . HTTP_HOST . $_SERVER['REQUEST_URI']);
 
         if (isset($_SERVER['HTTPS'])) { // check if page being accessed by browser
             $protocol = HTTP::IsSecure() ? 'https://' : 'http://';
@@ -304,6 +291,85 @@ class Web extends strongType
             if (!defined('BASE_URL')) { // allows the secure URL to be set in scheduled tasks
                 define('BASE_URL', (defined('HTTP_HOST_IS_SECURE') && HTTP_HOST_IS_SECURE ? 'https://' : 'http://') . HTTP_HOST);
             }
+        }
+    }
+
+    public function Exec(): void
+    {
+
+        if ($this->IndexFile) {
+            header('Content-Type: text/html; charset=UTF-8');
+            readfile($this->IndexFile);
+            exit;
+        }
+
+        if ($this->ControllerFile) {
+            require_once $this->ControllerFile;
+
+            /* @var BasePage $class */
+            $class = $this->PageClass;
+
+            $class::Init();
+
+            switch ($_SERVER['REQUEST_METHOD']) {
+                case 'GET':
+                    if ($_REQUEST['export'] ?? null) {
+                        $this->Export($this->PageClass, $_REQUEST['export']);
+                    } else {
+                        $class::Get();
+                    }
+                    break;
+                case 'POST':
+                    if ($_REQUEST['export'] ?? null) {
+                        $this->Export($this->PageClass, $_REQUEST['export']);
+                    } else {
+                        $class::Post();
+                    }
+                    break;
+                case 'PUT':
+                    $class::Put();
+                    break;
+                case 'PATCH':
+                    $class::Patch();
+                    break;
+                case 'DELETE':
+                    $class::Delete();
+                    break;
+                case 'OPTIONS':
+                    $class::Options();
+                    break;
+                default:
+                    exit('unknown REQUEST_METHOD: ' . $_SERVER['REQUEST_METHOD']);
+            }
+
+            if ($this->ViewFile) {
+                ob_start();
+                require_once $this->ViewFile;
+                $this->HTML = ob_get_clean();
+            }
+            $this->MetaTitle = $class::getMetaTitle();
+
+            if ($class::getMasterPage()) {
+                require_once __DIR__ . '/../../masterpages/' . $class::getMasterPage();
+            } else {
+                exit ($this->HTML);
+            }
+        }
+    }
+
+    public function Export(
+        string $class,
+        string $export
+    ): void
+    {
+        /* @var BasePage $class */
+        switch($export) {
+            case 'XLS':
+                $class::ExportToXLS();
+                break;
+            case 'PDF':
+                $class::ExportToPDF();
+                break;
         }
     }
 }

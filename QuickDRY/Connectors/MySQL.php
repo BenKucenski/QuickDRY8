@@ -25,7 +25,7 @@ class MySQL extends strongType
             Debug::Halt('QuickDRY Error: No MySQL Connection');
         }
         $matches = [];
-        preg_match_all('/[\'\"][^\"\']*[\'\"](*SKIP)(*FAIL)|[:@](\w+[^\s+\,\)])/i', $sql . ' ', $matches);
+        preg_match_all('/[\'\"][^\"\']*[\'\"](*SKIP)(*FAIL)|[:@](\w+[^\s+\,\;)])/i', $sql . ' ', $matches);
 
         if (sizeof($matches[1])) {
             Strings::SortArrayByValueLength($matches[1]);
