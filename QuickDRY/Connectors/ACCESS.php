@@ -50,15 +50,21 @@ class ACCESS
      * @param string $file
      * @param string|null $user
      * @param string|null $pass
+     * @param bool $skip_check
      */
-    public function __construct(string $file, string $user = null, string $pass = null)
+    public function __construct(
+        string $file,
+        string $user = null,
+        string $pass = null,
+        bool $skip_check = false
+    )
     {
         if(!file_exists($file)) {
             dd('could not find database: ' . $file);
         }
 
 
-        while(file_exists(str_ireplace('.tmo', '.ldb', $file))) {
+        while(!$skip_check && file_exists(str_ireplace('.tmo', '.ldb', $file))) {
             // https://stackoverflow.com/questions/15322371/php-wait-for-input-from-command-line
             echo 'Database in Use By Another Program.  Please Exit All Instances of TMO' . PHP_EOL;
             $handle = fopen ('php://stdin', 'r');
