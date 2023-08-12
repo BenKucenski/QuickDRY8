@@ -44,12 +44,22 @@ class BasePage extends strongType
         return self::$MasterPage;
     }
 
+    public static function setMasterPage(string $masterpage): void
+    {
+        self::$MasterPage = $masterpage;
+    }
+
     /**
      * @return string|null
      */
     public static function getMetaTitle(): ?string
     {
         return self::$MetaTitle;
+    }
+
+    public static function setMetaTitle(string $metaTitle): void
+    {
+        self::$MetaTitle = $metaTitle;
     }
 
     /**
