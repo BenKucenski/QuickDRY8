@@ -674,36 +674,66 @@ class Strings extends strongType
         return $str;
     }
 
+    private static function RowToJSON($row)
+    {
+        if (!is_object($row)) {
+            return $row;
+        }
+
+        if ($row instanceof DateTime) {
+            return Dates::SolrTime($row);
+        }
+
+        if ($row instanceof strongType) {
+            $json = $row->toArray(); // note: it's really annoying in testing to exclude empty values
+            foreach ($json as $k => $v) {
+                if ($k[0] == '_') {
+                    unset($json[$k]);
+                }
+            }
+            return $json;
+        }
+
+        if ($row instanceof stdClass) {
+            return get_object_vars($row);
+        }
+        dd([
+            'error' => 'fix_json unknown object',
+            'class' => get_class($row),
+            'strongType' => $row instanceof strongType,
+            'row' => $row,
+        ]);
+
+    }
+
     /**
      * @param $json
-     * @return array|string
+     * @return array|null
      */
-    public static function FixJSON($json): array|string
+    public static function FixJSON($json): ?array
     {
         if (!is_array($json)) {
-            return iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($json));
+            $json = self::RowToJSON($json);
+        }
+
+        if (!is_array($json)) {
+            exit(print_r($json, true));
         }
 
         foreach ($json as $i => $row) {
+            if (is_object($row)) {
+                $row = Strings::FixJSON(self::RowToJSON($row));
+            }
             if (is_array($row)) {
                 $json[$i] = Strings::FixJSON($row);
+            } elseif (mb_detect_encoding($row)) {
+                $json[$i] = mb_convert_encoding($row, 'UTF-8', 'UTF-8');
             } else {
-                if (is_object($row)) {
-                    if ($row instanceof DateTime) {
-                        $json[$i] = Dates::SolrTime($row);
-                    } elseif ($row instanceof strongType) {
-                        $json[$i] = $row->toArray();
-                    } elseif ($row instanceof stdClass) {
-                        $json[$i] = json_decode(json_encode($row), true);
-                    } else {
-                        Debug(['error' => 'fix_json unknown object', $row]);
-                    }
-                }
-                if (!is_array($json[$i])) {
-                    $json[$i] = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($json[$i]));
-                }
+                $json[$i] = Strings::KeyboardOnly($row);
             }
+
         }
+
         return $json;
     }
 

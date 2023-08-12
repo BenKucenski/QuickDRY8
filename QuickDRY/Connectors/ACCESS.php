@@ -1,6 +1,8 @@
 <?php
 namespace QuickDRY\Connectors;
 
+use Exception;
+
 /**
  * Class ACCESS
  *
@@ -18,6 +20,9 @@ class ACCESS
      */
     public function __destruct()
     {
+        if(!$this->connection) {
+            return;
+        }
         odbc_close($this->connection);
     }
 
@@ -52,6 +57,7 @@ class ACCESS
             dd('could not find database: ' . $file);
         }
 
+
         while(file_exists(str_ireplace('.tmo', '.ldb', $file))) {
             // https://stackoverflow.com/questions/15322371/php-wait-for-input-from-command-line
             echo 'Database in Use By Another Program.  Please Exit All Instances of TMO' . PHP_EOL;
@@ -59,12 +65,16 @@ class ACCESS
             fgets($handle);
             fclose($handle);
         }
-        
+
         $this->ACCESS_FILE = $file;
         $this->ACCESS_USER = $user;
         $this->ACCESS_PASS = $pass;
 
-        $this->connection = odbc_connect('Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=' . $file, $user, $pass);
+        try {
+            $this->connection = odbc_connect('Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=' . $file, $user, $pass);
+        } catch (Exception $ex) {
+            Debug($ex->getMessage());
+        }
     }
 
     /**
