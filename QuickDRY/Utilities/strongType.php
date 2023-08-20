@@ -4,6 +4,7 @@ namespace QuickDRY\Utilities;
 
 
 use DateTime;
+use Exception;
 use ReflectionException;
 use ReflectionProperty;
 
@@ -120,8 +121,15 @@ class strongType
                 $this->$k = $v;
                 continue;
             }
-            switch ($rp->getType()->getName()) {
+            $type = $rp->getType()->getName();
+            switch ($type) {
                 case 'DateTime':
+                    try {
+                        $this->$k = new DateTime($v);
+                    } catch(Exception $ex) {
+                        break;
+                    }
+                    break;
                 case 'array':
                 case 'string':
                     $this->$k = $v;

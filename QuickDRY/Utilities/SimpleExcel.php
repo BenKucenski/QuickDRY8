@@ -5,6 +5,7 @@ namespace QuickDRY\Utilities;
 use DateTime;
 use Exception;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -299,6 +300,7 @@ class SimpleExcel extends strongType
 
         if ($value instanceof DateTime) {
             $value = $property_type == SimpleExcel_Column::SIMPLE_EXCEL_PROPERTY_TYPE_DATE ? Dates::Datestamp($value, '') : Dates::Timestamp($value, '');
+            $value = Date::PHPToExcel( $value );
         }
 
         if ($property_type == SimpleExcel_Column::SIMPLE_EXCEL_PROPERTY_TYPE_AS_GIVEN) {
