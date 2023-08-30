@@ -621,15 +621,18 @@ class MSSQL_Connection extends strongType
     }
 
     /**
-     * @return null
+     * @return int|null
      */
-    public function LastID()
+    public function LastID(): ?int
     {
         $sql = '
 					SELECT SCOPE_IDENTITY() AS lid
 				';
         $res = $this->Query($sql);
-        return $res['data'][0]['lid'] ?? null;
+        if(isset($res['data'][0]['lid'])) {
+            return (int)$res['data'][0]['lid'];
+        }
+        return null;
     }
 
     /**

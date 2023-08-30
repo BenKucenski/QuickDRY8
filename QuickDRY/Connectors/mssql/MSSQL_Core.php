@@ -1056,6 +1056,10 @@ WHERE
             }
             $res = static::Execute($sql, $params);
 
+            if($res->error) {
+                Debug($res);
+            }
+
             if (!$primary_set) {
                 // there can only be one auto incrementing column per table
                 foreach ($primary as $col) {
@@ -1091,7 +1095,7 @@ SET
                 }
             }
             if (!sizeof($props)) {
-                return ['error' => ''];
+                return new QueryExecuteResult();
             }
 
             $sql .= implode(',', $props);

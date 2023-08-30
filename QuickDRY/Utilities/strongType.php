@@ -13,6 +13,8 @@ use ReflectionProperty;
  */
 class strongType
 {
+    public static bool $ignoreMissingProperties = false;
+
     private array $_missing_properties = [];
     protected static ?array $_alias = null;
 
@@ -148,7 +150,9 @@ class strongType
             }
         }
 
-        self::checkMissingProperties($this->_missing_properties, static::class);
+        if(!self::$ignoreMissingProperties) {
+            self::checkMissingProperties($this->_missing_properties, static::class);
+        }
 
         return $this;
     }
