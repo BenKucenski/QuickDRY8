@@ -7,54 +7,8 @@ namespace QuickDRY\Utilities;
 
 use JetBrains\PhpStorm\NoReturn;
 use QuickDRY\JSON\JsonStatusResult;
-use QuickDRY\Web\HTTPStatus;
 
-const HTTP_STATUS_CONTINUE = 100;
-const HTTP_STATUS_SWITCHING_PROTOCOLS = 101;
-const HTTP_STATUS_OK = 200;
-const HTTP_STATUS_CREATED = 201;
-const HTTP_STATUS_ACCEPTED = 202;
-const HTTP_STATUS_NON_AUTHORITATIVE_INFORMATION = 203;
-const HTTP_STATUS_NO_CONTENT = 204;
-const HTTP_STATUS_RESET_CONTENT = 205;
-const HTTP_STATUS_PARTIAL_CONTENT = 206;
-const HTTP_STATUS_MULTIPLE_CHOICES = 300;
-const HTTP_STATUS_MOVED_PERMANENTLY = 301;
-const HTTP_STATUS_FOUND = 302;
-const HTTP_STATUS_SEE_OTHER = 303;
-const HTTP_STATUS_NOT_MODIFIED = 304;
-const HTTP_STATUS_USE_PROXY = 305;
-const HTTP_STATUS_TEMPORARY_REDIRECT = 307;
-const HTTP_STATUS_BAD_REQUEST = 400;
-const HTTP_STATUS_UNAUTHORIZED = 401;
-const HTTP_STATUS_PAYMENT_REQUIRED = 402;
-const HTTP_STATUS_FORBIDDEN = 403;
-const HTTP_STATUS_NOT_FOUND = 404;
-const HTTP_STATUS_METHOD_NOT_ALLOWED = 405;
-const HTTP_STATUS_NOT_ACCEPTABLE = 406;
-const HTTP_STATUS_PROXY_AUTHENTICATION_REQUIRED = 407;
-const HTTP_STATUS_REQUEST_TIMEOUT = 408;
-const HTTP_STATUS_CONFLICT = 409;
-const HTTP_STATUS_GONE = 410;
-const HTTP_STATUS_LENGTH_REQUIRED = 411;
-const HTTP_STATUS_PRECONDITION_FAILED = 412;
-const HTTP_STATUS_PAYLOAD_TOO_LARGE = 413;
-const HTTP_STATUS_URI_TOO_LONG = 414;
-const HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE = 415;
-const HTTP_STATUS_RANGE_NOT_SATISFIABLE = 416;
-const HTTP_STATUS_EXPECTATION_FAILED = 417;
-const HTTP_STATUS_UPGRADE_REQUIRED = 426;
-const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
-const HTTP_STATUS_NOT_IMPLEMENTED = 501;
-const HTTP_STATUS_BAD_GATEWAY = 502;
-const HTTP_STATUS_SERVICE_UNAVAILABLE = 503;
-const HTTP_STATUS_GATEWAY_TIMEOUT = 504;
-const HTTP_STATUS_HTTP_VERSION_NOT_SUPPORTED = 505;
 
-// extra
-const HTTP_STATUS_CALM_DOWN = 420;
-const HTTP_STATUS_UNPROCESSABLE_ENTITY = 422;
-const HTTP_STATUS_TOO_MANY_REQUESTS = 429;
 
 
 /**
@@ -62,6 +16,53 @@ const HTTP_STATUS_TOO_MANY_REQUESTS = 429;
  */
 class HTTP extends strongType
 {
+    public const HTTP_STATUS_CONTINUE = 100;
+    public const HTTP_STATUS_SWITCHING_PROTOCOLS = 101;
+    public const HTTP_STATUS_OK = 200;
+    public const HTTP_STATUS_CREATED = 201;
+    public const HTTP_STATUS_ACCEPTED = 202;
+    public const HTTP_STATUS_NON_AUTHORITATIVE_INFORMATION = 203;
+    public const HTTP_STATUS_NO_CONTENT = 204;
+    public const HTTP_STATUS_RESET_CONTENT = 205;
+    public const HTTP_STATUS_PARTIAL_CONTENT = 206;
+    public const HTTP_STATUS_MULTIPLE_CHOICES = 300;
+    public const HTTP_STATUS_MOVED_PERMANENTLY = 301;
+    public const HTTP_STATUS_FOUND = 302;
+    public const HTTP_STATUS_SEE_OTHER = 303;
+    public const HTTP_STATUS_NOT_MODIFIED = 304;
+    public const HTTP_STATUS_USE_PROXY = 305;
+    public const HTTP_STATUS_TEMPORARY_REDIRECT = 307;
+    public const HTTP_STATUS_BAD_REQUEST = 400;
+    public const HTTP_STATUS_UNAUTHORIZED = 401;
+    public const HTTP_STATUS_PAYMENT_REQUIRED = 402;
+    public const HTTP_STATUS_FORBIDDEN = 403;
+    public const HTTP_STATUS_NOT_FOUND = 404;
+    public const HTTP_STATUS_METHOD_NOT_ALLOWED = 405;
+    public const HTTP_STATUS_NOT_ACCEPTABLE = 406;
+    public const HTTP_STATUS_PROXY_AUTHENTICATION_REQUIRED = 407;
+    public const HTTP_STATUS_REQUEST_TIMEOUT = 408;
+    public const HTTP_STATUS_CONFLICT = 409;
+    public const HTTP_STATUS_GONE = 410;
+    public const HTTP_STATUS_LENGTH_REQUIRED = 411;
+    public const HTTP_STATUS_PRECONDITION_FAILED = 412;
+    public const HTTP_STATUS_PAYLOAD_TOO_LARGE = 413;
+    public const HTTP_STATUS_URI_TOO_LONG = 414;
+    public const HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE = 415;
+    public const HTTP_STATUS_RANGE_NOT_SATISFIABLE = 416;
+    public const HTTP_STATUS_EXPECTATION_FAILED = 417;
+    public const HTTP_STATUS_UPGRADE_REQUIRED = 426;
+    public const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
+    public const HTTP_STATUS_NOT_IMPLEMENTED = 501;
+    public const HTTP_STATUS_BAD_GATEWAY = 502;
+    public const HTTP_STATUS_SERVICE_UNAVAILABLE = 503;
+    public const HTTP_STATUS_GATEWAY_TIMEOUT = 504;
+    public const HTTP_STATUS_HTTP_VERSION_NOT_SUPPORTED = 505;
+
+// extra
+    public const HTTP_STATUS_CALM_DOWN = 420;
+    public const HTTP_STATUS_UNPROCESSABLE_ENTITY = 422;
+    public const HTTP_STATUS_TOO_MANY_REQUESTS = 429;
+    
     /**
      * @param $url
      * @return mixed
@@ -232,7 +233,7 @@ class HTTP extends strongType
      * @param int $HTTP_STATUS
      * @return void
      */
-    #[NoReturn] public static function ExitOData($json, int $HTTP_STATUS = HTTP_STATUS_OK): void
+    #[NoReturn] public static function ExitOData($json, int $HTTP_STATUS = self::HTTP_STATUS_OK): void
     {
         if ($HTTP_STATUS) {
             header('HTTP/1.1 ' . $HTTP_STATUS . ': ' . HTTPStatus::GetDescription($HTTP_STATUS));
@@ -260,7 +261,7 @@ class HTTP extends strongType
      * @param $json
      * @param int $HTTP_STATUS
      */
-    #[NoReturn] public static function ExitJSON($json, int $HTTP_STATUS = HTTP_STATUS_OK): void
+    #[NoReturn] public static function ExitJSON($json, int $HTTP_STATUS = self::HTTP_STATUS_OK): void
     {
         if($_SERVER['HTTP_HOST'] ?? null) {
             if ($HTTP_STATUS) {
@@ -295,7 +296,7 @@ class HTTP extends strongType
     #[NoReturn] public static function ExitFile(
         string $content,
         string $filename,
-        int $HTTP_STATUS = HTTP_STATUS_OK,
+        int $HTTP_STATUS = self::HTTP_STATUS_OK,
         string $ContentType = null,
         bool $Download = true
     ): void

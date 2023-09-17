@@ -5,7 +5,7 @@ namespace QuickDRY\Utilities;
 /**
  * Class HTTPStatus
  */
-class HTTPStatus
+class HTTPStatus extends strongType
 {
     /**
      * @param $http_status_code
@@ -18,35 +18,35 @@ class HTTPStatus
         }
 
         switch ($http_status_code) {
-            case HTTP_STATUS_OK:
+            case HTTP::HTTP_STATUS_OK:
                 return 'OK';
-            case HTTP_STATUS_NOT_MODIFIED:
+            case HTTP::HTTP_STATUS_NOT_MODIFIED:
                 return 'Not Modified';
-            case HTTP_STATUS_BAD_REQUEST:
+            case HTTP::HTTP_STATUS_BAD_REQUEST:
                 return 'Bad Request';
-            case HTTP_STATUS_UNAUTHORIZED:
+            case HTTP::HTTP_STATUS_UNAUTHORIZED:
                 return 'Unauthorized';
-            case HTTP_STATUS_FORBIDDEN:
+            case HTTP::HTTP_STATUS_FORBIDDEN:
                 return 'Forbidden';
-            case HTTP_STATUS_NOT_FOUND:
+            case HTTP::HTTP_STATUS_NOT_FOUND:
                 return 'Not Found';
-            case HTTP_STATUS_NOT_ACCEPTABLE:
+            case HTTP::HTTP_STATUS_NOT_ACCEPTABLE:
                 return 'Not Acceptable';
-            case HTTP_STATUS_GONE:
+            case HTTP::HTTP_STATUS_GONE:
                 return 'Gone';
-            case HTTP_STATUS_CALM_DOWN:
+            case HTTP::HTTP_STATUS_CALM_DOWN:
                 return 'Calm Your Scripts';
-            case HTTP_STATUS_UNPROCESSABLE_ENTITY:
+            case HTTP::HTTP_STATUS_UNPROCESSABLE_ENTITY:
                 return 'Unprocessable Entity';
-            case HTTP_STATUS_TOO_MANY_REQUESTS:
+            case HTTP::HTTP_STATUS_TOO_MANY_REQUESTS:
                 return 'Too Many Requests';
-            case HTTP_STATUS_INTERNAL_SERVER_ERROR:
+            case HTTP::HTTP_STATUS_INTERNAL_SERVER_ERROR:
                 return 'Internal Server Error';
-            case HTTP_STATUS_BAD_GATEWAY:
+            case HTTP::HTTP_STATUS_BAD_GATEWAY:
                 return 'Bad Gateway';
-            case HTTP_STATUS_SERVICE_UNAVAILABLE:
+            case HTTP::HTTP_STATUS_SERVICE_UNAVAILABLE:
                 return 'Service Unavailable';
-            case HTTP_STATUS_GATEWAY_TIMEOUT:
+            case HTTP::HTTP_STATUS_GATEWAY_TIMEOUT:
                 return 'Gateway timeout';
 
         }

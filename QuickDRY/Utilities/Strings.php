@@ -4,6 +4,7 @@ namespace QuickDRY\Utilities;
 
 use DateTime;
 use Exception;
+use QuickDRY\Connectors\SQL_Base;
 use stdClass;
 
 /**
@@ -684,7 +685,7 @@ class Strings extends strongType
             return Dates::SolrTime($row);
         }
 
-        if ($row instanceof strongType) {
+        if ($row instanceof strongType || $row instanceof SQL_Base) {
             $json = $row->toArray(); // note: it's really annoying in testing to exclude empty values
             foreach ($json as $k => $v) {
                 if ($k[0] == '_') {
@@ -697,6 +698,7 @@ class Strings extends strongType
         if ($row instanceof stdClass) {
             return get_object_vars($row);
         }
+
         dd([
             'error' => 'fix_json unknown object',
             'class' => get_class($row),
@@ -727,13 +729,12 @@ class Strings extends strongType
             if (is_array($row)) {
                 $json[$i] = Strings::FixJSON($row);
             } elseif (mb_detect_encoding($row)) {
-                $json[$i] = mb_convert_encoding($row, 'UTF-8', 'UTF-8');
+                $json[$i] = is_numeric($row) ? $row : mb_convert_encoding($row, 'UTF-8', 'UTF-8');
             } else {
                 $json[$i] = Strings::KeyboardOnly($row);
             }
 
         }
-
         return $json;
     }
 

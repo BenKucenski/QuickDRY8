@@ -90,20 +90,19 @@ class Dates extends strongType
      */
     public static function MonthsBetweenDates($min_date, $max_date): int
     {
-        $min_date = strtotime(Dates::Datestamp($min_date));
-        $max_date = strtotime(Dates::Datestamp($max_date));
+        $date1 = $min_date;
+        $date2 = $max_date;
 
-        if ($max_date < $min_date) {
-            $a = $min_date;
-            $min_date = $max_date;
-            $max_date = $a;
-        }
+        $ts1 = strtotime(Dates::Datestamp($date1));
+        $ts2 = strtotime(Dates::Datestamp($date2));
 
-        $i = 0;
-        while (($min_date = strtotime('+1 MONTH', $min_date)) <= $max_date) {
-            $i++;
-        }
-        return $i;
+        $year1 = (int)date('Y', $ts1);
+        $year2 = (int)date('Y', $ts2);
+
+        $month1 = (int)date('m', $ts1);
+        $month2 = (int)date('m', $ts2);
+
+        return (($year2 - $year1) * 12) + ($month2 - $month1);
     }
 
     /**

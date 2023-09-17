@@ -1,4 +1,4 @@
-<script type="text/javascript" src="/QuickDRY/controls/ctl_notice.js"></script>
+<script type="text/javascript" src="/QuickDRY/controls/ctl_notice.js?<?php echo JS_VERSION; ?>"></script>
 
 
 <div class="modal fade" id="notice_dialog" style="display: none;" tabindex="-1" role="dialog">

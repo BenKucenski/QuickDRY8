@@ -363,7 +363,7 @@ class Web extends strongType
     ): void
     {
         /* @var BasePage $class */
-        switch($export) {
+        switch(strtoupper($export)) {
             case 'XLS':
                 $class::ExportToXLS();
                 break;

@@ -1,4 +1,4 @@
-<script type="text/javascript" src="/QuickDRY/controls/ctl_wait.js"></script>
+<script type="text/javascript" src="/QuickDRY/controls/ctl_wait.js?<?php echo JS_VERSION; ?>"></script>
 
 <div class="modal fade" id="wait_dialog" style="display: none;" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">

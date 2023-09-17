@@ -12,13 +12,17 @@ class Meta
     private static ?string $keywords = null;
 
     /**
-     * @param null $val
+     * @param string|null $val
      * @return null|string
      */
-    public static function Title($val = null): ?string
+    public static function Title(string $val = null): ?string
     {
-        if (is_null($val))
+        if (is_null($val)) {
+            if(!self::$title) {
+                return '';
+            }
             return ': ' . str_replace('"', '\\"', self::$title);
+        }
         self::$title = $val;
         return $val;
     }

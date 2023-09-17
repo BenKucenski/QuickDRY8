@@ -340,6 +340,14 @@ class MySQL_Core extends SQL_Base
             } else {
                 $col = $col . 'IN (' . Strings::StringRepeatCS('{{}}', sizeof($val)) . ')';
             }
+        } elseif (str_starts_with($val, '{NOT IN} ')) {
+            $val = explode(',', trim(Strings::RemoveFromStart('{NOT IN} ', $val)));
+            if (($key = array_search('null', $val)) !== false) {
+                $col = '(' . $col . ' IS NOT NULL OR ' . $col . ' NOT IN (' . Strings::StringRepeatCS('{{}}', sizeof($val) - 1) . '))';
+                unset($val[$key]);
+            } else {
+                $col = $col . 'NOT IN (' . Strings::StringRepeatCS('{{}}', sizeof($val)) . ')';
+            }
         } elseif (str_starts_with($val, '{NLIKE} ')) {
             $col = $col . ' NOT LIKE {{}} ';
             $val = trim(Strings::RemoveFromStart('{NLIKE} ', $val));

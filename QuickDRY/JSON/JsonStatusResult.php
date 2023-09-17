@@ -1,48 +1,8 @@
 <?php
 namespace QuickDRY\JSON;
 
+use QuickDRY\Utilities\HTTP;
 use QuickDRY\Utilities\strongType;
-use const QuickDRY\Utilities\HTTP_STATUS_ACCEPTED;
-use const QuickDRY\Utilities\HTTP_STATUS_BAD_GATEWAY;
-use const QuickDRY\Utilities\HTTP_STATUS_BAD_REQUEST;
-use const QuickDRY\Utilities\HTTP_STATUS_CONFLICT;
-use const QuickDRY\Utilities\HTTP_STATUS_CONTINUE;
-use const QuickDRY\Utilities\HTTP_STATUS_CREATED;
-use const QuickDRY\Utilities\HTTP_STATUS_EXPECTATION_FAILED;
-use const QuickDRY\Utilities\HTTP_STATUS_FORBIDDEN;
-use const QuickDRY\Utilities\HTTP_STATUS_FOUND;
-use const QuickDRY\Utilities\HTTP_STATUS_GATEWAY_TIMEOUT;
-use const QuickDRY\Utilities\HTTP_STATUS_GONE;
-use const QuickDRY\Utilities\HTTP_STATUS_HTTP_VERSION_NOT_SUPPORTED;
-use const QuickDRY\Utilities\HTTP_STATUS_INTERNAL_SERVER_ERROR;
-use const QuickDRY\Utilities\HTTP_STATUS_LENGTH_REQUIRED;
-use const QuickDRY\Utilities\HTTP_STATUS_METHOD_NOT_ALLOWED;
-use const QuickDRY\Utilities\HTTP_STATUS_MOVED_PERMANENTLY;
-use const QuickDRY\Utilities\HTTP_STATUS_MULTIPLE_CHOICES;
-use const QuickDRY\Utilities\HTTP_STATUS_NO_CONTENT;
-use const QuickDRY\Utilities\HTTP_STATUS_NON_AUTHORITATIVE_INFORMATION;
-use const QuickDRY\Utilities\HTTP_STATUS_NOT_ACCEPTABLE;
-use const QuickDRY\Utilities\HTTP_STATUS_NOT_FOUND;
-use const QuickDRY\Utilities\HTTP_STATUS_NOT_IMPLEMENTED;
-use const QuickDRY\Utilities\HTTP_STATUS_NOT_MODIFIED;
-use const QuickDRY\Utilities\HTTP_STATUS_OK;
-use const QuickDRY\Utilities\HTTP_STATUS_PARTIAL_CONTENT;
-use const QuickDRY\Utilities\HTTP_STATUS_PAYLOAD_TOO_LARGE;
-use const QuickDRY\Utilities\HTTP_STATUS_PAYMENT_REQUIRED;
-use const QuickDRY\Utilities\HTTP_STATUS_PRECONDITION_FAILED;
-use const QuickDRY\Utilities\HTTP_STATUS_PROXY_AUTHENTICATION_REQUIRED;
-use const QuickDRY\Utilities\HTTP_STATUS_RANGE_NOT_SATISFIABLE;
-use const QuickDRY\Utilities\HTTP_STATUS_REQUEST_TIMEOUT;
-use const QuickDRY\Utilities\HTTP_STATUS_RESET_CONTENT;
-use const QuickDRY\Utilities\HTTP_STATUS_SEE_OTHER;
-use const QuickDRY\Utilities\HTTP_STATUS_SERVICE_UNAVAILABLE;
-use const QuickDRY\Utilities\HTTP_STATUS_SWITCHING_PROTOCOLS;
-use const QuickDRY\Utilities\HTTP_STATUS_TEMPORARY_REDIRECT;
-use const QuickDRY\Utilities\HTTP_STATUS_UNAUTHORIZED;
-use const QuickDRY\Utilities\HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE;
-use const QuickDRY\Utilities\HTTP_STATUS_UPGRADE_REQUIRED;
-use const QuickDRY\Utilities\HTTP_STATUS_URI_TOO_LONG;
-use const QuickDRY\Utilities\HTTP_STATUS_USE_PROXY;
 
 /**
  * Class JsonStatusResult
@@ -77,7 +37,7 @@ class JsonStatusResult extends strongType
      */
     public static function Success($value, $traceId = null): JsonStatusResult
     {
-        return JsonStatusResult::Create(HTTP_STATUS_OK, $value, $traceId);
+        return JsonStatusResult::Create(HTTP::HTTP_STATUS_OK, $value, $traceId);
     }
 
     /**
@@ -146,249 +106,249 @@ class JsonStatusResult extends strongType
     public static function SetResponseCode($HTTP_RESPONSE_CODE, self $error): void
     {
         switch ($HTTP_RESPONSE_CODE) {
-            case HTTP_STATUS_CONTINUE:
+            case HTTP::HTTP_STATUS_CONTINUE:
             {
                 $error->title = 'Continue';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.2.1';
                 break;
             }
-            case HTTP_STATUS_SWITCHING_PROTOCOLS:
+            case HTTP::HTTP_STATUS_SWITCHING_PROTOCOLS:
             {
                 $error->title = 'Switching Protocols';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.2.2';
                 break;
             }
-            case HTTP_STATUS_OK:
+            case HTTP::HTTP_STATUS_OK:
             {
                 $error->title = 'OK';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.3.1';
                 break;
             }
-            case HTTP_STATUS_CREATED:
+            case HTTP::HTTP_STATUS_CREATED:
             {
                 $error->title = 'Created';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.3.2';
                 break;
             }
-            case HTTP_STATUS_ACCEPTED:
+            case HTTP::HTTP_STATUS_ACCEPTED:
             {
                 $error->title = 'Accepted';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.3.3';
                 break;
             }
-            case HTTP_STATUS_NON_AUTHORITATIVE_INFORMATION:
+            case HTTP::HTTP_STATUS_NON_AUTHORITATIVE_INFORMATION:
             {
                 $error->title = 'Non-Authoritative Information';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section6.3.4';
                 break;
             }
-            case HTTP_STATUS_NO_CONTENT:
+            case HTTP::HTTP_STATUS_NO_CONTENT:
             {
                 $error->title = 'No Content';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.3.5';
                 break;
             }
-            case HTTP_STATUS_RESET_CONTENT:
+            case HTTP::HTTP_STATUS_RESET_CONTENT:
             {
                 $error->title = 'Reset Content';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.3.6';
                 break;
             }
-            case HTTP_STATUS_PARTIAL_CONTENT:
+            case HTTP::HTTP_STATUS_PARTIAL_CONTENT:
             {
                 $error->title = 'Partial Content';
                 $error->type = 'https://tools.ietf.org/html/rfc7233#Section-4.1';
                 break;
             }
-            case HTTP_STATUS_MULTIPLE_CHOICES:
+            case HTTP::HTTP_STATUS_MULTIPLE_CHOICES:
             {
                 $error->title = 'Multiple Choices';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.4.1';
                 break;
             }
-            case HTTP_STATUS_MOVED_PERMANENTLY:
+            case HTTP::HTTP_STATUS_MOVED_PERMANENTLY:
             {
                 $error->title = 'Moved Permanently';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.4.2';
                 break;
             }
-            case HTTP_STATUS_FOUND:
+            case HTTP::HTTP_STATUS_FOUND:
             {
                 $error->title = 'Found';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.4.3';
                 break;
             }
-            case HTTP_STATUS_SEE_OTHER:
+            case HTTP::HTTP_STATUS_SEE_OTHER:
             {
                 $error->title = 'See Other';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.4.4';
                 break;
             }
-            case HTTP_STATUS_NOT_MODIFIED:
+            case HTTP::HTTP_STATUS_NOT_MODIFIED:
             {
                 $error->title = 'Not Modified';
                 $error->type = 'https://tools.ietf.org/html/rfc7232#Section-4.1';
                 break;
             }
 
-            case HTTP_STATUS_USE_PROXY:
+            case HTTP::HTTP_STATUS_USE_PROXY:
             {
                 $error->title = 'Use Proxy';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.4.5';
                 break;
             }
-            case HTTP_STATUS_TEMPORARY_REDIRECT:
+            case HTTP::HTTP_STATUS_TEMPORARY_REDIRECT:
             {
                 $error->title = 'Temporary Redirect';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.4.7';
                 break;
             }
-            case HTTP_STATUS_BAD_REQUEST:
+            case HTTP::HTTP_STATUS_BAD_REQUEST:
             {
                 $error->title = 'Bad Request';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.5.1';
                 break;
             }
-            case HTTP_STATUS_UNAUTHORIZED:
+            case HTTP::HTTP_STATUS_UNAUTHORIZED:
             {
                 $error->title = 'Unauthorized';
                 $error->type = 'https://tools.ietf.org/html/rfc7235#Section-3.1';
                 break;
             }
-            case HTTP_STATUS_PAYMENT_REQUIRED:
+            case HTTP::HTTP_STATUS_PAYMENT_REQUIRED:
             {
                 $error->title = 'Payment Required';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.5.2';
                 break;
             }
-            case HTTP_STATUS_FORBIDDEN:
+            case HTTP::HTTP_STATUS_FORBIDDEN:
             {
                 $error->title = 'Forbidden';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.5.3';
                 break;
             }
-            case HTTP_STATUS_NOT_FOUND:
+            case HTTP::HTTP_STATUS_NOT_FOUND:
             {
                 $error->title = 'Not Found';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.5.4';
                 break;
             }
-            case HTTP_STATUS_METHOD_NOT_ALLOWED:
+            case HTTP::HTTP_STATUS_METHOD_NOT_ALLOWED:
             {
                 $error->title = 'Method Not Allowed';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.5.5';
                 break;
             }
-            case HTTP_STATUS_NOT_ACCEPTABLE:
+            case HTTP::HTTP_STATUS_NOT_ACCEPTABLE:
             {
                 $error->title = 'Not Acceptable';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.5.6';
                 break;
             }
-            case HTTP_STATUS_PROXY_AUTHENTICATION_REQUIRED:
+            case HTTP::HTTP_STATUS_PROXY_AUTHENTICATION_REQUIRED:
             {
                 $error->title = 'Proxy Authentication Required';
                 $error->type = 'https://tools.ietf.org/html/rfc7235#Section3.2';
                 break;
             }
-            case HTTP_STATUS_REQUEST_TIMEOUT:
+            case HTTP::HTTP_STATUS_REQUEST_TIMEOUT:
             {
                 $error->title = 'Request Timeout';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.5.7';
                 break;
             }
-            case HTTP_STATUS_CONFLICT:
+            case HTTP::HTTP_STATUS_CONFLICT:
             {
                 $error->title = 'Conflict';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.5.8';
                 break;
             }
-            case HTTP_STATUS_GONE:
+            case HTTP::HTTP_STATUS_GONE:
             {
                 $error->title = 'Gone';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.5.9';
                 break;
             }
-            case HTTP_STATUS_LENGTH_REQUIRED:
+            case HTTP::HTTP_STATUS_LENGTH_REQUIRED:
             {
                 $error->title = 'Length Required';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.5.10';
                 break;
             }
-            case HTTP_STATUS_PRECONDITION_FAILED:
+            case HTTP::HTTP_STATUS_PRECONDITION_FAILED:
             {
                 $error->title = 'Precondition Failed';
                 $error->type = 'https://tools.ietf.org/html/rfc7232#Section-4.2';
                 break;
             }
 
-            case HTTP_STATUS_PAYLOAD_TOO_LARGE:
+            case HTTP::HTTP_STATUS_PAYLOAD_TOO_LARGE:
             {
                 $error->title = 'Payload Too Large';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.5.11';
                 break;
             }
-            case HTTP_STATUS_URI_TOO_LONG:
+            case HTTP::HTTP_STATUS_URI_TOO_LONG:
             {
                 $error->title = 'URI Too Long';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.5.12';
                 break;
             }
-            case HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE:
+            case HTTP::HTTP_STATUS_UNSUPPORTED_MEDIA_TYPE:
             {
                 $error->title = 'Unsupported Media Type';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.5.13';
                 break;
             }
-            case HTTP_STATUS_RANGE_NOT_SATISFIABLE:
+            case HTTP::HTTP_STATUS_RANGE_NOT_SATISFIABLE:
             {
                 $error->title = 'Range Not Satisfiable';
                 $error->type = 'https://tools.ietf.org/html/rfc7233#Section-4.4';
                 break;
             }
-            case HTTP_STATUS_EXPECTATION_FAILED:
+            case HTTP::HTTP_STATUS_EXPECTATION_FAILED:
             {
                 $error->title = 'Expectation Failed';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.5.14';
                 break;
             }
-            case HTTP_STATUS_UPGRADE_REQUIRED:
+            case HTTP::HTTP_STATUS_UPGRADE_REQUIRED:
             {
                 $error->title = 'Upgrade Required';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.5.15';
                 break;
             }
-            case HTTP_STATUS_INTERNAL_SERVER_ERROR:
+            case HTTP::HTTP_STATUS_INTERNAL_SERVER_ERROR:
             {
                 $error->title = 'Internal Server Error';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.6.1';
                 break;
             }
-            case HTTP_STATUS_NOT_IMPLEMENTED:
+            case HTTP::HTTP_STATUS_NOT_IMPLEMENTED:
             {
                 $error->title = 'Not Implemented';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.6.2';
                 break;
             }
-            case HTTP_STATUS_BAD_GATEWAY:
+            case HTTP::HTTP_STATUS_BAD_GATEWAY:
             {
                 $error->title = 'Bad Gateway';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.6.3';
                 break;
             }
-            case HTTP_STATUS_SERVICE_UNAVAILABLE:
+            case HTTP::HTTP_STATUS_SERVICE_UNAVAILABLE:
             {
                 $error->title = 'Service Unavailable';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.6.4';
                 break;
             }
-            case HTTP_STATUS_GATEWAY_TIMEOUT:
+            case HTTP::HTTP_STATUS_GATEWAY_TIMEOUT:
             {
                 $error->title = 'Gateway Timeout';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.6.5';
                 break;
             }
-            case HTTP_STATUS_HTTP_VERSION_NOT_SUPPORTED:
+            case HTTP::HTTP_STATUS_HTTP_VERSION_NOT_SUPPORTED:
             {
                 $error->title = 'HTTP Version Not Supported';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.6.6';
@@ -398,7 +358,7 @@ class JsonStatusResult extends strongType
             {
                 $error->title = 'Internal Server Error';
                 $error->type = 'https://tools.ietf.org/html/rfc7231#Section-6.6.1';
-                $error->statusCode = HTTP_STATUS_INTERNAL_SERVER_ERROR;
+                $error->statusCode = HTTP::HTTP_STATUS_INTERNAL_SERVER_ERROR;
                 break;
             }
 

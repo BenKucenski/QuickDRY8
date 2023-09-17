@@ -4,7 +4,6 @@ namespace QuickDRY\Utilities;
 
 
 use DateTime;
-use Exception;
 use ReflectionException;
 use ReflectionProperty;
 
@@ -13,8 +12,6 @@ use ReflectionProperty;
  */
 class strongType
 {
-    public static bool $ignoreMissingProperties = false;
-
     private array $_missing_properties = [];
     protected static ?array $_alias = null;
 
@@ -123,15 +120,8 @@ class strongType
                 $this->$k = $v;
                 continue;
             }
-            $type = $rp->getType()->getName();
-            switch ($type) {
+            switch ($rp->getType()->getName()) {
                 case 'DateTime':
-                    try {
-                        $this->$k = new DateTime($v);
-                    } catch(Exception $ex) {
-                        break;
-                    }
-                    break;
                 case 'array':
                 case 'string':
                     $this->$k = $v;
@@ -150,9 +140,7 @@ class strongType
             }
         }
 
-        if(!self::$ignoreMissingProperties) {
-            self::checkMissingProperties($this->_missing_properties, static::class);
-        }
+        self::checkMissingProperties($this->_missing_properties, static::class);
 
         return $this;
     }

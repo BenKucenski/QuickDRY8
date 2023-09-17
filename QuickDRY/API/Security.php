@@ -11,8 +11,6 @@ use QuickDRY\Utilities\Log;
 use QuickDRY\Utilities\Strings;
 use QuickDRY\Utilities\strongType;
 use stdClass;
-use const QuickDRY\Utilities\HTTP_STATUS_CALM_DOWN;
-use const QuickDRY\Utilities\HTTP_STATUS_UNAUTHORIZED;
 
 /**
  *
@@ -130,11 +128,11 @@ class Security extends strongType
         } catch (Exception $ex) {
             switch($ex->getMessage()) {
                 case 'Expired token':
-                    HTTP::ExitJSON(['error' => 'token expired'], HTTP_STATUS_UNAUTHORIZED);
+                    HTTP::ExitJSON(['error' => 'token expired'], HTTP::HTTP_STATUS_UNAUTHORIZED);
 
                 case 'Signature verification failed':
                 case 'Wrong number of segments':
-                    HTTP::ExitJSON(['error' => 'invalid token'], HTTP_STATUS_UNAUTHORIZED);
+                    HTTP::ExitJSON(['error' => 'invalid token'], HTTP::HTTP_STATUS_UNAUTHORIZED);
             }
             HTTP::ExitJSON(['error' => $ex->getMessage()]);
         }
@@ -202,7 +200,7 @@ class Security extends strongType
 
         $expires = intval($jwt->exp);
         if ($expires < time()) {
-            HTTP::ExitJSON(['error' => 'token expired'], HTTP_STATUS_UNAUTHORIZED);
+            HTTP::ExitJSON(['error' => 'token expired'], HTTP::HTTP_STATUS_UNAUTHORIZED);
         }
 
         $ip = $_SERVER['REMOTE_ADDR'];
@@ -216,7 +214,7 @@ class Security extends strongType
         if($checkCount) {
             $cnt = $checkCount($ip);
             if($cnt > 1200) {
-                HTTP::ExitJSON(['error' => 'slow down', 'queries' => $cnt], HTTP_STATUS_CALM_DOWN);
+                HTTP::ExitJSON(['error' => 'slow down', 'queries' => $cnt], HTTP::HTTP_STATUS_CALM_DOWN);
             }
         }
 
