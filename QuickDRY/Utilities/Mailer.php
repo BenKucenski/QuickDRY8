@@ -11,16 +11,16 @@ use PHPMailer\PHPMailer\PHPMailer;
  */
 class Mailer extends strongType
 {
-    public string $message;
-    public string $subject;
-    public string $to_email;
-    public string $to_name;
-    public int $is_sent;
+    public ?string $message = null;
+    public ?string $subject = null;
+    public ?string $to_email = null;
+    public ?string $to_name = null;
+    public ?int $is_sent = null;
     public ?string $sent_at = null;
     public ?string $log = null;
-    public string $headers;
-    public ?string $from_email;
-    public ?string $from_name;
+    public ?string $headers = null;
+    public ?string $from_email = null;
+    public ?string $from_name = null;
 
     public PHPMailer $mail;
 
@@ -128,15 +128,15 @@ class Mailer extends strongType
 
 
             try {
-                $mail->addAddress($to, $this->to_name);
+                $mail->addAddress($to, $to);
             } catch (Exception $e) {
-                exit('Mailer Add Address');
+                Debug('Mailer Add Address', $e->getMessage());
             }
             $mail->Subject = $this->subject;
             try {
                 $mail->msgHTML($this->message);
             } catch (Exception $e) {
-                exit('Mailer MsgHTML');
+                Debug('Mailer MsgHTML', $e->getMessage());
             }
 
             $attachments = unserialize($this->headers);

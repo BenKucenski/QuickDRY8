@@ -2,6 +2,9 @@
 
 namespace QuickDRY\Connectors;
 
+use QuickDRY\Utilities\SimpleExcel;
+use QuickDRY\Utilities\SimpleExcel_Column;
+use QuickDRY\Utilities\strongType;
 use QuickDRYInstance\Common\ChangeLogHistory;
 use DateTime;
 use QuickDRY\Utilities\Dates;
@@ -377,12 +380,12 @@ class SQL_Base
      * @return null
      */
     public static function GetAllPaginated(
-        array $where = null,
-        array $order_by = null,
-        int   $page = 0,
-        int   $per_page = 0,
-        array $left_join = null,
-        int   $limit = null)
+        ?array $where = null,
+        ?array $order_by = null,
+        int    $page = 0,
+        int    $per_page = 0,
+        array  $left_join = null,
+        int    $limit = null)
     {
         return static::_GetAllPaginated($where, $order_by, $page, $per_page, $left_join, $limit);
     }
@@ -392,10 +395,9 @@ class SQL_Base
      */
     public static function GetVars(): array
     {
-        $vars = [];
-        foreach (static::$prop_definitions as $name => $def)
-            $vars[$name] = null;
-        return $vars;
+        return array_map(function ($def) {
+            return null;
+        }, static::$prop_definitions);
     }
 
     /**
@@ -462,9 +464,9 @@ class SQL_Base
     /**
      * @param $name
      * @param $value
-     *
+     * @return mixed|string|null
      */
-    protected function SetProperty($name, $value): void
+    protected function SetProperty($name, $value): mixed
     {
         if (!array_key_exists($name, $this->props)) {
             Debug('QuickDRY Error: ' . $name . ' is not a property of ' . get_class($this) . "\r\n");
@@ -528,6 +530,7 @@ class SQL_Base
             $this->HasChanges = true;
         }
         $this->props[$name] = $value;
+        return $value;
     }
 
     /**
@@ -833,7 +836,7 @@ class SQL_Base
         $missing = [];
 
         foreach ($row as $name => $value) {
-            if (property_exists(get_called_class(), $name)) {
+            if (property_exists(static::class, $name)) {
                 $this->$name = $value;
                 continue;
             }
@@ -860,8 +863,14 @@ class SQL_Base
                 $this->props[$name] = isset($row[$name]) ? $value : (null);
             }
         }
+
         if ($strict && sizeof($missing)) {
-            Debug(['error' => 'QuickDRY Error: Missing Columns', 'Object' => get_class($this), 'Columns' => $missing, 'Values' => $row]);
+            Debug([
+                'error'   => 'QuickDRY Error: Missing Columns',
+                'Object'  => get_class($this),
+                'Columns' => $missing,
+                'Values'  => $row,
+            ]);
         }
     }
 
@@ -889,5 +898,43 @@ class SQL_Base
             return $this->Save();
         }
         return new QueryExecuteResult();
+    }
+
+    /**
+     * @param self $item
+     * @return array
+     */
+    public static function getHeaders(self $item): array
+    {
+        $class = get_called_class();
+        $cols = array_keys(get_object_vars($item));
+        foreach ($cols as $i => $col) {
+            if ($col[0] === '_') {
+                unset($cols[$i]);
+            }
+        }
+        return $cols;
+    }
+
+    /**
+     * @param self[] $items
+     * @return SimpleExcel|null
+     */
+    public static function toExcel(array $items): ?SimpleExcel
+    {
+        if (!sizeof($items)) {
+            return null;
+        }
+        $cols = array_keys($items[0]->ToArray());
+
+        $se = new SimpleExcel();
+        $se->Report = $items;
+        $se->Title = static::class;
+        $se->Columns = [];
+        foreach ($cols as $col) {
+            $se->Columns[$col] = new SimpleExcel_Column($col, $col);
+        }
+
+        return $se;
     }
 }

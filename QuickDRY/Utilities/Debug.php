@@ -112,14 +112,18 @@ class Debug extends strongType
 
         if (defined('IS_PRODUCTION') && IS_PRODUCTION) {
             $uri = $_SERVER['REQUEST_URI'] ?? $_SERVER['SCRIPT_FILENAME'];
-            if (defined('SMTP_DEBUG_EMAIL') && defined('SMTP_FROM_NAME')) {
-                $t = Mailer::Queue(SMTP_DEBUG_EMAIL, SMTP_FROM_NAME, SMTP_FROM_NAME . ' HALT: ' . $uri, $finalMsg);
-                try {
-                    $t->Send();
-                } catch (Exception $ex) {
-                    echo $ex->getMessage();
+
+            if(defined('EMAIL_ERRORS') && EMAIL_ERRORS) {
+                if (defined('SMTP_DEBUG_EMAIL') && defined('SMTP_FROM_NAME')) {
+                    $t = Mailer::Queue(SMTP_DEBUG_EMAIL, SMTP_FROM_NAME, SMTP_FROM_NAME . ' HALT: ' . $uri, $finalMsg);
+                    try {
+                        $t->Send();
+                    } catch (Exception $ex) {
+                        echo $ex->getMessage();
+                    }
                 }
             }
+
             if (defined('SMTP_DEBUG_SMS')) {
                 $t = Mailer::Queue(SMTP_DEBUG_SMS, SMTP_DEBUG_SMS, ' HALT: ' . $uri, 'There was a critical error.  Check email.');
                 try {
@@ -128,9 +132,15 @@ class Debug extends strongType
                     echo $ex->getMessage();
                 }
             }
+
             if (defined('PRETTY_ERROR')) {
                 exit(PRETTY_ERROR);
             }
+
+            if(defined('SHOW_ERRORS') && SHOW_ERRORS) {
+                Debug($var);
+            }
+
             exit('An Error Occurred.  Please Try Again Later.');
         }
         if ($print !== false) {

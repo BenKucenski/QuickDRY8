@@ -32,4 +32,22 @@ class APIHelper
         return self::removeSqlComment(str_replace('@', ':', file_get_contents($filename)));
 
     }
+
+    public static function ApplyArray(string $var, array $data, string &$sql, array &$params): void
+    {
+        $placeholders = Strings::GetPlaceholders(sizeof($data), '@' . $var, true);
+        $sql = str_replace('\'--' . $var . '--\'', $placeholders, $sql);
+        foreach($data as $i => $k) {
+            $params[$var . $i] = $k;
+        }
+    }
+
+    public static function ApplyValues(string $var, array $data, string &$sql, array &$params): void
+    {
+        $placeholders = Strings::GetValues(sizeof($data), '@' . $var, true);
+        $sql = str_replace('\'--' . $var . '--\'', $placeholders, $sql);
+        foreach($data as $i => $k) {
+            $params[$var . $i] = $k;
+        }
+    }
 }

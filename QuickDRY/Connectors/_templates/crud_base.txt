@@ -1,7 +1,7 @@
 <?php
 namespace pages\[[namespace]]\[[table_nice_name]]\base;
 
-use JetBrains\PhpStorm\NoReturn;
+
 use QuickDRY\Web\BasePage;
 use QuickDRY\Utilities\Dates;
 use QuickDRY\Utilities\HTTP;
@@ -51,7 +51,7 @@ class [[table_nice_name]]Base extends BasePage
     /**
      * @return void
      */
-    #[NoReturn] public static function DoGet(): void
+    public static function Get(): void
     {
         self::$Request->FromSerialized(self::$Request->Get('serialized'));
 
@@ -66,7 +66,7 @@ class [[table_nice_name]]Base extends BasePage
     /**
      * @return void
      */
-    #[NoReturn] public static function DoPost(): void
+    public static function Post(): void
     {
         self::$Request->FromSerialized(self::$Request->Get('serialized'));
 
@@ -85,7 +85,7 @@ class [[table_nice_name]]Base extends BasePage
     /**
      * @return void
      */
-    #[NoReturn] public static function DoPut(): void
+    public static function Put(): void
     {
         self::$Request->FromSerialized(self::$Request->Get('serialized'));
 
@@ -120,7 +120,7 @@ class [[table_nice_name]]Base extends BasePage
      * @param string $success_message
      * @return void
      */
-    #[NoReturn] public static function DoDelete(string $success_message = 'Item Removed'): void
+    public static function Delete(string $success_message = 'Item Removed'): void
     {
         self::$Request->FromSerialized(self::$Request->Get('serialized'));
 
@@ -137,7 +137,7 @@ class [[table_nice_name]]Base extends BasePage
     /**
      * @return void
      */
-    #[NoReturn] public static function DoFind(): void
+    public static function Find(): void
     {
         self::$Request->FromSerialized(self::$Request->Get('serialized'));
 
@@ -149,7 +149,7 @@ class [[table_nice_name]]Base extends BasePage
     /**
      * @return void
      */
-    #[NoReturn] public static function DoHistory(): void
+    public static function History(): void
     {
         self::$Request->FromSerialized(self::$Request->Get('serialized'));
 

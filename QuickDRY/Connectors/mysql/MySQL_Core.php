@@ -346,7 +346,7 @@ class MySQL_Core extends SQL_Base
                 $col = '(' . $col . ' IS NOT NULL OR ' . $col . ' NOT IN (' . Strings::StringRepeatCS('{{}}', sizeof($val) - 1) . '))';
                 unset($val[$key]);
             } else {
-                $col = $col . 'NOT IN (' . Strings::StringRepeatCS('{{}}', sizeof($val)) . ')';
+                $col = $col . ' NOT IN (' . Strings::StringRepeatCS('{{}}', sizeof($val)) . ')';
             }
         } elseif (str_starts_with($val, '{NLIKE} ')) {
             $col = $col . ' NOT LIKE {{}} ';
@@ -423,6 +423,10 @@ class MySQL_Core extends SQL_Base
 			';
 
         $res = static::Query($sql, $params, true);
+        if(isset($res['error'])) {
+            Debug($res);
+        }
+
         foreach ($res as $t) {
             return $t;
         }
@@ -543,8 +547,8 @@ class MySQL_Core extends SQL_Base
      * @return array
      */
     #[ArrayShape(['count' => 'int|mixed', 'items' => 'array', 'sql' => 'string', 'res' => 'array'])] protected static function _GetAllPaginated(
-        array $where = null,
-        array $order_by = null,
+        ?array $where = null,
+        ?array $order_by = null,
         int   $page = null,
         int   $per_page = null,
         array $left_join = null,
@@ -552,20 +556,21 @@ class MySQL_Core extends SQL_Base
     {
         $params = [];
 
-        $sql_order = [];
+        $sql_order = '';
         if (is_array($order_by) && sizeof($order_by)) {
+            $sql_order_by = [];
             foreach ($order_by as $col => $dir) {
                 if (stristr($col, '.') !== false) {
                     $col = explode('.', $col);
-                    $sql_order[] .= '`' . trim($col[0]) . '`.`' . trim($col[1]) . '` ' . $dir;
+                    $sql_order_by[] .= '`' . trim($col[0]) . '`.`' . trim($col[1]) . '` ' . $dir;
                 } else {
                     if (is_array($col)) {
                         Debug(['QuickDRY Error' => '$col cannot be array', $col]);
                     }
-                    $sql_order[] .= '`' . trim($col) . '` ' . $dir;
+                    $sql_order_by[] .= '`' . trim($col) . '` ' . $dir;
                 }
             }
-            $sql_order = 'ORDER BY ' . implode(', ', $sql_order);
+            $sql_order = 'ORDER BY ' . implode(', ', $sql_order_by);
         }
 
         $sql_where = '1=1';
@@ -692,6 +697,10 @@ class MySQL_Core extends SQL_Base
             case 'decimal(18,2)':
             case 'double':
             case 'int(10)':
+                if (is_null($value) && static::$prop_definitions[$name]['is_nullable']) {
+                    return null;
+                }
+
                 if (!is_numeric($value)) {
                     $value = 0;
                 }
@@ -711,8 +720,6 @@ class MySQL_Core extends SQL_Base
      */
     protected function _Save(bool $force_insert = false): QueryExecuteResult
     {
-        global $Web;
-
         if (!sizeof($this->_change_log)) {
             return new QueryExecuteResult();
         }

@@ -7,6 +7,7 @@ namespace QuickDRY\Connectors;
 use DateTime;
 use QuickDRY\Utilities\Dates;
 use QuickDRY\Utilities\Debug;
+use QuickDRY\Utilities\HTTP;
 use QuickDRY\Utilities\strongType;
 use QuickDRY\Utilities\Strings;
 
@@ -102,7 +103,7 @@ class MSSQL extends strongType
                     }
                     return MSSQL::EscapeString($params[$result[1]]);
                 } else {
-                    if(is_null($params[$result[1]])) {
+                    if($params && is_null($params[$result[1]] ?? null)) {
                         return 'null';
                     }
                     // in order to allow more advanced queries that Declare Variables, we just need to ignore @Var if it's not in the passed in parameters

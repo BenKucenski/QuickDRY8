@@ -8,7 +8,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
 use models\_dw_api_log;
 use Psr\Http\Message\ResponseInterface;
-use QuickDRY\Utilities\HTTP;
 
 /**
  * Class Curl
@@ -45,10 +44,9 @@ class Curl
     ): Curl
     {
         $response_header = $response->getHeaders();
-        $head_hash = [];
-        foreach ($response_header as $name => $values) {
-            $head_hash[$name] = implode(';', $values);
-        }
+        $head_hash = array_map(function ($values) {
+            return implode(';', $values);
+        }, $response_header);
         $status = $response->getStatusCode();
         $body = $response->getBody()->getContents();
 

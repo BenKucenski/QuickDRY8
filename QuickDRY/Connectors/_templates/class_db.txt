@@ -5,7 +5,6 @@ namespace [[namespace]];
 
 use QuickDRY\Connectors\SQL_Query;
 use QuickDRY\Utilities\Dates;
-use QuickDRY\Utilities\HTTP;
 use QuickDRY\Web\ElementID;
 use QuickDRYInstance\Common\QuickDRYUser;
 use QuickDRY\Connectors\QueryExecuteResult;
@@ -38,6 +37,8 @@ class db_[[c_name]] extends [[DatabaseClassName]]
     protected static string $DatabasePrefix = '[[DatabasePrefix]]';
     protected static string $DatabaseTypePrefix = '[[DatabaseTypePrefix]]';
     protected static int $LowerCaseTable = [[LowerCaseTable]];
+
+    [[class_const]]
 
     protected static array $prop_definitions = [
         [[prop_definitions]]
@@ -102,10 +103,12 @@ class db_[[c_name]] extends [[DatabaseClassName]]
     /**
      * @param $search
      * @param QuickDRYUser $user
+     * @return array
      */
-    public static function Suggest($search, QuickDRYUser $user)
+    public static function Suggest($search, QuickDRYUser $user): array
     {
-        HTTP::ExitJSON(['error' => 'Suggest not implemented', 'search' => $search, 'user' => $user]);
+        Debug(['error' => 'Suggest not implemented', 'search' => $search, 'user' => $user]);
+        return [];
     }
 
     /**

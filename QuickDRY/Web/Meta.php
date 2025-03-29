@@ -18,12 +18,18 @@ class Meta
     public static function Title(string $val = null): ?string
     {
         if (is_null($val)) {
-            if(!self::$title) {
-                return '';
+            if(defined('DEMO_MODE') && DEMO_MODE) {
+                self::$title .= ' - Demo -';
             }
-            return ': ' . str_replace('"', '\\"', self::$title);
+
+            if(!self::$title) {
+                return SITE_NAME;
+            }
+            return str_replace('"', '\\"', self::$title);
         }
         self::$title = $val;
+
+
         return $val;
     }
 

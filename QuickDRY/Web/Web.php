@@ -2,6 +2,7 @@
 
 namespace QuickDRY\Web;
 
+use models\CurrentUser;
 use QuickDRY\Connectors\mssql\MSSQL_Connection;
 use QuickDRY\Connectors\mysql\MySQL_Connection;
 use QuickDRY\Utilities\HTTP;
@@ -310,6 +311,12 @@ class Web extends strongType
             $class = $this->PageClass;
 
             $class::Init();
+
+            if(CurrentUser::$ResetPassword) {
+                if($this->CurrentPage !== '/my_account') {
+                    HTTP::Redirect('/my_account');
+                }
+            }
 
             switch ($_SERVER['REQUEST_METHOD']) {
                 case 'GET':

@@ -3,9 +3,14 @@
 namespace QuickDRY\API;
 
 
+use api_models\api_user;
+use common\ms_tmodb\ms_TmodbApiUserLogClass;
 use DateTimeImmutable;
 use Exception;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+use QuickDRY\Web\Server;
+use QuickDRY\Utilities\Dates;
 use QuickDRY\Utilities\HTTP;
 use QuickDRY\Utilities\Log;
 use QuickDRY\Utilities\Strings;
@@ -30,7 +35,7 @@ class Security extends strongType
         $m = strlen(self::$chars);
         $base10 = Strings::Base16to10($token);
         $new_token = '';
-        while(strlen($base10) > 1) {
+        while (strlen($base10) > 1) {
             $base10_part = substr(strval($base10), -3);
             $new_token .= self::$chars[(intval($base10_part) % $m)];
             $base10 = substr($base10, 0, -1);
@@ -98,14 +103,18 @@ class Security extends strongType
     public static function createBearerToken(array $data, int $expire_seconds): string
     {
         $issuedAt = new DateTimeImmutable();
-        $expire = $issuedAt->modify('+' . $expire_seconds .  ' seconds')->getTimestamp();
+        try {
+            $expire = $issuedAt->modify('+' . $expire_seconds . ' seconds')->getTimestamp();
+        } catch (Exception $e) {
+            Debug($e->getMessage());
+        }
         $serverName = $_SERVER['HTTP_HOST'];
 
         $data = [
-            'iat' => $issuedAt->getTimestamp(),         // Issued at: time when the token was generated
-            'iss' => $serverName,                       // Issuer
-            'nbf' => $issuedAt->getTimestamp(),         // Not before
-            'exp' => $expire,                           // Expire
+            'iat'  => $issuedAt->getTimestamp(),         // Issued at: time when the token was generated
+            'iss'  => $serverName,                       // Issuer
+            'nbf'  => $issuedAt->getTimestamp(),         // Not before
+            'exp'  => $expire,                           // Expire
             'data' => $data,
         ];
 
@@ -126,16 +135,19 @@ class Security extends strongType
         try {
             return JWT::decode($token, new Key(MASTER_SECRET_KEY, 'HS512'));
         } catch (Exception $ex) {
-            switch($ex->getMessage()) {
+            switch ($ex->getMessage()) {
                 case 'Expired token':
                     HTTP::ExitJSON(['error' => 'token expired'], HTTP::HTTP_STATUS_UNAUTHORIZED);
+                    break;
 
                 case 'Signature verification failed':
                 case 'Wrong number of segments':
                     HTTP::ExitJSON(['error' => 'invalid token'], HTTP::HTTP_STATUS_UNAUTHORIZED);
+                    break;
             }
             HTTP::ExitJSON(['error' => $ex->getMessage()]);
         }
+        return null;
     }
 
     /**
@@ -153,16 +165,14 @@ class Security extends strongType
      */
     public static function validateHeaders(): ?string
     {
-        Log::Insert('validateHeaders');
         $headers = getallheaders();
-        $client_id = $headers['X-Client-Id'] ?? null;
-        $client_secret = $headers['X-Client-Secret'] ?? null;
-        Log::Insert('Client-Id: ' . $client_id);
-        if($client_id && $client_secret) {
+        $client_id = $headers['X-Client-Id'] ?? ($_REQUEST['client_id'] ?? null);
+        $client_secret = $headers['X-Client-Secret'] ?? ($_REQUEST['client_secret'] ?? null);;
+        if ($client_id && $client_secret) {
             return self::getBearer($client_id, $client_secret);
         }
         $bearer = $_REQUEST['bearer'] ?? null;
-        if($bearer) {
+        if ($bearer) {
             return $bearer;
         }
         return null;
@@ -174,12 +184,10 @@ class Security extends strongType
      */
     public static function validateRequest(callable $checkCount = null): ?array
     {
-        $token = $_SERVER['HTTP_AUTHORIZATION'] ?? null;
-        Log::Insert('Token: ' . $token);
+        $token = $_SERVER['HTTP_AUTHORIZATION'] ?? ($_REQUEST['HTTP_AUTHORIZATION'] ?? null);
         if (!$token) {
             $token = self::validateHeaders();
-            Log::Insert('Token(2): ' . $token);
-            if(!$token) {
+            if (!$token) {
                 return null;
             }
         }
@@ -187,14 +195,11 @@ class Security extends strongType
         $token = explode(' ', $token);
         $token = trim($token[sizeof($token) - 1] ?? null);
 
-        Log::Insert('Split Token: ' . $token);
         if (!$token) {
             return null;
         }
 
         $jwt = self::decodeBearerToken($token);
-
-        Log::Insert($jwt);
 
         $data = json_decode(json_encode($jwt->data ?? null), true);
 
@@ -203,17 +208,17 @@ class Security extends strongType
             HTTP::ExitJSON(['error' => 'token expired'], HTTP::HTTP_STATUS_UNAUTHORIZED);
         }
 
-        $ip = $_SERVER['REMOTE_ADDR'];
-        if(in_array($ip, [
+        $ip = Server::RemoteADDR();
+        if (in_array($ip, [
             '127.0.0.1', // localhost
             'localhost',
         ])) {
             return $data;
         }
 
-        if($checkCount) {
+        if ($checkCount) {
             $cnt = $checkCount($ip);
-            if($cnt > 1200) {
+            if ($cnt > 1200) {
                 HTTP::ExitJSON(['error' => 'slow down', 'queries' => $cnt], HTTP::HTTP_STATUS_CALM_DOWN);
             }
         }
@@ -230,41 +235,38 @@ class Security extends strongType
     public static function getBearer(
         string $client_id,
         string $client_secret,
-        int $expire = 3600
+        int    $expire = 3600
     ): string
     {
-//        $check = api_user::Get([
-//            'client_id' => $client_id,
-//        ]);
-//
-//        if (!$check) {
-//            HTTP::ExitJSON(['error' => 'unauthorized'], HTTP_STATUS_UNAUTHORIZED);
-//        }
-//
-//        $log = new api_user_log();
-//        $log->api_user_id = $check->client_id;
-//        $log->created_at = Dates::Timestamp();
-//        $log->remote_addr = $_SERVER['REMOTE_ADDR'];
-//
-//        if (!$check->validate($client_secret)) {
-//            $log->is_success = 0;
-//            $log->Save();
-//            HTTP::ExitJSON(['error' => 'unauthorized'], HTTP_STATUS_UNAUTHORIZED);
-//        }
-//
-//        $log->is_success = 1;
-//        $log->Save();
-//
-//        $expire = $expire ?? 3600;
-//        if($expire > 3600) {
-//            $expire = 3600;
-//        }
-//
-//        return Security::createBearerToken([
-//            'email' => $check->email_address,
-//            'client_id' => $check->client_id,
-//        ], $expire);
+        $check = api_user::Get($client_id);
 
-        return '';
+        if (!$check) {
+            HTTP::ExitJSON(['error' => 'unauthorized'], HTTP::HTTP_STATUS_UNAUTHORIZED);
+            return '';
+        }
+
+        $log = new ms_TmodbApiUserLogClass();
+        $log->client_id = $check->client_id;
+        $log->created_at = Dates::Timestamp();
+        $log->remote_addr = Server::RemoteADDR();
+
+        if (!$check->validate($client_secret)) {
+            $log->is_success = 0;
+            $log->Save();
+            HTTP::ExitJSON(['error' => 'unauthorized'], HTTP::HTTP_STATUS_UNAUTHORIZED);
+        }
+
+        $log->is_success = 1;
+        $log->Save();
+
+        $expire = $expire ?? 3600;
+        if ($expire > 3600) {
+            $expire = 3600;
+        }
+
+        return Security::createBearerToken([
+            'email'     => $check->email_address,
+            'client_id' => $check->client_id,
+        ], $expire);
     }
 }

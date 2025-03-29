@@ -10,7 +10,7 @@ use QuickDRY\Utilities\Debug;
     /**
      * @return [[sp_class]][]
      */
-    public static function GetReport([[func_params]]): ?array
+    public static function getReport([[func_params]]): ?array
     {
         $sql = '
         CALL [[DatabaseConstant]].[[[SPECIFIC_NAME]]] (

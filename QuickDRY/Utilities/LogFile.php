@@ -41,10 +41,14 @@ class LogFile
         $msg [] = is_array($message) || is_object($message) ? json_encode($message) : $message;
         $msg = implode("\t", $msg);
 
+        $date = Dates::Datestamp();
 
         if ($write_to_file) {
             $f = preg_replace('/[^a-z0-9]/si', '_', $filename) . '.' . Dates::Datestamp();
-            $log_path = DATA_FOLDER . '/logs/' . $f . '.log';
+            if(!is_dir(DATA_FOLDER . '/logs/' . $date)) {
+                mkdir(DATA_FOLDER . '/logs/' . $date);
+            }
+            $log_path = DATA_FOLDER . '/logs/' . $date . '/' . $f . '.log';
 
             file_put_contents($log_path, $msg . PHP_EOL, FILE_APPEND);
         }

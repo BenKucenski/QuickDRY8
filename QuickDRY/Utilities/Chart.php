@@ -3,8 +3,6 @@
 namespace QuickDRY\Utilities;
 
 
-use QuickDRY\Utilities\strongType;
-
 /**
  *
  */

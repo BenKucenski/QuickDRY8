@@ -448,18 +448,26 @@ class MSSQL_Core extends SQL_Base
         } elseif (str_starts_with($val, '{YEAR} ')) {
             $col = 'DATEPART(yyyy, ' . $col . ') = @';
             $val = trim(Strings::RemoveFromStart('{YEAR}', $val));
-        } elseif (str_starts_with($val, 'NLIKE ')) {
+        } elseif (str_starts_with($val, '{NLIKE} ')) {
             $col = $col . ' NOT LIKE @';
-            $val = trim(Strings::RemoveFromStart('NLIKE', $val));
-        } elseif (str_starts_with($val, 'NILIKE ')) {
+            $val = trim(Strings::RemoveFromStart('{NLIKE}', $val));
+        } elseif (str_starts_with($val, '{NILIKE} ')) {
             $col = 'LOWER(' . $col . ')' . ' NOT LIKE LOWER(@) ';
-            $val = trim(Strings::RemoveFromStart('NILIKE', $val));
-        } elseif (str_starts_with($val, 'ILIKE ')) {
+            $val = trim(Strings::RemoveFromStart('{NILIKE}', $val));
+        } elseif (str_starts_with($val, '{ILIKE} ')) {
             $col = 'LOWER(' . $col . ')' . ' ILIKE LOWER(@) ';
-            $val = trim(Strings::RemoveFromStart('ILIKE', $val));
-        } elseif (str_starts_with($val, 'LIKE ')) {
+            $val = trim(Strings::RemoveFromStart('{ILIKE}', $val));
+        } elseif (str_starts_with($val, '{NOT IN} ')) {
+            $val = explode(',', trim(Strings::RemoveFromStart('{NOT IN} ', $val)));
+            if (($key = array_search('null', $val)) !== false) {
+                $col = '(' . $col . ' IS NOT NULL OR ' . $col . ' NOT IN (' . Strings::StringRepeatCS('@', sizeof($val) - 1) . '))';
+                unset($val[$key]);
+            } else {
+                $col = $col . ' NOT IN (' . Strings::StringRepeatCS('@', sizeof($val)) . ')';
+            }
+        } elseif (str_starts_with($val, '{LIKE} ')) {
             $col = $col . ' LIKE @';
-            $val = trim(Strings::RemoveFromStart('LIKE', $val));
+            $val = trim(Strings::RemoveFromStart('{LIKE}', $val));
         } elseif (str_starts_with($val, '<= ')) {
             $col = $col . ' <= @ ';
             $val = trim(Strings::RemoveFromStart('<=', $val));

@@ -12,6 +12,16 @@ use stdClass;
  */
 class Strings extends strongType
 {
+    public static function SplitEmails(string $emails): array
+    {
+        $list = [];
+        $temp = explode(';', str_replace(',', ';', $emails));
+        foreach ($temp as $item) {
+            $list [] = trim($item);
+        }
+        return $list;
+    }
+
     /**
      * @param array $arr
      */
@@ -587,10 +597,19 @@ class Strings extends strongType
     /**
      * @param $count
      * @param string $str
+     * @param bool $increment
      * @return string
      */
-    public static function GetPlaceholders($count, string $str = '{{}}'): string
+    public static function GetPlaceholders($count, string $str = '{{}}', bool $increment = false): string
     {
+        if ($increment) {
+            $list = [];
+            for ($j = 0; $j < $count; $j++) {
+                $list[] = $str . $j;
+            }
+            return implode(', ', $list);
+        }
+
         return implode(',', array_fill(0, $count, $str));
     }
 
@@ -700,10 +719,10 @@ class Strings extends strongType
         }
 
         dd([
-            'error' => 'fix_json unknown object',
-            'class' => get_class($row),
+            'error'      => 'fix_json unknown object',
+            'class'      => get_class($row),
             'strongType' => $row instanceof strongType,
-            'row' => $row,
+            'row'        => $row,
         ]);
 
     }
@@ -1079,6 +1098,19 @@ class Strings extends strongType
             }
             self::FlattenArray($v, $parents . $k . '_', $dest);
         }
+    }
+
+    public static function GetValues(int $count, string $str, bool $increment): string
+    {
+        if ($increment) {
+            $list = [];
+            for ($j = 0; $j < $count; $j++) {
+                $list[] = $str . $j;
+            }
+            return '(' . implode('),(', $list) . ')';
+        }
+
+        return '(' . implode('),(', array_fill(0, $count, $str)) . ')';
     }
 }
 

@@ -136,6 +136,14 @@ class strongType
                     break;
 
                 default:
+                    if(!$v) {
+                        $this->$k = $v;
+                        break;
+                    }
+                    if(is_object($v)) {
+                        $this->$k = $v;
+                        break;
+                    }
                     Debug($rp->getType()->getName() . ' unknown type', debug_backtrace());
             }
         }

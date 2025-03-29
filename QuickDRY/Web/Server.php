@@ -9,6 +9,11 @@ use QuickDRY\Utilities\strongType;
  */
 class Server extends strongType
 {
+    public static function RemoteADDR()
+    {
+        return $_SERVER['HTTP_X_FORWARDED_FOR'] ?? ($_SERVER['REMOTE_ADDR'] ?? null);
+    }
+
     /**
      * @param array|null $remove
      * @return string

@@ -12,7 +12,7 @@ class db_[[sp_class]] extends SafeClass
      * @param  [[clean_params]]
      * @return [[sp_class]][]
      */
-    public static function GetReport([[func_params]]): ?array
+    public static function getReport([[func_params]]): ?array
     {
         $sql = '
         EXEC [[DatabaseConstant]].[dbo].[[[SPECIFIC_NAME]]]

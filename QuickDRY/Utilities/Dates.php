@@ -209,7 +209,7 @@ class Dates extends strongType
      */
     public static function CalcWeek($date, bool $debug = false): DateCalcWeekDTO
     {
-        if (strtotime($date) == 0) {
+        if (is_string($date) && strtotime($date) == 0) {
             return new DateCalcWeekDTO(null, null, null);
         }
 

@@ -153,9 +153,20 @@ class MSSQL_Connection extends strongType
                 } else {
                     sqlsrv_errors(SQLSRV_ERR_ERRORS);
                     if (stristr($db_base, '.') !== false) { // linked server support
-                        $this->db_conns[$db_base] = sqlsrv_connect($this->DB_HOST, ['UID' => $this->DB_USER, 'PWD' => $this->DB_PASS]);
+                        $this->db_conns[$db_base] = sqlsrv_connect($this->DB_HOST, [
+                            'UID'                    => $this->DB_USER,
+                            'PWD'                    => $this->DB_PASS,
+                            'TrustServerCertificate' => true,
+                            'CharacterSet'           => 'UTF-8'
+                        ]);
                     } else {
-                        $this->db_conns[$db_base] = sqlsrv_connect($this->DB_HOST, ['Database' => $db_base, 'UID' => $this->DB_USER, 'PWD' => $this->DB_PASS]);
+                        $this->db_conns[$db_base] = sqlsrv_connect($this->DB_HOST, [
+                            'Database'               => $db_base,
+                            'UID'                    => $this->DB_USER,
+                            'PWD'                    => $this->DB_PASS,
+                            'TrustServerCertificate' => true,
+                            'CharacterSet'           => 'UTF-8'
+                        ]);
                     }
                     $error = print_r(sqlsrv_errors(), true);
                     if (isset($error['message']) && $error['message']) {
@@ -219,12 +230,12 @@ class MSSQL_Connection extends strongType
         $this->query_count++;
         if (!isset(self::$log[$sql])) {
             self::$log[$sql] = [
-                'params' => [],
-                'err' => [],
-                'time' => [],
+                'params'     => [],
+                'err'        => [],
+                'time'       => [],
                 'total_time' => 0,
-                'avg_time' => 0,
-                'count' => 0,
+                'avg_time'   => 0,
+                'count'      => 0,
             ];
         }
         self::$log[$sql]['params'][] = $params;
@@ -267,11 +278,11 @@ class MSSQL_Connection extends strongType
         $start = microtime(true);
 
         $returnval = [
-            'error' => 'command not executed',
+            'error'   => 'command not executed',
             'numrows' => 0,
-            'data' => [],
-            'sql' => $sql,
-            'params' => $params
+            'data'    => [],
+            'sql'     => $sql,
+            'params'  => $params
         ];
 
         $query = MSSQL::EscapeQuery($sql, $params);
@@ -313,12 +324,12 @@ class MSSQL_Connection extends strongType
                     $i++;
                 }
                 $returnval = [
-                    'data' => $list,
-                    'error' => '',
-                    'time' => microtime(true) - $start,
-                    'query' => $query,
+                    'data'   => $list,
+                    'error'  => '',
+                    'time'   => microtime(true) - $start,
+                    'query'  => $query,
                     'params' => $params,
-                    'sql' => $sql
+                    'sql'    => $sql
                 ];
                 if (sizeof($more)) {
                     $returnval['more'] = $more;
@@ -343,13 +354,12 @@ class MSSQL_Connection extends strongType
         $this->Log($sql, $params, $t, $returnval['error']);
 
         if ($returnval['error']) {
-            if ($map_function) {
-                if (defined('MSSQL_EXIT_ON_ERROR') && MSSQL_EXIT_ON_ERROR) {
-                    Debug::Halt($returnval);
-                }
-                return $returnval;
+            if ($map_function || defined('MSSQL_EXIT_ON_ERROR') && MSSQL_EXIT_ON_ERROR) {
+                Debug::Halt($returnval);
             }
+            return $returnval;
         }
+
         if (!$map_function) {
             return $returnval;
         }
@@ -366,19 +376,20 @@ class MSSQL_Connection extends strongType
     {
         $this->_connect();
 
-        if ($this->_usesqlsrv)
+        if ($this->_usesqlsrv) {
             return $this->QueryWindows($sql, $params, $map_function);
+        }
 
         Metrics::Start('MSSQL');
 
         $start = microtime(true);
 
         $returnval = [
-            'error' => 'command not executed',
+            'error'   => 'command not executed',
             'numrows' => 0,
-            'data' => [],
-            'sql' => $sql,
-            'params' => $params
+            'data'    => [],
+            'sql'     => $sql,
+            'params'  => $params
         ];
 
         $query = MSSQL::EscapeQuery($sql, $params);
@@ -434,7 +445,13 @@ class MSSQL_Connection extends strongType
                 while ($r = mssql_fetch_assoc($result)) {
                     $list[] = is_null($map_function) ? $r : call_user_func($map_function, $r);
                 }
-                $returnval = ['data' => $list, 'error' => '', 'time' => microtime(true) - $start, 'query' => $sql, 'params' => $params];
+                $returnval = [
+                    'data'   => $list,
+                    'error'  => '',
+                    'time'   => microtime(true) - $start,
+                    'query'  => $sql,
+                    'params' => $params,
+                ];
             }
         } catch (Exception $e) {
 
@@ -475,10 +492,11 @@ class MSSQL_Connection extends strongType
 
         $start = microtime(true);
 
-        $returnval = ['error' => 'command not executed',
+        $returnval = [
+            'error'   => 'command not executed',
             'numrows' => 0,
-            'data' => [],
-            'query' => $query
+            'data'    => [],
+            'query'   => $query
         ];
 
         $this->_connect();
@@ -572,8 +590,10 @@ class MSSQL_Connection extends strongType
             } else {
                 $result = sqlsrv_query($this->db, $query);
                 if (!$result) {
-                    $returnval = ['error' => static::SQLErrorsToString(),
-                        'query' => $query];
+                    $returnval = [
+                        'error' => static::SQLErrorsToString(),
+                        'query' => $query
+                    ];
                 } else {
                     $returnval['error'] = '';
                     $returnval['numrows'] = sqlsrv_rows_affected($result);
@@ -629,7 +649,7 @@ class MSSQL_Connection extends strongType
 					SELECT SCOPE_IDENTITY() AS lid
 				';
         $res = $this->Query($sql);
-        if(isset($res['data'][0]['lid'])) {
+        if (isset($res['data'][0]['lid'])) {
             return (int)$res['data'][0]['lid'];
         }
         return null;

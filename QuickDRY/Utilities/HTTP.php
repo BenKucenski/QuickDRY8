@@ -5,7 +5,7 @@ namespace QuickDRY\Utilities;
 // HTTPStatus
 
 
-use JetBrains\PhpStorm\NoReturn;
+
 use QuickDRY\JSON\JsonStatusResult;
 
 
@@ -63,6 +63,8 @@ class HTTP extends strongType
     public const HTTP_STATUS_UNPROCESSABLE_ENTITY = 422;
     public const HTTP_STATUS_TOO_MANY_REQUESTS = 429;
     
+    public static bool $AJAXTestMode = false;
+    
     /**
      * @param $url
      * @return mixed
@@ -97,7 +99,7 @@ class HTTP extends strongType
     /**
      * @param JsonStatusResult $result
      */
-    #[NoReturn] public static function ExitJSONResult(JsonStatusResult $result): void
+    public static function ExitJSONResult(JsonStatusResult $result): void
     {
         $res = $result->toArray();
         $json = json_decode(json_encode($res), true);
@@ -141,8 +143,12 @@ class HTTP extends strongType
     /**
      * @param string|null $url
      */
-    #[NoReturn] public static function Redirect(string $url = null): void
+    public static function Redirect(string $url = null): void
     {
+        if(self::$AJAXTestMode) {
+            return;
+        }
+
         if (!$url) {
             if (isset($_SERVER['HTTP_REFERER'])) {
                 header('location: ' . $_SERVER['HTTP_REFERER']);
@@ -168,7 +174,7 @@ class HTTP extends strongType
 
         $_SESSION['error'] = $err;
 
-        if ($url == '/' && isset($_SERVER['HTTP_REFERER'])) {
+        if ($url == '/' && isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER']) {
             header('location: ' . $_SERVER['HTTP_REFERER']);
         } else {
             header('location: ' . $url);
@@ -180,8 +186,12 @@ class HTTP extends strongType
      * @param $notice
      * @param string $url
      */
-    #[NoReturn] public static function RedirectNotice($notice, string $url = '/'): void
+    public static function RedirectNotice($notice, string $url = '/'): void
     {
+        if(self::$AJAXTestMode) {
+            return;
+        }
+
         $_SESSION['notice'] = $notice;
 
         if ($url === '/' && isset($_SERVER['HTTP_REFERER'])) {
@@ -195,8 +205,12 @@ class HTTP extends strongType
     /**
      *
      */
-    #[NoReturn] public static function ReloadPage(): void
+    public static function ReloadPage(): void
     {
+        if(self::$AJAXTestMode) {
+            return;
+        }
+
         header('location: ' . $_SERVER['REQUEST_URI']);
         exit;
     }
@@ -205,8 +219,12 @@ class HTTP extends strongType
      * @param $url
      * @param $title
      */
-    #[NoReturn] public static function ExitJavascript($url, $title): void
+    public static function ExitJavascript($url, $title): void
     {
+        if(self::$AJAXTestMode) {
+            return;
+        }
+
         echo 'Redirecting to <a id="redirect_url" href="' . $url . '">' . $title . '</a><script>
     (function() {
         window.location = document.getElementById("redirect_url");
@@ -224,8 +242,7 @@ class HTTP extends strongType
      */
     public static function isJson(string $string): bool
     {
-        json_decode($string);
-        return json_last_error() === JSON_ERROR_NONE;
+        return json_validate($string);
     }
 
     /**
@@ -233,8 +250,12 @@ class HTTP extends strongType
      * @param int $HTTP_STATUS
      * @return void
      */
-    #[NoReturn] public static function ExitOData($json, int $HTTP_STATUS = self::HTTP_STATUS_OK): void
+    public static function ExitOData($json, int $HTTP_STATUS = self::HTTP_STATUS_OK): void
     {
+        if(self::$AJAXTestMode) {
+            return;
+        }
+
         if ($HTTP_STATUS) {
             header('HTTP/1.1 ' . $HTTP_STATUS . ': ' . HTTPStatus::GetDescription($HTTP_STATUS));
         }
@@ -257,12 +278,18 @@ class HTTP extends strongType
         exit($json);
 
     }
+
     /**
      * @param $json
      * @param int $HTTP_STATUS
+     * @return string|void
      */
-    #[NoReturn] public static function ExitJSON($json, int $HTTP_STATUS = self::HTTP_STATUS_OK): void
+    public static function ExitJSON($json, int $HTTP_STATUS = self::HTTP_STATUS_OK)
     {
+        if(self::$AJAXTestMode) {
+            return $json;
+        }
+
         if($_SERVER['HTTP_HOST'] ?? null) {
             if ($HTTP_STATUS) {
                 header('HTTP/1.1 ' . $HTTP_STATUS . ': ' . HTTPStatus::GetDescription($HTTP_STATUS));
@@ -274,6 +301,9 @@ class HTTP extends strongType
 
         if(is_string($json)) {
             if (self::isJson($json)) {
+                if(self::$AJAXTestMode) {
+                    return $json;
+                }
                 exit($json);
             }
         }
@@ -281,8 +311,12 @@ class HTTP extends strongType
         $json = json_encode(Strings::FixJSON($json), JSON_PRETTY_PRINT);
         $error = json_last_error_msg();
         if(json_last_error()) {
+            if(self::$AJAXTestMode) {
+                Debug($error);
+            }
             exit($error);
         }
+
         exit($json);
     }
 
@@ -293,7 +327,7 @@ class HTTP extends strongType
      * @param string|null $ContentType
      * @param bool $Download
      */
-    #[NoReturn] public static function ExitFile(
+    public static function ExitFile(
         string $content,
         string $filename,
         int $HTTP_STATUS = self::HTTP_STATUS_OK,
@@ -301,6 +335,10 @@ class HTTP extends strongType
         bool $Download = true
     ): void
     {
+        if(self::$AJAXTestMode) {
+            return;
+        }
+
         if ($HTTP_STATUS) {
             header('HTTP/1.1 ' . $HTTP_STATUS . ': ' . HTTPStatus::GetDescription($HTTP_STATUS));
         }

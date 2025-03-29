@@ -49,6 +49,16 @@ class BasePage extends strongType
         self::$MasterPage = $masterpage;
     }
 
+    public static function setPDFOrientation(string $value): void
+    {
+        self::$PDFPageOrientation = $value;
+    }
+
+    public static function setPDFFilename(string $value): void
+    {
+        self::$PDFFileName = $value;
+    }
+
     /**
      * @return string|null
      */
@@ -67,7 +77,7 @@ class BasePage extends strongType
      */
     public static function Post()
     {
-
+        Debug('Post Undefined');
     }
 
 
@@ -142,7 +152,7 @@ class BasePage extends strongType
      */
     public static function ExportToXLS(): void
     {
-        Debug('QuickDRY Error: DoExportToXLS is not implemented');
+        Debug('QuickDRY Error: ExportToXLS is not implemented');
     }
 
     /**
@@ -150,7 +160,7 @@ class BasePage extends strongType
      */
     public static function ExportToPDF(): void
     {
-        Debug('QuickDRY Error: DoExportToPDF is not implemented');
+        Debug('QuickDRY Error: ExportToPDF is not implemented');
     }
 
     /**
@@ -158,7 +168,7 @@ class BasePage extends strongType
      */
     public static function ExportToDOCX(): void
     {
-        Debug('QuickDRY Error: DoExportToDOCX is not implemented');
+        Debug('QuickDRY Error: ExportToDOCX is not implemented');
     }
 
     /**
@@ -166,7 +176,7 @@ class BasePage extends strongType
      */
     public static function ExportToCSV(): void
     {
-        Debug('QuickDRY Error: DoExportToCSV is not implemented');
+        Debug('QuickDRY Error: ExportToCSV is not implemented');
     }
 
     /**
@@ -174,6 +184,6 @@ class BasePage extends strongType
      */
     public static function ExportToJSON(): void
     {
-        Debug('QuickDRY Error: DoExportToJSON is not implemented');
+        Debug('QuickDRY Error: ExportToJSON is not implemented');
     }
 }
