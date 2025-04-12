@@ -3,12 +3,11 @@
 namespace QuickDRY\API;
 
 
-use api_models\api_user;
-use common\ms_tmodb\ms_TmodbApiUserLogClass;
 use DateTimeImmutable;
 use Exception;
 use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
+use models\APIUser;
+use models\APIUserLog;
 use QuickDRY\Utilities\Dates;
 use QuickDRY\Utilities\HTTP;
 use QuickDRY\Utilities\Strings;
@@ -229,7 +228,7 @@ class Security extends strongType
         int    $expire = 3600
     ): string
     {
-        $check = api_user::Get($client_id);
+        $check = APIUser::Get($client_id);
 
         if (!$check) {
             HTTP::ExitJSON([
@@ -238,7 +237,7 @@ class Security extends strongType
             ], HTTP::HTTP_STATUS_UNAUTHORIZED);
         }
 
-        $log = new ms_TmodbApiUserLogClass();
+        $log = new APIUserLog();
         $log->client_id = $check->client_id;
         $log->created_at = Dates::Timestamp();
         $log->remote_addr = Server::REMOTE_ADDR();

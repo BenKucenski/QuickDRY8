@@ -11,6 +11,11 @@ class Request extends strongType
         return $_REQUEST[$name] ?? null;
     }
 
+    public static function Set(string $name, $value): void
+    {
+        $_REQUEST[$name] = $value;
+    }
+
     public static function isset(string $name): bool
     {
         return isset($_REQUEST[$name]);

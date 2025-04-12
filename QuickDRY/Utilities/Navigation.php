@@ -3,14 +3,15 @@
 namespace QuickDRY\Utilities;
 
 use models\Security;
+use QuickDRY\Web\Server;
 
 /**
  * Class Navigation
  */
 class Navigation
 {
-    private array $_PERMISSIONS = [];
-    private array $_MENU = [];
+    protected array $_PERMISSIONS = [];
+    protected array $_MENU = [];
 
     public ?array $Legend = null;
 

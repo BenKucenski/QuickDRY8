@@ -2,8 +2,6 @@
 
 namespace QuickDRY\Connectors;
 
-use common\PmtFreq;
-use Exception;
 use models\ChangeLogHistory;
 use QuickDRY\Utilities\SimpleExcel;
 use QuickDRY\Utilities\SimpleExcel_Column;
@@ -902,7 +900,6 @@ class SQL_Base
      */
     public static function getHeaders(self $item): array
     {
-        $class = get_called_class();
         $cols = array_keys(get_object_vars($item));
         foreach ($cols as $i => $col) {
             if ($col[0] === '_') {

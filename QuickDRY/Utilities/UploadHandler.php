@@ -208,8 +208,8 @@ class UploadHandler
         }
         $id = $file->Save();
 
-        if (!file_exists($file->server_location)) {
-            move_uploaded_file($fileArray['tmp_name'], $file->server_location);
+        if (!file_exists($file->server_location())) {
+            move_uploaded_file($fileArray['tmp_name'], $file->server_location());
         }
 
         return [

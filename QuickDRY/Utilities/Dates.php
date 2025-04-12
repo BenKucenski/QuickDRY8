@@ -5,7 +5,6 @@ namespace QuickDRY\Utilities;
 use DateTime;
 use DateTimeZone;
 use Exception;
-use QuickDRYInstance\Common\QuickDRYUser;
 
 /**
  * Class Dates
@@ -415,18 +414,6 @@ class Dates extends strongType
     public static function StandardTime($date = null, $null = null): ?string
     {
         return self::Datestamp($date, $null, 'h:iA');
-    }
-
-    /**
-     * @param $time
-     * @param QuickDRYUser $User
-     * @return string|null
-     */
-    public static function FromUserTimeToGMT($time, QuickDRYUser $User): ?string
-    {
-        $time = self::DateToInt($time);
-
-        return self::Timestamp($time - $User->User->hours_diff * 3600);
     }
 
     /**

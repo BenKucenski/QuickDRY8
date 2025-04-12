@@ -661,7 +661,7 @@ class MySQL_Core extends SQL_Base
         if (is_object($value) || is_array($value))
             return null;
 
-        if (strcasecmp($value, 'null') == 0) {
+        if ($value && strcasecmp($value, 'null') == 0) {
             if (!static::$prop_definitions[$name]['is_nullable']) {
                 throw new Exception($name . ' cannot be null');
             }
