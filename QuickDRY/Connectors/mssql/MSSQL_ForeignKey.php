@@ -14,7 +14,7 @@ class MSSQL_ForeignKey
     public $column_name;
 
     public string $foreign_table_name;
-    public array $foreign_column_name;
+    public string $foreign_column_name;
     public string $FK_CONSTRAINT_NAME;
     public string $REFERENCED_CONSTRAINT_NAME;
     public string $REFERENCED_COLUMN_ID;

@@ -2,6 +2,7 @@
 
 namespace QuickDRY\Connectors\mssql;
 
+use DateTime;
 use QuickDRY\Utilities\strongType;
 
 /**
@@ -58,8 +59,8 @@ class MSSQL_StoredProc extends strongType
     public ?string $MAX_DYNAMIC_RESULT_SETS;
     public ?string $IS_USER_DEFINED_CAST;
     public ?string $IS_IMPLICITLY_INVOCABLE;
-    public ?string $CREATED;
-    public ?string $LAST_ALTERED;
+    public ?DateTime $CREATED;
+    public ?DateTime $LAST_ALTERED;
     public ?string $SOURCE_CODE;
 
     /**

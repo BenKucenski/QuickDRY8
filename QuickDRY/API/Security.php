@@ -9,12 +9,11 @@ use DateTimeImmutable;
 use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-use QuickDRY\Web\Server;
 use QuickDRY\Utilities\Dates;
 use QuickDRY\Utilities\HTTP;
-use QuickDRY\Utilities\Log;
 use QuickDRY\Utilities\Strings;
 use QuickDRY\Utilities\strongType;
+use QuickDRY\Web\Server;
 use stdClass;
 
 /**
@@ -71,28 +70,20 @@ class Security extends strongType
     }
 
     /**
-     * @param string $data
-     * @return bool|string
+     * @param $ciphertext
+     * @return false|string
      */
-    public static function decryptBase64(string $data): bool|string
+    public static function decrypt($ciphertext): bool|string
     {
-        $parts = explode('::', $data);
-        return self::decrypt(
+        $parts = explode('::', $ciphertext);
+        return openssl_decrypt(
             $parts[0],
+            self::$cipher,
+            MASTER_SECRET_KEY,
+            0,
             base64_decode($parts[1] ?? ''),
             base64_decode($parts[2] ?? '')
         );
-    }
-
-    /**
-     * @param $ciphertext
-     * @param $iv
-     * @param $tag
-     * @return false|string
-     */
-    public static function decrypt($ciphertext, $iv, $tag): bool|string
-    {
-        return openssl_decrypt($ciphertext, self::$cipher, MASTER_SECRET_KEY, 0, $iv, $tag);
     }
 
     /**
@@ -208,7 +199,7 @@ class Security extends strongType
             HTTP::ExitJSON(['error' => 'token expired'], HTTP::HTTP_STATUS_UNAUTHORIZED);
         }
 
-        $ip = Server::RemoteADDR();
+        $ip = Server::REMOTE_ADDR();
         if (in_array($ip, [
             '127.0.0.1', // localhost
             'localhost',
@@ -241,19 +232,24 @@ class Security extends strongType
         $check = api_user::Get($client_id);
 
         if (!$check) {
-            HTTP::ExitJSON(['error' => 'unauthorized'], HTTP::HTTP_STATUS_UNAUTHORIZED);
-            return '';
+            HTTP::ExitJSON([
+                'error' => 'unauthorized',
+                'code'  => 1
+            ], HTTP::HTTP_STATUS_UNAUTHORIZED);
         }
 
         $log = new ms_TmodbApiUserLogClass();
         $log->client_id = $check->client_id;
         $log->created_at = Dates::Timestamp();
-        $log->remote_addr = Server::RemoteADDR();
+        $log->remote_addr = Server::REMOTE_ADDR();
 
         if (!$check->validate($client_secret)) {
             $log->is_success = 0;
             $log->Save();
-            HTTP::ExitJSON(['error' => 'unauthorized'], HTTP::HTTP_STATUS_UNAUTHORIZED);
+            HTTP::ExitJSON([
+                'error' => 'unauthorized',
+                'code'  => 2
+            ], HTTP::HTTP_STATUS_UNAUTHORIZED);
         }
 
         $log->is_success = 1;
@@ -268,5 +264,65 @@ class Security extends strongType
             'email'     => $check->email_address,
             'client_id' => $check->client_id,
         ], $expire);
+    }
+
+    public static function encryptURL(?string $data): ?string
+    {
+        if (!$data) {
+            return $data;  //to preserve empty string, null, or zero
+        }
+
+        if (!defined('URL_SECRET_KEY')) {
+            Debug('URL_SECRET_KEY is not in the env');
+        }
+
+        // https://stackoverflow.com/questions/48017856/correct-way-to-use-php-openssl-encrypt
+        $passphrase = hash('sha256', URL_SECRET_KEY);
+        $iv = substr(hash('sha256', $passphrase), 0, 16);
+
+        // base64 encode to make it URL safe
+        // add a leading "_" to indicate OpenSSL
+        return base64_encode(openssl_encrypt(
+            $data,
+            self::$cipher,
+            $passphrase,
+            0,
+            $iv
+        ));
+    }
+
+    /**
+     * @param string $data
+     * @return string
+     * @throws Exception
+     */
+    public static function decryptURL(string $data): string
+    {
+        if (!$data) {
+            return $data;  //to preserve empty string, null, or zero
+        }
+
+        if (!defined('URL_SECRET_KEY')) {
+            Debug('URL_SECRET_KEY is not in the env');
+        }
+
+        $data = base64_decode($data);
+
+        $passphrase = hash('sha256', URL_SECRET_KEY);
+        $iv = substr(hash('sha256', $passphrase), 0, 16);
+
+        $check = openssl_decrypt(
+            $data,
+            self::$cipher,
+            $passphrase,
+            0,
+            $iv
+        );
+
+        if (!$check) {
+            throw new Exception('Invalid Key');
+        }
+
+        return $check;
     }
 }

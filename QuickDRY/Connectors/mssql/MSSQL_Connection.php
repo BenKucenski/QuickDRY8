@@ -112,7 +112,7 @@ class MSSQL_Connection extends strongType
         $time = microtime(true);
         $error = '';
 
-        if (strcmp($this->current_db, $db_base) == 0 && $this->db) {
+        if ($this->db && $this->current_db && strcmp($this->current_db, $db_base) == 0) {
             $this->_LastConnection['reuse connection'] = $this->current_db . ' = ' . $db_base;
             return;
         }
@@ -214,10 +214,15 @@ class MSSQL_Connection extends strongType
     /**
      * @param string $sql
      * @param array|null $params
-     * @param int $time
+     * @param float $time
      * @param null $err
      */
-    private function Log(string $sql, ?array $params = null, int $time = 0, $err = null): void
+    private function Log(
+        string $sql,
+        ?array $params = null,
+        float $time = 0,
+        $err = null
+    ): void
     {
         if (!static::$use_log)
             return;
@@ -681,7 +686,14 @@ class MSSQL_Connection extends strongType
      */
     public function GetTables(): array
     {
-        $sql = 'SELECT * FROM [' . $this->current_db . '].information_schema.tables WHERE "TABLE_TYPE" <> \'VIEW\' ORDER BY "TABLE_NAME"';
+        $sql = '
+SELECT 
+    * 
+FROM [' . $this->current_db . '].information_schema.tables 
+WHERE "TABLE_TYPE" <> \'VIEW\' 
+AND TABLE_NAME NOT LIKE \'lss_%\'
+ORDER BY "TABLE_NAME"
+';
         $res = $this->Query($sql);
         $list = [];
         if ($res['error']) {
@@ -690,8 +702,12 @@ class MSSQL_Connection extends strongType
 
         foreach ($res['data'] as $row) {
             $t = $row['TABLE_NAME'];
-            if (str_starts_with($t, 'TEMP'))
+            if (str_starts_with($t, 'TEMP')) {
                 continue;
+            }
+            if (str_starts_with($t, 'lss_')) {
+                continue;
+            }
 
             $list[] = $t;
         }

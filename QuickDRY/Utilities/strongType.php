@@ -122,6 +122,9 @@ class strongType
             }
             switch ($rp->getType()->getName()) {
                 case 'DateTime':
+                    $this->$k = is_string($v) ? new DateTime($v) : $v;
+                    break;
+
                 case 'array':
                 case 'string':
                     $this->$k = $v;
@@ -133,6 +136,10 @@ class strongType
 
                 case 'int':
                     $this->$k = intval($v);
+                    break;
+
+                case 'bool':
+                    $this->$k = boolval($v);
                     break;
 
                 default:

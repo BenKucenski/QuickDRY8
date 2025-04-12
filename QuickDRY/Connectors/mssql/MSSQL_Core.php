@@ -5,6 +5,8 @@ namespace QuickDRY\Connectors\mssql;
 use DateTime;
 use Exception;
 use JetBrains\PhpStorm\ArrayShape;
+use models\ChangeLog;
+use models\CurrentUser;
 use QuickDRY\Connectors\MSSQL;
 use QuickDRY\Connectors\QueryExecuteResult;
 use QuickDRY\Connectors\SQL_Base;
@@ -344,81 +346,71 @@ class MSSQL_Core extends SQL_Base
     }
 
     /**
-     * @return int|string
+     * @return int|string|null
      */
-    public static function LastID(): int|string
+    public static function LastID(): int|string|null
     {
         static::_connect();
 
         return static::$connection->LastID();
     }
 
-//
-//    /**
-//     * @param QuickDRYUser|null $User
-//     * @return array|null
-//     */
-//    public function Remove(?QuickDRYUser $User): ?array
-//    {
-//        if (!$this->CanDelete($User)) {
-//            return ['error' => 'No Permission'];
-//        }
-//
-//        // if this instance wasn't loaded from the database
-//        // don't try to remove it
-//        if (!$this->_from_db) {
-//            return ['error' => 'Invalid Request'];
-//        }
-//
-//        if ($this->HasChangeLog()) {
-//            $uuid = $this->GetUUID();
-//
-//            if ($uuid) {
-//                $cl = new ChangeLog();
-//                $cl->host = static::$DB_HOST;
-//                $cl->database = static::$database;
-//                $cl->table = static::$table;
-//                $cl->uuid = $uuid;
-//                $cl->changes = json_encode($this->_change_log);
-//                $cl->user_id = is_object($User) ? $User->GetUUID() : null;
-//                $cl->created_at = Dates::Timestamp();
-//                $cl->object_type = static::TableToClass(static::$DatabasePrefix, static::$table, static::$LowerCaseTable, static::$DatabaseTypePrefix);
-//                $cl->is_deleted = true;
-//                $cl->Save();
-//            }
-//        }
-//
-//
-//        // rows are removed based on the columns which
-//        // make the row unique
-//        $where = [];
-//        if (sizeof(static::$_primary) > 0) {
-//            foreach (static::$_primary as $column)
-//                $where[] = $column . ' = ' . MSSQL::EscapeString($this->{$column});
-//        } else {
-//            if (sizeof(static::$_unique) > 0) {
-//                foreach (static::$_unique as $column)
-//                    $where[] = $column . ' = ' . MSSQL::EscapeString($this->{$column});
-//            } else {
-//                return ['error' => 'unique or primary key required'];
-//            }
-//        }
-//
-//
-//        $sql = '
-//			DELETE FROM
-//				[' . static::$database . '].dbo.[' . static::$table . ']
-//			WHERE
-//				' . implode(' AND ', $where) . '
-//		';
-//        $res = self::Execute($sql);
-//
-//        if (method_exists($this, 'ElasticRemove')) {
-//            $this->ElasticRemove();
-//        }
-//
-//        return $res;
-//    }
+
+    /**
+     * @param CurrentUser|null $User
+     * @return QueryExecuteResult
+     */
+    public function Remove(?CurrentUser $User): QueryExecuteResult
+    {
+        if (!$this->CanDelete($User)) {
+            return new QueryExecuteResult();
+        }
+
+        // if this instance wasn't loaded from the database
+        // don't try to remove it
+        if (!$this->_from_db) {
+            return new QueryExecuteResult();
+        }
+
+        if ($this->HasChangeLog()) {
+            $uuid = $this->PrimaryKey();
+
+            if ($uuid) {
+                ChangeLog::Delete($this);
+            }
+        }
+
+
+        // rows are removed based on the columns which
+        // make the row unique
+        $where = [];
+        if (sizeof(static::$_primary) > 0) {
+            foreach (static::$_primary as $column)
+                $where[] = $column . ' = ' . MSSQL::EscapeString($this->{$column});
+        } else {
+            if (sizeof(static::$_unique) > 0) {
+                foreach (static::$_unique as $column)
+                    $where[] = $column . ' = ' . MSSQL::EscapeString($this->{$column});
+            } else {
+                return ['error' => 'unique or primary key required'];
+            }
+        }
+
+
+        $sql = '
+			DELETE FROM
+				[' . static::$database . '].dbo.[' . static::$table . ']
+			WHERE
+				' . implode(' AND ', $where) . '
+		';
+        $res = self::Execute($sql);
+
+        if (method_exists($this, 'ElasticRemove')) {
+            $this->ElasticRemove();
+        }
+
+        return $res;
+    }
 
     /**
      * @param $col
@@ -432,7 +424,11 @@ class MSSQL_Core extends SQL_Base
         $col = str_replace('+', '', $col);
 
         if (is_object($val)) {
-            Debug(['QuickDRY Error' => '$val is object', $val]);
+            if($val instanceof DateTime) {
+                $val = $val->format('Y-m-d H:i:s');
+            } else {
+                Debug(['QuickDRY Error' => '$val is object', $val]);
+            }
         }
         if (str_starts_with($val, '{BETWEEN} ')) {
             $val = trim(Strings::RemoveFromStart('{BETWEEN}', $val));
@@ -595,7 +591,7 @@ class MSSQL_Core extends SQL_Base
                 $cv = self::_parse_col_val($c, $v);
                 $v = $cv['val'];
 
-                if (!is_array($v) && strtolower($v) === 'null') {
+                if (is_null($v) || (!is_array($v) && strtolower($v) === 'null')) {
                     $t[] = $c . ' IS NULL';
                 } else {
                     $t[] = $cv['col'];
@@ -861,9 +857,9 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
      * @param string $name
      * @param $value
      * @param bool $just_checking
-     * @return float|int|string|null
+     * @return mixed
      */
-    protected static function StrongType(string $name, $value, bool $just_checking = false): float|int|string|null
+    protected static function StrongType(string $name, $value, bool $just_checking = false): mixed
     {
         if ($value === '#NULL!') { // Excel files may have this
             $value = null;
@@ -892,7 +888,13 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
 
         switch (static::$prop_definitions[$name]['type']) {
             case 'date':
-                return $value ? Dates::Datestamp($value) : null;
+            case 'timestamp':
+            case 'datetime':
+                try {
+                    return $value ? new DateTime($value) : null;
+                } catch (Exception $e) {
+                    return $value;
+                }
 
             case 'int':
             case 'float':
@@ -908,9 +910,9 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
                         $value = Strings::Numeric($value);
                         if (!$value) {
                             Debug([
-                                'name' => $name,
+                                'name'  => $name,
                                 'value' => $value,
-                                'type' => static::$prop_definitions[$name]['type'],
+                                'type'  => static::$prop_definitions[$name]['type'],
                                 'error' => 'value must be ' . static::$prop_definitions[$name]['type'],
                             ]);
                         }
@@ -924,10 +926,6 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
             case 'decimal(18,2)':
             case 'int(10)':
                 return $value * 1.0;
-
-            case 'timestamp':
-            case 'datetime':
-                return $value ? Dates::SQLDateTimeToString($value) : null;
         }
         return $value;
     }
@@ -948,8 +946,6 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
      */
     protected function _Save(bool $force_insert = false, bool $return_query = false): QueryExecuteResult|SQL_Query|array
     {
-        global $Web;
-
         /* @var string[] $primary */
         $primary = static::$_primary ?? [];
 
@@ -1046,6 +1042,9 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
                     $qs[] = 'NULL --' . $name . ' / ' . static::$prop_definitions[$name]['type'] . PHP_EOL;
                 } else {
                     $qs[] = '@ --' . $name . ' / ' . static::$prop_definitions[$name]['type'] . PHP_EOL;
+                    if($st_value instanceof DateTime) {
+                        $st_value = $st_value->format('Y-m-d H:i:s');
+                    }
                     $params[] = '{{{' . $st_value . '}}}'; // necessary to get past the null check in EscapeString
                 }
 
@@ -1064,17 +1063,14 @@ WHERE
             }
             $res = static::Execute($sql, $params);
 
-            if($res->error) {
+            if ($res->error) {
                 Debug($res);
             }
 
             if (!$primary_set) {
                 // there can only be one auto incrementing column per table
                 foreach ($primary as $col) {
-                    if (is_null($this->$col)) {
-                        $this->$col = static::LastID();
-                        break;
-                    }
+                    $this->$col = static::LastID();
                 }
             }
         } else {
@@ -1099,6 +1095,10 @@ SET
                     $props[] = '[' . $name . '] = NULL -- ' . $name . ' / ' . static::$prop_definitions[$name]['type'] . PHP_EOL;
                 } else {
                     $props[] = '[' . $name . '] = @ --' . $name . ' / ' . static::$prop_definitions[$name]['type'] . PHP_EOL;
+
+                    if($st_value instanceof DateTime) {
+                        $st_value = $st_value->format('Y-m-d H:i:s');
+                    }
                     $params[] = '{{{' . $st_value . '}}}'; // necessary to get past the null check in EscapeString
                 }
             }
@@ -1113,28 +1113,21 @@ WHERE
   ' . implode(' AND ', $primary_sql) . '
 ';
 
+
+//            Debug($sql, $params, $this->_change_log, $this);
             if ($return_query) {
                 return new SQL_Query($sql, $params);
             }
             $res = static::Execute($sql, $params);
         }
 
-//        if ($this->HasChangeLog()) {
-//            $uuid = $this->GetUUID();
-//            if ($uuid) {
-//                $cl = new ChangeLog();
-//                $cl->host = static::$DB_HOST;
-//                $cl->database = static::$database;
-//                $cl->table = static::$table;
-//                $cl->uuid = $uuid;
-//                $cl->changes = json_encode($this->_change_log);
-//                $cl->user_id = is_object($Web) && $Web->CurrentUser ? $Web->CurrentUser->GetUUID() : null;
-//                $cl->created_at = Dates::Timestamp();
-//                $cl->object_type = static::TableToClass(static::$DatabasePrefix, static::$table, static::$LowerCaseTable, static::$DatabaseTypePrefix);
-//                $cl->is_deleted = false;
-//                $cl->Save();
-//            }
-//        }
+        if ($this->HasChangeLog()) {
+            $uuid = $this->PrimaryKey();
+            if ($uuid) {
+                ChangeLog::Create($this);
+
+            }
+        }
         return $res;
     }
 

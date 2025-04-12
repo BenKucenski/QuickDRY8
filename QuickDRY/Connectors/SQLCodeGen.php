@@ -43,6 +43,8 @@ class SQLCodeGen extends strongType
     protected string $PagesManageFolder;
     protected string $PagesPHPUnitFolder;
 
+    public static ?bool $UseChangeLog = true;
+
     /**
      * @return void
      */
@@ -262,7 +264,7 @@ class SQLCodeGen extends strongType
 
         $seens_vars = [];
         $db_use = [];
-        if($this->DatabaseClass[0] === '\\') {
+        if ($this->DatabaseClass[0] === '\\') {
             $db_use[] = 'use ' . substr($this->DatabaseClass, 1) . ';';
         } else {
             $db_use[] = 'use ' . substr($this->DatabaseClass, 0) . ';';
@@ -435,6 +437,7 @@ class SQLCodeGen extends strongType
             'unique'             => $unique_code,
             'indexes'            => $indexes_code,
             'prop_definitions'   => $props,
+            'change_log'         => is_null(self::$UseChangeLog) ? 'null' : (self::$UseChangeLog ? 'true' : 'false'),
             'database'           => (!$this->DatabaseConstant ? '\'' . $this->Database . '\'' : $this->DatabaseConstant),
             'table_name'         => $table_name,
             'DatabasePrefix'     => (!$this->DatabaseConstant ? $this->Database : $this->DatabaseConstant),
@@ -480,14 +483,14 @@ class SQLCodeGen extends strongType
             'c_name'      => $c_name,
             'class_props' => implode("\r\n", $class_props),
             'HasUserLink' => $HasUserLink ? '
-        global $Web;
         if($this->id) {
-            if($this->user_id !== $Web->CurrentUser->id) {
-                $res[\'error\'] = [\'No Permission\'];
-                return $res;
+            if($this->user_id !== CurrentUser::$id) {
+                $q = new QueryExecuteResult();
+                $q->error = \'No Permission\';
+                return $q;
             }
         } else {
-            $this->user_id = $Web->CurrentUser->id;
+            $this->user_id = CurrentUser::$id;
         }
 ' : '',
         ];

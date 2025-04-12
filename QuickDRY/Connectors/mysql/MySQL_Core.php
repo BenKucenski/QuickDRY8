@@ -4,14 +4,13 @@ namespace QuickDRY\Connectors\mysql;
 
 use Exception;
 use JetBrains\PhpStorm\ArrayShape;
+use models\ChangeLog;
 use models\CurrentUser;
 use QuickDRY\Connectors\QueryExecuteResult;
 use QuickDRY\Connectors\SQL_Base;
 use QuickDRY\Connectors\SQL_Query;
 use QuickDRY\Utilities\Dates;
 use QuickDRY\Utilities\Strings;
-use QuickDRYInstance\Common\ChangeLog;
-use QuickDRYInstance\Common\QuickDRYUser;
 
 /**
  * Class MySQL_Core
@@ -180,10 +179,10 @@ class MySQL_Core extends SQL_Base
     }
 
     /**
-     * @param QuickDRYUser $user
+     * @param CurrentUser $user
      * @return bool
      */
-    public function CanDelete(QuickDRYUser $user): bool
+    public function CanDelete(CurrentUser $user): bool
     {
         return false;
     }
@@ -242,10 +241,10 @@ class MySQL_Core extends SQL_Base
     }
 
     /**
-     * @param QuickDRYUser $User
+     * @param CurrentUser $User
      * @return QueryExecuteResult
      */
-    public function Remove(QuickDRYUser $User): QueryExecuteResult
+    public function Remove(CurrentUser $User): QueryExecuteResult
     {
         if (!$this->CanDelete($User)) {
             return new QueryExecuteResult();
@@ -258,20 +257,10 @@ class MySQL_Core extends SQL_Base
         }
 
         if ($this->HasChangeLog()) {
-            $uuid = $this->GetUUID();
+            $uuid = $this->PrimaryKey();
 
             if ($uuid) {
-                $cl = new ChangeLog();
-                $cl->host = static::$DB_HOST;
-                $cl->database = static::$database;
-                $cl->table = static::$table;
-                $cl->uuid = $uuid;
-                $cl->changes = json_encode($this->_change_log);
-                $cl->user_id = $User->GetUUID();
-                $cl->created_at = Dates::Timestamp();
-                $cl->object_type = static::class;
-                $cl->is_deleted = true;
-                $cl->Save();
+                ChangeLog::Delete($this);
             }
         }
 
@@ -823,19 +812,10 @@ class MySQL_Core extends SQL_Base
             $this->$primary = $res->last_id;
 
         if ($this->HasChangeLog()) {
-            $uuid = $this->GetUUID();
+            $uuid = $this->PrimaryKey();
             if ($uuid) {
-                $cl = new ChangeLog();
-                $cl->host = static::$DB_HOST;
-                $cl->database = static::$database;
-                $cl->table = static::$table;
-                $cl->uuid = $uuid;
-                $cl->changes = json_encode($this->_change_log);
-                $cl->user_id = CurrentUser::GetUUID();
-                $cl->created_at = Dates::Timestamp();
-                $cl->object_type = static::TableToClass(static::$DatabasePrefix, static::$table, static::$LowerCaseTable, static::$DatabaseTypePrefix);
-                $cl->is_deleted = false;
-                $cl->Save();
+                ChangeLog::Create($this);
+
             }
         }
         $this->_from_db = true;

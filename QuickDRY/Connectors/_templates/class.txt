@@ -2,6 +2,7 @@
 namespace [[namespace]];
 
 [[use]]
+use models\CurrentUser;
 use QuickDRY\Connectors\QueryExecuteResult;
 
 class [[c_name]] extends db_[[c_name]]

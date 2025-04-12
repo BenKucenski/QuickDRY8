@@ -2,6 +2,8 @@
 
 namespace QuickDRY\Utilities;
 
+use models\Security;
+
 /**
  * Class Navigation
  */
@@ -39,11 +41,7 @@ class Navigation
      */
     public function CheckPermissions(string $_CUR_PAGE, bool $test = false): bool
     {
-        if ($_CUR_PAGE == '/' || $_CUR_PAGE == '')
-            return true;
-
-        $t = explode('/', $_CUR_PAGE);
-        if (stristr($t[sizeof($t) - 1], 'json') !== FALSE) {
+        if ($_CUR_PAGE == '/' || $_CUR_PAGE == '') {
             return true;
         }
 
@@ -57,6 +55,90 @@ class Navigation
         return false;
     }
 
+    private function _hasVisible(array $links)
+    {
+        $has_visible = false;
+        if (sizeof($links)) {
+            foreach ($links as $name => $url) {
+                if(is_array($url)) {
+                    if($this->_hasVisible($url)) {
+                        $has_visible = true;
+                        break;
+                    }
+                }
+                if ($this->CheckPermissions($url, true)) {
+                    $has_visible = true;
+                    break;
+                }
+            }
+        }
+
+        return $has_visible;
+    }
+
+
+    /**
+     * @param string $name
+     * @param mixed $values
+     * @param string $_MENU_HTML
+     * @param bool $is_submenu
+     * @return void
+     */
+    private function _RenderValues(
+        string $name,
+        mixed  $values,
+        string &$_MENU_HTML,
+        bool   $is_submenu = false
+    ): void
+    {
+
+        if (is_string($values)) {
+            if ($this->CheckPermissions($values, true)) {
+                $_MENU_HTML .= '<a class="btn btn-primary" href="' . $values . '">' . $name . '</a>' . PHP_EOL;
+            }
+            return;
+        }
+
+        if (!is_array($values)) {
+            return;
+        }
+
+        $has_visible = $this->_hasVisible($values);
+
+        if (!$has_visible) {
+            return;
+        }
+
+        $hash = Security::MD5(json_encode($values));
+
+        if (!$is_submenu) {
+            $_MENU_HTML .= '<button 
+class="btn btn-primary dropdown-toggle" 
+type="button"
+data-bs-toggle="dropdown" 
+id="dropdownMenu_' . $hash . '"
+aria-expanded="false"
+>' . $name . '</button>';
+        } else {
+            $_MENU_HTML .= '<div class="dropdown-submenu"><a class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown" href="#">' . $name . '</a>';
+        }
+        ksort($values);
+        $_MENU_HTML .= '<div class="dropdown-menu" aria-labelledby="dropdownMenu_' . $hash . '">';
+        foreach ($values as $link_name => $values2) {
+            if (!is_array($values2)) {
+                if (!$this->CheckPermissions($values2, true)) {
+                    continue;
+                }
+                $_MENU_HTML .= '<a class="dropdown-item" href="' . $values2 . '">' . $link_name . '</a>' . PHP_EOL;
+                continue;
+            }
+//            Debug($hash, $values2, Security::MD5(json_encode($values2)));
+            $this->_RenderValues($link_name, $values2, $_MENU_HTML, true);
+
+        }
+        $_MENU_HTML .= '</div>' . PHP_EOL;
+    }
+
     /**
      * @param $_MENU
      * @return string
@@ -67,167 +149,11 @@ class Navigation
             $this->_MENU = $_MENU;
         }
 
-        $_MENU_HTML = '';
+        $_MENU_HTML = '<div class="btn-group" role="group">';
         foreach ($this->_MENU as $name => $values) {
-            if (isset($values['link']) && !$this->CheckPermissions($values['link'], true)) {
-                continue;
-            }
-
-            $has_visible = false;
-            if (isset($values['links']) && sizeof($values['links'])) {
-                foreach ($values['links'] as $url) {
-                    if (isset($url['link']) && strcasecmp($url['link'], $name) == 0) {
-                        continue;
-                    }
-
-                    if (!isset($url['link'])) {
-                        if (!$this->CheckPermissions($url, true)) {
-                            continue;
-                        }
-                    } elseif (!$this->CheckPermissions($url['link'], true)) {
-                        continue;
-                    }
-
-
-                    $has_visible = true;
-                    break;
-                }
-            }
-
-            if ($has_visible) {
-                $_MENU_HTML .= '<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">' . $name . '<span class="caret"></span></a>';
-                ksort($values['links']);
-                reset($values['links']);
-                $_MENU_HTML .= '<ul class="dropdown-menu">';
-                foreach ($values['links'] as $link_name => $url) {
-                    if (!is_array($url)) {
-                        if (!$this->CheckPermissions($url, true)) {
-                            continue;
-                        }
-                        $_MENU_HTML .= '<li><a href="' . $url . '">' . $link_name . '</a></li>' . PHP_EOL;
-                    } else {
-                        if (isset($url['onclick'])) {
-                            $_MENU_HTML .= '<li><a href="#" onclick="' . $url['onclick'] . '">' . $name . '</a></li>';
-                        }
-
-                        if (isset($url['links']) && sizeof($url['links'])) {
-
-                            $_MENU_HTML .= '<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">' . $name . '<span class="caret"></span></a>';
-                            $_MENU_HTML .= '<ul class="dropdown-menu">' . PHP_EOL;
-                            foreach ($url['links'] as $sub_name => $sub_url) {
-                                if ($this->CheckPermissions($sub_url, true)) {
-                                    $_MENU_HTML .= '<li><a href="' . $sub_url . '">' . $sub_name . '</a></li>' . PHP_EOL;
-                                }
-                            }
-                            $_MENU_HTML .= '</ul>' . PHP_EOL;
-                        } elseif (isset($url['onclick'])) {
-                            $_MENU_HTML .= '<li><a href="#" onclick="' . $url['onclick'] . '">' . $name . '</a></li>';
-                        } elseif (isset($url['link'])) {
-                            if (!$this->CheckPermissions($url['link'], true)) {
-                                continue;
-                            }
-
-                            $_MENU_HTML .= '<li><a href="' . $url['link'] . '">' . $link_name . '</a></li>' . PHP_EOL;
-                        }
-
-
-                    }
-                }
-                $_MENU_HTML .= '</ul></li>' . PHP_EOL;
-            } elseif (isset($values['onclick'])) {
-                $_MENU_HTML .= '<li><a href="#" onclick="' . $values['onclick'] . '">' . $name . '</a></li>';
-            } elseif (isset($values['link'])) {
-                if ($this->CheckPermissions($values['link'], true)) {
-                    $_MENU_HTML .= '<li><a href="' . $values['link'] . '"><b>' . $name . '</b></a></li>' . PHP_EOL;
-                }
-            }
+            $this->_RenderValues($name, $values, $_MENU_HTML);
         }
-        return $_MENU_HTML;
-    }
-
-    /**
-     * @param $_MENU
-     * @return string
-     */
-    public function RenderBootstrap4($_MENU = null): string
-    {
-        if ($_MENU) {
-            $this->_MENU = $_MENU;
-        }
-
-        $_MENU_HTML = '';
-        foreach ($this->_MENU as $name => $values) {
-            if (isset($values['link']) && !$this->CheckPermissions($values['link'], true)) {
-                continue;
-            }
-
-            $has_visible = false;
-            if (isset($values['links']) && sizeof($values['links'])) {
-                foreach ($values['links'] as $url) {
-                    if (isset($url['link']) && strcasecmp($url['link'], $name) == 0) {
-                        continue;
-                    }
-
-                    if (!isset($url['link'])) {
-                        if (!$this->CheckPermissions($url, true)) {
-                            continue;
-                        }
-                    } elseif (!$this->CheckPermissions($url['link'], true)) {
-                        continue;
-                    }
-
-                    $has_visible = true;
-                    break;
-                }
-            }
-
-            if ($has_visible) {
-                $_MENU_HTML .= '<li class="dropdown nav-item"><a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">' . $name . '<span class="caret"></span></a>';
-                ksort($values['links']);
-                reset($values['links']);
-                $_MENU_HTML .= '<ul class="dropdown-menu">';
-                foreach ($values['links'] as $link_name => $url) {
-                    if (!is_array($url)) {
-                        if (!$this->CheckPermissions($url, true)) {
-                            continue;
-                        }
-                        $_MENU_HTML .= '<li class="dropdown nav-item"><a class="nav-link" href="' . $url . '">' . $link_name . '</a></li>' . PHP_EOL;
-                    } else {
-                        if (isset($url['onclick'])) {
-                            $_MENU_HTML .= '<li class="dropdown nav-item"><a class="nav-link" href="#" onclick="' . $url['onclick'] . '">' . $name . '</a></li>';
-                        }
-
-                        if (isset($url['links']) && sizeof($url['links'])) {
-
-                            $_MENU_HTML .= '<li class="dropdown nav-item"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">' . $name . '<span class="caret"></span></a>';
-                            $_MENU_HTML .= '<ul class="dropdown-menu">' . PHP_EOL;
-                            foreach ($url['links'] as $sub_name => $sub_url) {
-                                if ($this->CheckPermissions($sub_url, true)) {
-                                    $_MENU_HTML .= '<li><a href="' . $sub_url . '">' . $sub_name . '</a></li>' . PHP_EOL;
-                                }
-                            }
-                            $_MENU_HTML .= '</ul>' . PHP_EOL;
-                        } elseif (isset($url['onclick'])) {
-                            $_MENU_HTML .= '<li class="dropdown nav-item"><a class="nav-link" href="#" onclick="' . $url['onclick'] . '">' . $name . '</a></li>';
-                        } elseif (isset($url['link'])) {
-                            if (!$this->CheckPermissions($url['link'], true)) {
-                                continue;
-                            }
-
-                            $_MENU_HTML .= '<li class="dropdown nav-item"><a class="nav-link" href="' . $url['link'] . '">' . $link_name . '</a></li>' . PHP_EOL;
-                        }
-                    }
-                }
-                $_MENU_HTML .= '</ul></li>' . PHP_EOL;
-            } elseif (isset($values['onclick'])) {
-                $_MENU_HTML .= '<li class="dropdown nav-item"><a class="nav-link" href="#" onclick="' . $values['onclick'] . '">' . $name . '</a></li>';
-            } elseif (isset($values['link'])) {
-                if ($this->CheckPermissions($values['link'], true)) {
-                    $_MENU_HTML .= '<li class="dropdown nav-item"><a class="nav-link" href="' . $values['link'] . '"><b>' . $name . '</b></a></li>' . PHP_EOL;
-                }
-            }
-        }
-        return $_MENU_HTML;
+        return $_MENU_HTML . '</div>';
     }
 
     /**

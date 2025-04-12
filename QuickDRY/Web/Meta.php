@@ -23,7 +23,7 @@ class Meta
             }
 
             if(!self::$title) {
-                return SITE_NAME;
+                return 'Servicing Pros';
             }
             return str_replace('"', '\\"', self::$title);
         }

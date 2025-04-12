@@ -27,7 +27,6 @@ class BasePage extends strongType
     private static ?string $MetaTitle = null;
     public static ?string $CurrentPage = null;
 
-
     /**
      * @return void
      */
@@ -88,7 +87,7 @@ class BasePage extends strongType
     {
         $temp = parse_url($_SERVER['REQUEST_URI']);
         self::$CurrentPage = $temp['path'] ?? '/';
-        self::$PostData = json_decode(file_get_contents('php://input')); // return a standard object
+        self::$PostData = json_decode(file_get_contents('php://input'), true); // return an array
     }
 
     /**

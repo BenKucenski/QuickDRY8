@@ -727,6 +727,26 @@ class Strings extends strongType
 
     }
 
+    public static function fixBOOLs(&$val)
+    {
+        if(is_string($val)) {
+            if($val === 'true') {
+                $val = true;
+            }
+            if($val === 'false') {
+                $val = false;
+            }
+        }
+
+        if(is_array($val)) {
+            foreach($val as $k => $v) {
+                $val[$k] = self::fixBOOLs($val[$k]);
+            }
+        }
+
+        return $val;
+    }
+
     /**
      * @param $json
      * @return array|null
@@ -748,7 +768,7 @@ class Strings extends strongType
             if (is_array($row)) {
                 $json[$i] = Strings::FixJSON($row);
             } elseif (mb_detect_encoding($row)) {
-                $json[$i] = is_numeric($row) ? $row : mb_convert_encoding($row, 'UTF-8', 'UTF-8');
+                $json[$i] = is_bool($row) ? $row : (is_numeric($row) ? $row : mb_convert_encoding($row, 'UTF-8', 'UTF-8'));
             } else {
                 $json[$i] = Strings::KeyboardOnly($row);
             }

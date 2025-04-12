@@ -178,15 +178,17 @@ class MSSQL_CodeGen extends SQLCodeGen
             }
 
             $template = file_get_contents(__DIR__ . '/../_templates/sp_db_mssql.txt');
+            $namespace = strtolower($this->DatabaseConstant ? $this->DatabaseTypePrefix . '_' . $this->DatabaseConstant : $this->DatabaseTypePrefix . '_' . $this->Database);
             $vars = [
-                'sp_class' => $sp_class,
-                'func_params' => implode(', ', $func_params),
-                'clean_params' => implode(PHP_EOL . '     * @param  ', $clean_params),
-                'DatabaseConstant' => $this->DatabaseConstant ? '\'' . $this->DatabaseConstant . '\'.' : '[' . $this->Database . ']',
-                'sql_params' => implode("\n         ,", $sql_params),
-                'params' => implode(', ', $params),
-                'SPECIFIC_NAME' => $sp->SPECIFIC_NAME,
-                'DatabaseClass' => $DatabaseClass,
+                'sp_class'         => $sp_class,
+                'func_params'      => implode(', ', $func_params),
+                'clean_params'     => implode(PHP_EOL . '     * @param  ', $clean_params),
+                'DatabaseConstant' => $this->DatabaseConstant ? '\' . ' . $this->DatabaseConstant . '. \'' : '[' . $this->Database . ']',
+                'sql_params'       => implode("\n         ,", $sql_params),
+                'params'           => implode(', ', $params),
+                'SPECIFIC_NAME'    => $sp->SPECIFIC_NAME,
+                'DatabaseClass'    => $DatabaseClass,
+                'namespace'        => $namespace,
 
             ];
 

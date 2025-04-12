@@ -12,7 +12,7 @@ class Metrics
     private static array $_total = [];
     private static array $_running = [];
 
-    private static int $global_start = 0;
+    private static float $global_start = 0;
 
     /**
      * @return void

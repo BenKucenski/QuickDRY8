@@ -103,7 +103,7 @@ WHERE SCHEMA_NAME = :SCHEMA_NAME
             $this->current_db = null;
         }
 
-        if ($db_base && strcmp($this->current_db, $db_base) == 0) {
+        if ($this->current_db && $db_base && strcmp($this->current_db, $db_base) == 0) {
             return;
         }
 
@@ -155,7 +155,7 @@ WHERE SCHEMA_NAME = :SCHEMA_NAME
      * @param int $time
      * @param string|null $err
      */
-    private function Log(string $sql, int $time = 0, string $err = null): void
+    private function Log(string $sql, float $time = 0, string $err = null): void
     {
         if (is_null($err)) {
             $err = mysqli_error($this->db);

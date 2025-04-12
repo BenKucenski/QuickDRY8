@@ -33,6 +33,13 @@ class APIHelper
 
     }
 
+    /**
+     * @param string $var
+     * @param array $data
+     * @param string $sql
+     * @param array $params
+     * @return void
+     */
     public static function ApplyArray(string $var, array $data, string &$sql, array &$params): void
     {
         $placeholders = Strings::GetPlaceholders(sizeof($data), '@' . $var, true);
@@ -42,6 +49,13 @@ class APIHelper
         }
     }
 
+    /**
+     * @param string $var
+     * @param array $data
+     * @param string $sql
+     * @param array $params
+     * @return void
+     */
     public static function ApplyValues(string $var, array $data, string &$sql, array &$params): void
     {
         $placeholders = Strings::GetValues(sizeof($data), '@' . $var, true);
@@ -49,5 +63,26 @@ class APIHelper
         foreach($data as $i => $k) {
             $params[$var . $i] = $k;
         }
+    }
+
+    /**
+     * @param string $var
+     * @param array $data
+     * @param string $sql
+     * @param array $params
+     * @return void
+     */
+    public static function ApplyValuesArray(string $var, array $data, string &$sql, array &$params): void
+    {
+        $data2 = [];
+        foreach($data as $i => $v) {
+            $placeholders = Strings::GetValues(sizeof($v), '@' . $var . $i, true);
+            $placeholders = str_replace('),(', ',', $placeholders);
+            foreach($v as $j => $k) {
+                $params[$var . $i . $j] = $k;
+            }
+            $data2[] = $placeholders;
+        }
+        $sql = str_replace('\'--' . $var . '--\'', implode(',', $data2), $sql);
     }
 }

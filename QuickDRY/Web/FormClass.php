@@ -219,4 +219,13 @@ class FormClass
 
         return $res . '</div>';
     }
+
+    /**
+     * @param string $tooltip
+     * @return string
+     */
+    public static function Tooltip(string $tooltip): string
+    {
+        return '<i class="fa fa-info-circle text-primary" title ="' . htmlentities($tooltip) . '"></i>';
+    }
 }

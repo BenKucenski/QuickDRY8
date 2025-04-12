@@ -2,10 +2,11 @@
 
 namespace QuickDRY\Connectors;
 
+use common\PmtFreq;
+use Exception;
+use models\ChangeLogHistory;
 use QuickDRY\Utilities\SimpleExcel;
 use QuickDRY\Utilities\SimpleExcel_Column;
-use QuickDRY\Utilities\strongType;
-use QuickDRYInstance\Common\ChangeLogHistory;
 use DateTime;
 use QuickDRY\Utilities\Dates;
 use ReflectionException;
@@ -28,7 +29,7 @@ class SQL_Base
     protected ?ChangeLogHistory $_history = null;
     protected ?int $_from_db = null;
 
-    public ?bool $HasChanges;
+    public ?bool $HasChanges = false;
 
     public static bool $UseLog = false;
     public static array $Log = [];
@@ -249,17 +250,20 @@ class SQL_Base
      */
     public function __get(string $name)
     {
-        switch ($name) {
-            case 'Changes':
-                return $this->_change_log;
-
-            case 'history':
-                if (is_null($this->_history)) {
-                    $this->_history = $this->_history();
-                }
-                return $this->_history;
-        }
         return $this->GetProperty($name);
+    }
+
+    public function Changes(): array
+    {
+        return $this->_change_log;
+    }
+
+    public function History(): ?ChangeLogHistory
+    {
+        if (is_null($this->_history)) {
+            $this->_history = $this->_history();
+        }
+        return $this->_history;
     }
 
     /**
@@ -274,14 +278,11 @@ class SQL_Base
     }
 
     /**
-     * @return ChangeLogHistory|null
+     * @return ChangeLogHistory[]|null
      */
-    private function _history(): ?ChangeLogHistory
+    private function _history(): ?array
     {
-        if (class_exists('ChangeLogHandler')) {
-            return ChangeLogHistory::GetHistory(static::$DB_HOST, static::$database, static::$table, $this->GetUUID());
-        }
-        return null;
+        return ChangeLogHistory::GetHistory($this);
     }
 
     /**
@@ -407,7 +408,7 @@ class SQL_Base
     protected function GetProperty(string $name = null): mixed
     {
         if (array_key_exists($name, $this->props)) {
-            return $this->props[$name];
+            return static::StrongType($name, $this->props[$name]);
         }
         Debug($name . ' is not a property of ' . get_class($this) . "\r\n");
         return null;
@@ -448,7 +449,7 @@ class SQL_Base
     /**
      * @return array
      */
-    public function ToArray(): array
+    public function toArray(): array
     {
         return self::_ToArray($this->props, true, static::$prop_definitions);
     }
@@ -491,6 +492,14 @@ class SQL_Base
         $old_val = static::StrongType($name, $this->props[$name]);
         $new_val = static::StrongType($name, $value);
 
+        if($old_val instanceof DateTime) {
+            $old_val = Dates::Timestamp($old_val);
+        }
+
+        if($new_val instanceof DateTime) {
+            $new_val = Dates::Timestamp($new_val);
+        }
+
         $changed = false;
         $change_reason = '';
         if (is_null($old_val) && !is_null($new_val)) {
@@ -529,6 +538,7 @@ class SQL_Base
             $this->_change_log[$name] = ['new' => $new_val, 'old' => $old_val, 'reason' => $change_reason];
             $this->HasChanges = true;
         }
+
         $this->props[$name] = $value;
         return $value;
     }
@@ -796,20 +806,6 @@ class SQL_Base
         return $res . '</tr>';
     }
 
-    /**
-     * @return string
-     */
-    public function GetUUID(): string
-    {
-        $uuid = [];
-        foreach (static::$_primary as $col) {
-            if ($col) {
-                $uuid[] = $col . ':' . $this->$col;
-            }
-        }
-        return implode(',', $uuid);
-    }
-
     // $trigger_change_log true is for FORM data to pass changes through set_property to trigger change log.
     // when coming from database, don't trigger change log
     // strict will halt when the hash passed in contains columns not in the table definition
@@ -852,7 +848,7 @@ class SQL_Base
                     if (!$value) {
                         $value = null;
                     } elseif (strtotime($value)) {
-                        $value = Dates::Timestamp(strtotime(Dates::Timestamp($value)) + $User->hours_diff * 3600);
+                        $value = Dates::Timestamp($value);
                     }
                 }
             }
@@ -891,7 +887,7 @@ class SQL_Base
     public function FromRequest(array $req, bool $save = true, bool $keep_existing_values = true): QueryExecuteResult
     {
         foreach ($this->props as $name => $value) {
-            $this->$name = $req[$name] ?? (!$keep_existing_values ? null : $this->props[$name]);
+            $this->$name = array_key_exists($name, $req) ? $req[$name] : (!$keep_existing_values ? null : $this->props[$name]);
         }
 
         if ($save) {
@@ -925,7 +921,7 @@ class SQL_Base
         if (!sizeof($items)) {
             return null;
         }
-        $cols = array_keys($items[0]->ToArray());
+        $cols = array_keys($items[0]->toArray());
 
         $se = new SimpleExcel();
         $se->Report = $items;
@@ -936,5 +932,17 @@ class SQL_Base
         }
 
         return $se;
+    }
+
+    /**
+     * @return string
+     */
+    public function PrimaryKey(): string
+    {
+        $key = [];
+        foreach (static::$_primary as $col) {
+            $key [] = $col . ':' . $this->$col;
+        }
+        return implode('::', $key);
     }
 }

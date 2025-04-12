@@ -6,7 +6,7 @@ namespace [[namespace]];
 use QuickDRY\Connectors\SQL_Query;
 use QuickDRY\Utilities\Dates;
 use QuickDRY\Web\ElementID;
-use QuickDRYInstance\Common\QuickDRYUser;
+use models\CurrentUser;
 use QuickDRY\Connectors\QueryExecuteResult;
 use DateTime;
 use Exception;
@@ -23,6 +23,8 @@ use Exception;
 
 class db_[[c_name]] extends [[DatabaseClassName]]
 {
+    protected static ?bool $_use_change_log = [[change_log]];
+
     public static array $_primary = [[primary]];
     public static array $_unique = [
     [[unique]]
@@ -37,6 +39,8 @@ class db_[[c_name]] extends [[DatabaseClassName]]
     protected static string $DatabasePrefix = '[[DatabasePrefix]]';
     protected static string $DatabaseTypePrefix = '[[DatabaseTypePrefix]]';
     protected static int $LowerCaseTable = [[LowerCaseTable]];
+
+    public const TABLE = '[[table_name]]';
 
     [[class_const]]
 
@@ -95,17 +99,21 @@ class db_[[c_name]] extends [[DatabaseClassName]]
      * @param bool $keep_existing_values
      * @return QueryExecuteResult
      */
-    public function FromRequest(array $req, bool $save = true, bool $keep_existing_values = false): QueryExecuteResult
+    public function FromRequest(
+        array $req,
+        bool $save = true,
+        bool $keep_existing_values = true
+    ): QueryExecuteResult
     {
         return parent::FromRequest($req, $save, $keep_existing_values);
     }
 
     /**
      * @param $search
-     * @param QuickDRYUser $user
+     * @param CurrentUser $user
      * @return array
      */
-    public static function Suggest($search, QuickDRYUser $user): array
+    public static function Suggest($search, CurrentUser $user): array
     {
         Debug(['error' => 'Suggest not implemented', 'search' => $search, 'user' => $user]);
         return [];
@@ -120,10 +128,10 @@ class db_[[c_name]] extends [[DatabaseClassName]]
     }
 
     /**
-     * @param QuickDRYUser|null $user
+     * @param CurrentUser|null $user
      * @return bool
      */
-    public function VisibleTo(?QuickDRYUser $user): bool
+    public function VisibleTo(?CurrentUser $user): bool
     {
         if(is_null($user)) {
             return false;
@@ -139,10 +147,10 @@ class db_[[c_name]] extends [[DatabaseClassName]]
     }
 
     /**
-     * @param QuickDRYUser|null $user
+     * @param CurrentUser|null $user
      * @return bool
      */
-    public function CanDelete(?QuickDRYUser $user): bool
+    public function CanDelete(?CurrentUser $user): bool
     {
         if(is_null($user)) {
             return false;

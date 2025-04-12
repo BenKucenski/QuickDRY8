@@ -19,6 +19,10 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Curl
 {
+    private static array $options = [
+        'verify' => false,
+    ];
+
     public ?string $Body = null;
     public ?array $HeaderHash = null;
     public ?string $HeaderRaw = null;
@@ -79,10 +83,10 @@ class Curl
         try {
             $start = microtime(true);
 
-            $client = new Client();
+            $client = new Client(self::$options);
             $response = $client->post($path, [
-                'query' => $params,
-                'headers' => $additional_headers,
+                'query'       => $params,
+                'headers'     => $additional_headers,
                 'http_errors' => false,
             ]);
 
@@ -110,11 +114,11 @@ class Curl
 
         try {
             $start = microtime(true);
-            $client = new Client();
+            $client = new Client(self::$options);
             $response = $client->post($path, [
                 RequestOptions::JSON => $params,
-                'headers' => $additional_headers,
-                'http_errors' => false,
+                'headers'            => $additional_headers,
+                'http_errors'        => false,
             ]);
 
             _dw_api_log::Insert($path, $params, microtime(true) - $start, 'PostJSON');
@@ -134,7 +138,7 @@ class Curl
      */
     public static function PostXML(
         string $path,
-        string  $xml = null,
+        string $xml = null,
         array  $additional_headers = null
     ): Curl
     {
@@ -142,10 +146,10 @@ class Curl
 
         try {
             $start = microtime(true);
-            $client = new Client();
+            $client = new Client(self::$options);
             $response = $client->post($path, [
-                'headers' => $additional_headers,
-                'body' => $xml,
+                'headers'     => $additional_headers,
+                'body'        => $xml,
                 'http_errors' => false,
             ]);
 
@@ -171,11 +175,11 @@ class Curl
     ): Curl
     {
         try {
-            $client = new Client();
+            $client = new Client(self::$options);
             $response = $client->post($path, [
                 RequestOptions::FORM_PARAMS => $params,
-                'headers' => $additional_headers,
-                'http_errors' => false,
+                'headers'                   => $additional_headers,
+                'http_errors'               => false,
             ]);
 
             return self::getResFromGuzzle($response, $path, $params, $additional_headers);
@@ -201,10 +205,10 @@ class Curl
         try {
             $start = microtime(true);
 
-            $client = new Client();
+            $client = new Client(self::$options);
             $response = $client->get($path, [
-                'query' => $params,
-                'headers' => $additional_headers,
+                'query'       => $params,
+                'headers'     => $additional_headers,
                 'http_errors' => false,
             ]);
             _dw_api_log::Insert($path, $params, microtime(true) - $start, 'Get');
