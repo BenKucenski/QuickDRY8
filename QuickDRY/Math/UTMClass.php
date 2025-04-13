@@ -3,12 +3,17 @@
 namespace QuickDRY\Math;
 
 use JetBrains\PhpStorm\ArrayShape;
+use QuickDRY\Utilities\strongType;
 
 /**
  * Class UTMClass
  */
-class UTMClass
+class UTMClass extends strongType
 {
+    public ?string $utm_x = null; // 426559.63018778
+    public ?string $utm_y = null; // 3694726.6953372
+    public ?string $utm_zone = null; // -1.9373154697137
+
 // http://home.hiwaay.net/~taylorc/toolbox/geography/geoutm.html
     public static float $pi = 3.14159265358979;
 
@@ -313,7 +318,7 @@ class UTMClass
      * @param $zone
      * @return array
      */
-    public static function LatLonToUTMXY($lat, $lon, $zone): array
+    public static function LatLonToUTMXY($lat, $lon, $zone): self
     {
         $zone = self::UTMCentralMeridian($zone);
         $xy = self::MapLatLonToXY($lat, $lon, $zone);
@@ -326,16 +331,20 @@ class UTMClass
 
         $xy[2] = $zone;
 
-        return $xy;
+        return new self([
+            'utm_x'    => $xy[0],
+            'utm_y'    => $xy[1],
+            'utm_zone' => $xy[2],
+        ]);
     }
 
 
     /**
      * @param $lat
      * @param $lon
-     * @return array
+     * @return self
      */
-    public static function ToUTM($lat, $lon): array
+    public static function ToUTM($lat, $lon): self
     {
         $zone = floor(($lon + 180.0) / 6) + 1;
 

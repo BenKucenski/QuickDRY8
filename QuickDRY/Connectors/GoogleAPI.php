@@ -5,39 +5,42 @@ namespace QuickDRY\Connectors;
 use Exception;
 use QuickDRY\Utilities\Debug;
 use QuickDRY\Utilities\Strings;
+use QuickDRY\Utilities\strongType;
 use SimpleXMLElement;
 
 /**
  * Class googleRequest
  */
-class GoogleAPI
+class GoogleAPI extends strongType
 {
 
-    public ?string $gKey;
-    public ?string $code;
-    public ?float $Accuracy;
-    public ?float $latitude;
-    public ?float $longitude;
-    public ?string $address;
-    public ?string $city;
-    public ?string $zip;
-    public ?string $country;
-    public ?string $error;
-    public ?string $result;
+    public ?string $gKey = null;
+    public ?string $code = null;
+    public ?float $Accuracy = null;
+    public ?float $latitude = null;
+    public ?float $longitude = null;
+    public ?string $address = null;
+    public ?string $city = null;
+    public ?string $zip = null;
+    public ?string $country = null;
+    public ?string $error = null;
+    public ?string $result = null;
+    public ?string $state = null;
 
     /**
-     * @param string $address
-     * @param string $city
-     * @param string $zip
-     * @param string $country
+     * @param string|null $address
+     * @param string|null $city
+     * @param string|null $zip
+     * @param string|null $country
      *
      * @return GoogleAPI
      */
     public static function GetForAddress(
-        string $address,
-        string $city,
-        string $zip,
-        string $country = ''): GoogleAPI
+        ?string $address,
+        ?string $city,
+        ?string $zip,
+        ?string $country = null
+    ): GoogleAPI
     {
         $t = new GoogleAPI();
 
@@ -65,17 +68,20 @@ class GoogleAPI
 
         if (strlen($this->gKey) > 1) {
             $q = str_replace(' ', '_', str_replace(' ', '+', urlencode(Strings::KeyboardOnly($this->address))) . ',+' . str_replace(' ', '+', $this->city) . ',+' . str_replace(' ', '+', $this->country) . ',+' . $this->zip);
-            if ($d = fopen("https://maps.googleapis.com/maps/api/geocode/xml?address=$q&sensor=false&key=" . $this->gKey, 'r', null, $context)) {
+            if ($d = fopen("https://maps.googleapis.com/maps/api/geocode/json?address=$q&sensor=false&key=" . $this->gKey, 'r', null, $context)) {
                 $gcsv = '';
                 while ($r = fread($d, 2048)) {
                     $gcsv .= $r;
                 }
                 fclose($d);
-                $this->result = $gcsv;
+                $this->result = json_encode(json_decode($gcsv, true));
                 $res = self::ParseResult($gcsv);
-                $this->latitude = $res['latitude'];
-                $this->longitude = $res['longitude'];
-                $this->error = $res['error'];
+                $this->latitude = $res['latitude'] ?? null;
+                $this->longitude = $res['longitude'] ?? null;
+                $this->code = $res['code'] ?? null;
+                $this->state = $res['state'] ?? null;
+                $this->country = $res['country'] ?? null;
+                $this->error = $res['error'] ?? null;
 
                 return;
             } else {
@@ -84,38 +90,39 @@ class GoogleAPI
         } else {
             $error = 'No Google Maps Api Key';
         }
-        Debug::Halt($error);
+        Debug($error);
     }
 
     /**
      * @param $result
-     * @return array
+     * @return array|null
      */
-    public static function ParseResult($result): array
+    public static function ParseResult($result): ?array
     {
+        if(!json_validate($result)) {
+            return null;
+        }
+
+        $google = json_decode($result, true)['results'][0] ?? null;
+
+        if(!$google) {
+            return null;
+        }
+
         $res = [];
         $res['error'] = '';
-        $res['latitude'] = 0;
-        $res['longitude'] = 0;
-
-        if (!$result) {
-            return $res;
+        $res['latitude'] = $google['geometry']['location']['lat'];
+        $res['longitude'] = $google['geometry']['location']['lng'];
+        $res['code'] = $google['place_id'] ?? null;
+        foreach($google['address_components'] as $component) {
+            if(in_array('administrative_area_level_1', $component['types'])) {
+                $res['state'] = $component['short_name'];
+            }
+            if(in_array('country', $component['types'])) {
+                $res['country'] = $component['short_name'];
+            }
         }
 
-        try {
-            $xml = new SimpleXMLElement($result);
-        } catch (Exception $ex) {
-            return $res;
-        }
-
-
-        if (isset($xml->error_message)) {
-            $res['error'] = $xml->error_message;
-        }
-        if (isset($xml->result[0]) && is_object($xml->result[0])) {
-            $res['latitude'] = strip_tags($xml->result[0]->geometry->location->lat->asXML());
-            $res['longitude'] = strip_tags($xml->result[0]->geometry->location->lng->asXML());
-        }
         return $res;
     }
 
