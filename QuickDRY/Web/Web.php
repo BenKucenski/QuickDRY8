@@ -12,37 +12,7 @@ use QuickDRY\Utilities\strongType;
 /**
  * Class Web
  *
- * @property string ControllerFile
- * @property string ViewFile
- * @property string PageClass
- * @property Cookie Cookie
- * @property Navigation Navigation
- * @property bool AccessDenied
- * @property bool IsJSON
- * @property string[] SecureMasterPages
- * @property string MasterPage
- * @property string SettingsFile
- * @property bool RenderPDF;
- * @property bool RenderDOCX;
- * @property string HTML;
- * @property string Verb
- * @property string PDFPageOrientation
- * @property string PDFPageSize
- * @property string PDFFileName
- * @property PDFMargins PDFMargins
- * @property string PDFHeader
- * @property string PDFFooter
- * @property string PDFHash
- * @property string PDFPostRedirect
- * @property bool PDFShrinkToFit
- * @property string PDFPostFunction
- * @property string PDFRootDir
- * @property string DOCXPageOrientation
- * @property string DOCXFileName
- * @property string DefaultURL
- * @property string url_export_xls
- * @property string Namespace;
- */
+*/
 class Web extends strongType
 {
     public ?string $Namespace = null;
