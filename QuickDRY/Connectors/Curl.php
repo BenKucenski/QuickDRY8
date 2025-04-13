@@ -90,7 +90,7 @@ class Curl
                 'http_errors' => false,
             ]);
 
-            CurlLog::Insert($path, $params, microtime(true) - $start, 'Post');
+            CurlLog::Log($path, $params, microtime(true) - $start, 'Post');
 
             return self::getResFromGuzzle($response, $path, $params, $additional_headers);
         } catch (GuzzleException $e) {
@@ -121,7 +121,7 @@ class Curl
                 'http_errors'        => false,
             ]);
 
-            CurlLog::Insert($path, $params, microtime(true) - $start, 'PostJSON');
+            CurlLog::Log($path, $params, microtime(true) - $start, 'PostJSON');
 
             return self::getResFromGuzzle($response, $path, $params, $additional_headers);
         } catch (GuzzleException $e) {
@@ -153,7 +153,7 @@ class Curl
                 'http_errors' => false,
             ]);
 
-            CurlLog::Insert($path, ['xml' => $xml], microtime(true) - $start, 'PostXML');
+            CurlLog::Log($path, ['xml' => $xml], microtime(true) - $start, 'PostXML');
 
             return self::getResFromGuzzle($response, $path, ['xml' => $xml], $additional_headers);
         } catch (GuzzleException $e) {
@@ -211,7 +211,7 @@ class Curl
                 'headers'     => $additional_headers,
                 'http_errors' => false,
             ]);
-            CurlLog::Insert($path, $params, microtime(true) - $start, 'Get');
+            CurlLog::Log($path, $params, microtime(true) - $start, 'Get');
 
             return self::getResFromGuzzle($response, $path, $params, $additional_headers);
         } catch (GuzzleException $e) {

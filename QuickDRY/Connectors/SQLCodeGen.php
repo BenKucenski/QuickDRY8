@@ -484,7 +484,7 @@ class SQLCodeGen extends strongType
             'class_props' => implode("\r\n", $class_props),
             'HasUserLink' => $HasUserLink ? '
         if($this->id) {
-            if($this->user_id !== CurrentUser::$id) {
+            if($this->user_id != CurrentUser::$id) {
                 $q = new QueryExecuteResult();
                 $q->error = \'No Permission\';
                 return $q;
