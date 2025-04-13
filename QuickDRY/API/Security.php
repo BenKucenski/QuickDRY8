@@ -6,6 +6,7 @@ namespace QuickDRY\API;
 use DateTimeImmutable;
 use Exception;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use models\APIUser;
 use models\APIUserLog;
 use QuickDRY\Utilities\Dates;

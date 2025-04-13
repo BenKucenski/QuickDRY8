@@ -483,7 +483,7 @@ class SQL_Base
             }
         }
 
-        if (strcasecmp($value, 'null') == 0) {
+        if ($value && strcasecmp($value, 'null') == 0) {
             $value = null;
         }
 

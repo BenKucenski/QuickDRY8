@@ -27,9 +27,9 @@ class APIHelper
      * @param string $filename
      * @return string
      */
-    public static function getSQL(string $filename): string
+    public static function getSQL(string $filename, string $placeholder = ':'): string
     {
-        return self::removeSqlComment(str_replace('@', ':', file_get_contents($filename)));
+        return self::removeSqlComment(str_replace('@', $placeholder, file_get_contents($filename)));
 
     }
 

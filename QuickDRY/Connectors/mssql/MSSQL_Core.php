@@ -877,7 +877,7 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
             }
         }
 
-        if (strcasecmp($value, 'null') == 0) {
+        if ($value && strcasecmp($value, 'null') == 0) {
             if (!$just_checking) {
                 if (!static::$prop_definitions[$name]['is_nullable']) {
                     Debug($name . ' cannot be null');

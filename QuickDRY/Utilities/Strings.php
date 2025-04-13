@@ -765,7 +765,10 @@ class Strings extends strongType
             if (is_object($row)) {
                 $row = Strings::FixJSON(self::RowToJSON($row));
             }
-            if (is_array($row)) {
+
+            if(is_null($row)) {
+                $json[$i] = null;
+            } elseif (is_array($row)) {
                 $json[$i] = Strings::FixJSON($row);
             } elseif (mb_detect_encoding($row)) {
                 $json[$i] = is_bool($row) ? $row : (is_numeric($row) ? $row : mb_convert_encoding($row, 'UTF-8', 'UTF-8'));
