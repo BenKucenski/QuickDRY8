@@ -14,6 +14,7 @@ use QuickDRY\Utilities\HTTP;
 use QuickDRY\Utilities\Strings;
 use QuickDRY\Utilities\strongType;
 use QuickDRY\Web\Server;
+use Random\RandomException;
 use stdClass;
 
 /**
@@ -266,6 +267,10 @@ class Security extends strongType
         ], $expire);
     }
 
+    /**
+     * @param string|null $data
+     * @return string|null
+     */
     public static function encryptURL(?string $data): ?string
     {
         if (!$data) {
@@ -324,5 +329,44 @@ class Security extends strongType
         }
 
         return $check;
+    }
+
+    /**
+     * @param string $data
+     * @return string
+     */
+    public static function Hash(string $data): string
+    {
+        return strtoupper(hash('sha256', $data));
+    }
+
+    /**
+     * @param string $data
+     * @return string
+     */
+    public static function MD5(string $data): string
+    {
+        return strtoupper(hash('md5', $data));
+    }
+
+    /**
+     * @param int $length
+     * @return string
+     */
+    public static function VerificationCode(int $length = 6): string
+    {
+        if ($length <= 0) {
+            $length = 6;
+        }
+
+        $min = ($length > 1) ? (int) str_pad('1', $length, '0') : 0;
+        $max = (int) str_repeat('9', $length);
+
+        try {
+            return str_pad((string)random_int($min, $max), $length, '0', STR_PAD_LEFT);
+        } catch (RandomException $e) {
+            Debug($e->getMessage());
+        }
+        return '';
     }
 }

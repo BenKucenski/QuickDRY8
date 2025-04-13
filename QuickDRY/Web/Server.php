@@ -66,4 +66,12 @@ class Server
     {
         return $_SERVER['QUERY_STRING'] ?? null;
     }
+
+    /**
+     * @return string|null
+     */
+    public static function HTTP_HOST(): ?string
+    {
+        return $_SERVER['HTTP_HOST'] ?? null;
+    }
 }
