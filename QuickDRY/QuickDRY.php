@@ -1,6 +1,5 @@
 <?php
 // SIMPLE_EXCEL
-use QuickDRY\Utilities\FineDiff\FineDiff;
 use QuickDRY\Utilities\Metrics;
 use QuickDRY\Web\BrowserOS;
 
@@ -69,6 +68,3 @@ const SELECT_YES = 2;
 Metrics::StartGlobal();
 BrowserOS::Configure();
 
-// FineDiff
-define('FINE_DIFF_GRANULARITY_WORD', json_encode(FineDiff::$wordGranularity));
-const FINE_DIFF_GRANULARITY_PARAGRAPH = 0;

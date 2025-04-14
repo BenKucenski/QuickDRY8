@@ -2,7 +2,7 @@
 
 namespace QuickDRY\Utilities;
 
-use models\Security;
+use QuickDRY\API\Security;
 use QuickDRY\Web\Server;
 
 /**
