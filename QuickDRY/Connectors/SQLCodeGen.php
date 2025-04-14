@@ -461,7 +461,7 @@ class SQLCodeGen extends strongType
             return true;
         }
 
-        if($this->user_id == $user->id) {
+        if($this->user_id == CurrentUser::$id) {
             return true;
         }
       ' : '',

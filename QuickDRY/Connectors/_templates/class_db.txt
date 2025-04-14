@@ -128,16 +128,15 @@ class db_[[c_name]] extends [[DatabaseClassName]]
     }
 
     /**
-     * @param CurrentUser|null $user
      * @return bool
      */
-    public function VisibleTo(?CurrentUser $user): bool
+    public function VisibleTo(): bool
     {
-        if(is_null($user)) {
+        if(!CurrentUser::$id) {
             return false;
         }
 
-        if($user->Is(ROLE_ID_ADMIN)) {
+        if(CurrentUser::Is(ROLE_ID_ADMIN)) {
             return true;
         }
 
@@ -147,16 +146,15 @@ class db_[[c_name]] extends [[DatabaseClassName]]
     }
 
     /**
-     * @param CurrentUser|null $user
      * @return bool
      */
-    public function CanDelete(?CurrentUser $user): bool
+    public function CanDelete(): bool
     {
-        if(is_null($user)) {
+        if(!CurrentUser::$id) {
             return false;
         }
 
-        if($user->Is(ROLE_ID_ADMIN)) {
+        if(CurrentUser::Is(ROLE_ID_ADMIN)) {
             return true;
         }
 
