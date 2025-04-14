@@ -5,7 +5,6 @@ namespace QuickDRY\Connectors\mysql;
 use Exception;
 use JetBrains\PhpStorm\ArrayShape;
 use models\ChangeLog;
-use models\CurrentUser;
 use QuickDRY\Connectors\QueryExecuteResult;
 use QuickDRY\Connectors\SQL_Base;
 use QuickDRY\Connectors\SQL_Query;
@@ -179,10 +178,9 @@ class MySQL_Core extends SQL_Base
     }
 
     /**
-     * @param CurrentUser $user
      * @return bool
      */
-    public function CanDelete(CurrentUser $user): bool
+    public function CanDelete(): bool
     {
         return false;
     }
@@ -241,12 +239,11 @@ class MySQL_Core extends SQL_Base
     }
 
     /**
-     * @param CurrentUser $User
      * @return QueryExecuteResult
      */
-    public function Remove(CurrentUser $User): QueryExecuteResult
+    public function Remove(): QueryExecuteResult
     {
-        if (!$this->CanDelete($User)) {
+        if (!$this->CanDelete()) {
             return new QueryExecuteResult();
         }
 

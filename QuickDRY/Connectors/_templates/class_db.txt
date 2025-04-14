@@ -136,7 +136,7 @@ class db_[[c_name]] extends [[DatabaseClassName]]
             return false;
         }
 
-        if(CurrentUser::Is(ROLE_ID_ADMIN)) {
+        if(CurrentUser::Is([ROLE_ID_ADMIN])) {
             return true;
         }
 
@@ -154,7 +154,7 @@ class db_[[c_name]] extends [[DatabaseClassName]]
             return false;
         }
 
-        if(CurrentUser::Is(ROLE_ID_ADMIN)) {
+        if(CurrentUser::Is([ROLE_ID_ADMIN])) {
             return true;
         }
 

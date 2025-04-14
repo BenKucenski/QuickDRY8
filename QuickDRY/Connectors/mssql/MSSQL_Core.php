@@ -6,7 +6,6 @@ use DateTime;
 use Exception;
 use JetBrains\PhpStorm\ArrayShape;
 use models\ChangeLog;
-use models\CurrentUser;
 use QuickDRY\Connectors\MSSQL;
 use QuickDRY\Connectors\QueryExecuteResult;
 use QuickDRY\Connectors\SQL_Base;
@@ -357,12 +356,11 @@ class MSSQL_Core extends SQL_Base
 
 
     /**
-     * @param CurrentUser|null $User
      * @return QueryExecuteResult
      */
-    public function Remove(?CurrentUser $User): QueryExecuteResult
+    public function Remove(): QueryExecuteResult
     {
-        if (!$this->CanDelete($User)) {
+        if (!$this->CanDelete()) {
             return new QueryExecuteResult();
         }
 
@@ -392,7 +390,9 @@ class MSSQL_Core extends SQL_Base
                 foreach (static::$_unique as $column)
                     $where[] = $column . ' = ' . MSSQL::EscapeString($this->{$column});
             } else {
-                return ['error' => 'unique or primary key required'];
+                $q = new QueryExecuteResult();
+                $q->error = 'unique or primary key required';
+                return $q;
             }
         }
 
