@@ -251,11 +251,17 @@ class SQL_Base
         return $this->GetProperty($name);
     }
 
+    /**
+     * @return array
+     */
     public function Changes(): array
     {
         return $this->_change_log;
     }
 
+    /**
+     * @return ChangeLogHistory|null
+     */
     public function History(): ?ChangeLogHistory
     {
         if (is_null($this->_history)) {

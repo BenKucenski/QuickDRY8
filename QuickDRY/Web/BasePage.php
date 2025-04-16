@@ -30,10 +30,19 @@ class BasePage extends strongType
     /**
      * @return void
      */
-    public static function Get()
+    public static function Get(): void
     {
 
     }
+
+    /**
+     * @return void
+     */
+    public static function Post(): void
+    {
+
+    }
+
 
     /**
      * @return string|null
@@ -69,14 +78,6 @@ class BasePage extends strongType
     public static function setMetaTitle(string $metaTitle): void
     {
         self::$MetaTitle = $metaTitle;
-    }
-
-    /**
-     * @return void
-     */
-    public static function Post()
-    {
-        Debug('Post Undefined');
     }
 
 
