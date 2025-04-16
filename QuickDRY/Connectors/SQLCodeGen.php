@@ -243,7 +243,7 @@ class SQLCodeGen extends strongType
                 $aliases[] = $col;
             }
             $class_props[] = ' * @property ' . SQLCodeGen::ColumnTypeToProperty(preg_replace('/\(.*?\)/si', '', $col->type), $this->DatabaseType) . ' ' . $col->field_alias;
-            $class_const[] = ' public const COLUMN_' . str_replace('-', '_', strtoupper($col->field_alias)) . ' = \'' . $col->field_alias . '\';';
+            $class_const[] = ' public const string COLUMN_' . str_replace('-', '_', strtoupper($col->field_alias)) . ' = \'' . $col->field_alias . '\';';
             $props .= "'" . $col->field . "' => ['type' => '" . str_replace('\'', '\\\'', $col->type) . "', 'is_nullable' => " . ($col->null ? 'true' : 'false') . ", 'display' => '" . SQLCodeGen::FieldToDisplay($col->field) . "'],\r\n\t\t";
             if ($col->field === 'user_id') {
                 $HasUserLink = true;

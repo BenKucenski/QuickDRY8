@@ -40,7 +40,7 @@ class db_[[c_name]] extends [[DatabaseClassName]]
     protected static string $DatabaseTypePrefix = '[[DatabaseTypePrefix]]';
     protected static int $LowerCaseTable = [[LowerCaseTable]];
 
-    public const TABLE = '[[table_name]]';
+    public const string TABLE = '[[table_name]]';
 
     [[class_const]]
 
