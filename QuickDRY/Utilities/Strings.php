@@ -1005,19 +1005,22 @@ class Strings extends strongType
 
 
     /**
-     * @param        $num
+     * @param string|null $num
      * @param int $dec
      * @param string $null
      *
      * @return string|null
      */
-    public static function SmartNumberFormat($num, int $dec = 2, string $null = '-'): ?string
+    public static function SmartNumberFormat(?string $num, int $dec = 2, string $null = '-'): ?string
     {
-        if (!is_numeric($dec))
+        if (!is_numeric($dec)) {
             return $num;
+        }
 
-        if (!is_numeric($num) || !$num)
+        if (!is_numeric($num) || !$num) {
             return $null;
+        }
+
         return number_format($num, $dec);
     }
 

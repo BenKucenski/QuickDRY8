@@ -159,7 +159,7 @@ class Security extends strongType
     {
         $headers = getallheaders();
         $client_id = $headers['X-Client-Id'] ?? ($_REQUEST['client_id'] ?? null);
-        $client_secret = $headers['X-Client-Secret'] ?? ($_REQUEST['client_secret'] ?? null);;
+        $client_secret = $headers['X-Client-Secret'] ?? ($_REQUEST['client_secret'] ?? null);
         if ($client_id && $client_secret) {
             return self::getBearer($client_id, $client_secret);
         }
