@@ -3,8 +3,7 @@
 
 use QuickDRY\Connectors\mssql\MSSQL_CodeGen;
 
-$opts = 'h::';
-$opts .= 'd::';
+$opts = 'd::';
 $opts .= 'c::';
 $opts .= 'u::';
 $opts .= 'v::';
@@ -18,7 +17,6 @@ $opts .= 's::';
 
 $options = getopt($opts);
 
-$_HOST = $options['h'] ?? '';
 $_DATABASE = $options['d'] ?? '';
 $_DATABASE_CONSTANT = $options['c'] ?? '';
 $_USER_CLASS = $options['u'] ?? '';
@@ -31,8 +29,8 @@ $_DATABASE_CLASS = $options['o'] ?? null;
 $_GENERATE_JSON = $options['j'] ?? true;
 $_SCHEMA_ONLY = $options['s'] ?? false;
 
-if(!$_HOST || !$_DATABASE) {
-    exit(basename(__FILE__) . ' usage: -h<host> -d<database> -c<database constant optional> -u<user class> -v<user variable> -i<user id column>' . PHP_EOL);
+if(!$_DATABASE) {
+    exit(basename(__FILE__) . ' usage: -d<database> -c<database constant optional> -u<user class> -v<user variable> -i<user id column>' . PHP_EOL);
 }
 
 include '../modules.php';
