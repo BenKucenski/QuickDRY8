@@ -312,7 +312,7 @@ class SimpleExcel extends strongType
                         ->getStyle($sheet_column . $sheet_row)
                         ->getNumberFormat()
                         ->setFormatCode(
-                            NumberFormat::FORMAT_DATE_YYYYMMDD
+                            NumberFormat::FORMAT_DATE_XLSX14_ACTUAL
                         );
                 } catch (Exception $ex) {
                     Debug::Halt($ex);

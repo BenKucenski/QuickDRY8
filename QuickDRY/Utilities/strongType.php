@@ -50,7 +50,7 @@ class strongType
         Debug([
             implode("\r\n", $code),
             $class . ' missing properties' => $missing_properties,
-            'backtrace' => debug_backtrace()
+            'backtrace'                    => debug_backtrace()
         ]);
     }
 
@@ -122,7 +122,7 @@ class strongType
                 continue;
             }
 
-            if(!$rp->getType()) {
+            if (!$rp->getType()) {
                 $this->$k = $v;
                 continue;
             }
@@ -154,11 +154,11 @@ class strongType
                     break;
 
                 default:
-                    if(!$v) {
+                    if (!$v) {
                         $this->$k = $v;
                         break;
                     }
-                    if(is_object($v)) {
+                    if (is_object($v)) {
                         $this->$k = $v;
                         break;
                     }
@@ -268,7 +268,11 @@ class strongType
         $se->Title = static::class;
         $se->Columns = [];
         foreach ($cols as $col) {
-            $se->Columns[$col] = new SimpleExcel_Column(static::$_alias[$col] ?? null, $col);
+            $se->Columns[$col] = new SimpleExcel_Column(
+                static::$_alias[$col] ?? null,
+                $col,
+                SimpleExcel_Column::getPropertyType(static::class, $col)
+            );
         }
         return $se;
     }

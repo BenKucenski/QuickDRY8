@@ -197,7 +197,9 @@ class Security extends strongType
 
         $expires = intval($jwt->exp);
         if ($expires < time()) {
-            HTTP::ExitJSON(['error' => 'token expired'], HTTP::HTTP_STATUS_UNAUTHORIZED);
+            HTTP::ExitJSON([
+                'error' => 'token expired',
+            ], HTTP::HTTP_STATUS_UNAUTHORIZED);
         }
 
         $ip = Server::REMOTE_ADDR();
@@ -211,7 +213,10 @@ class Security extends strongType
         if ($checkCount) {
             $cnt = $checkCount($ip);
             if ($cnt > 1200) {
-                HTTP::ExitJSON(['error' => 'slow down', 'queries' => $cnt], HTTP::HTTP_STATUS_CALM_DOWN);
+                HTTP::ExitJSON([
+                    'error'   => 'slow down',
+                    'queries' => $cnt
+                ], HTTP::HTTP_STATUS_CALM_DOWN);
             }
         }
 
@@ -359,8 +364,8 @@ class Security extends strongType
             $length = 6;
         }
 
-        $min = ($length > 1) ? (int) str_pad('1', $length, '0') : 0;
-        $max = (int) str_repeat('9', $length);
+        $min = ($length > 1) ? (int)str_pad('1', $length, '0') : 0;
+        $max = (int)str_repeat('9', $length);
 
         try {
             return str_pad((string)random_int($min, $max), $length, '0', STR_PAD_LEFT);

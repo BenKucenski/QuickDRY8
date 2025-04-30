@@ -19,6 +19,8 @@ use QuickDRY\Utilities\Strings;
  */
 class MSSQL_Core extends SQL_Base
 {
+    protected static ?MSSQL_Connection $connection = null;
+
     protected static array $prop_definitions = [];
     protected static array $_primary = [];
     protected static array $_unique = [];
@@ -342,6 +344,14 @@ class MSSQL_Core extends SQL_Base
             Debug($res);
         }
         return $res['data'][0]['guid'];
+    }
+
+    /**
+     * @return MSSQL_Connection|null
+     */
+    public static function getConnection(): ?MSSQL_Connection
+    {
+        return static::$connection;
     }
 
     /**

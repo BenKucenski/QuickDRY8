@@ -4,6 +4,7 @@ namespace QuickDRY\Utilities;
 
 use DateTime;
 use Exception;
+use QuickDRY\Connectors\Curl;
 use QuickDRY\Connectors\SQL_Base;
 use stdClass;
 
@@ -716,6 +717,10 @@ class Strings extends strongType
 
         if ($row instanceof stdClass) {
             return get_object_vars($row);
+        }
+
+        if($row instanceof Curl) {
+            return $row->Body;
         }
 
         dd([
