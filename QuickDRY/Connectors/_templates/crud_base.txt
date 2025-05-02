@@ -5,7 +5,9 @@ namespace pages\[[namespace]]\[[table_nice_name]]\base;
 use QuickDRY\Web\BasePage;
 use QuickDRY\Utilities\Dates;
 use QuickDRY\Utilities\HTTP;
-use QuickDRYInstance\Common\ChangeLogHistory;
+use models\ChangeLogHistory;
+use QuickDRY\Web\Request;
+use models\CurrentUser;
 
 use [[namespace_c_name]];
 
@@ -23,9 +25,9 @@ class [[table_nice_name]]Base extends BasePage
      */
     private static function CheckUser(): void
     {
-      if (!self::$CurrentUser || !self::$CurrentUser->id) {
-        HTTP::ExitJSON(['error' => 'Invalid Request'], HTTP_STATUS_UNAUTHORIZED);
-      }
+        if (!CurrentUser::$id) {
+            HTTP::ExitJSON(['error' => 'Invalid Request'], HTTP::HTTP_STATUS_UNAUTHORIZED);
+        }
     }
 
     /**
@@ -33,19 +35,19 @@ class [[table_nice_name]]Base extends BasePage
      */
     private static function LoadItem(): void
     {
-      if ([[missing_params]]) {
-        HTTP::ExitJSON(['error' => 'Missing ID'], HTTP_STATUS_BAD_REQUEST);
-      }
+        if ([[missing_params]]) {
+            HTTP::ExitJSON(['error' => 'Missing ID'], HTTP::HTTP_STATUS_BAD_REQUEST);
+        }
 
-      self::$Item = [[c_name]]::Get(['id' => self::$Request->Get('id')]);
+        self::$Item = [[c_name]]::Get(['id' => Request::Get('id')]);
 
-      if (!self::$Item) {
-        HTTP::ExitJSON(['error' => 'Invalid ID','parameters' => ['id' => self::$Request->Get('id')]], HTTP_STATUS_NOT_FOUND);
-      }
+        if (!self::$Item) {
+            HTTP::ExitJSON(['error' => 'Invalid ID','parameters' => ['id' => Request::Get('id')]], HTTP::HTTP_STATUS_NOT_FOUND);
+        }
 
-      if (!self::$Item->VisibleTo(self::$CurrentUser)) {
-        HTTP::ExitJSON(['error' => 'No Permission'], HTTP_STATUS_BAD_REQUEST);
-      }
+        if (!self::$Item->VisibleTo()) {
+            HTTP::ExitJSON(['error' => 'No Permission'], HTTP::HTTP_STATUS_BAD_REQUEST);
+        }
     }
 
     /**
@@ -53,13 +55,13 @@ class [[table_nice_name]]Base extends BasePage
      */
     public static function Get(): void
     {
-        self::$Request->FromSerialized(self::$Request->Get('serialized'));
+        Request::FromSerialized(Request::Get('serialized'));
 
         self::CheckUser();
         self::LoadItem();
 
         $res = self::$Item->ToJSONArray();
-        $res['can_delete'] = self::$Item->CanDelete(self::$CurrentUser);
+        $res['can_delete'] = self::$Item->CanDelete();
         HTTP::ExitJSON(['data' => $res]);
     }
 
@@ -68,18 +70,18 @@ class [[table_nice_name]]Base extends BasePage
      */
     public static function Post(): void
     {
-        self::$Request->FromSerialized(self::$Request->Get('serialized'));
+        Request::FromSerialized(Request::Get('serialized'));
 
         self::CheckUser();
         self::LoadItem();
 
-        $req = self::$Request->ToArray();
-        $res = self::$Item->FromRequest($req, true, true);
+        $req = Request::toArray();
+        $res = self::$Item->FromRequest($req);
         if (isset($res['error']) && $res['error']) {
-            HTTP::ExitJSON(['error' => $res['error']], HTTP_STATUS_BAD_REQUEST);
+            HTTP::ExitJSON(['error' => $res['error']], HTTP::HTTP_STATUS_BAD_REQUEST);
         }
 
-        HTTP::ExitJSON(['data' => self::$Item->ToArray()]);
+        HTTP::ExitJSON(['data' => self::$Item->toArray()]);
     }
 
     /**
@@ -87,7 +89,7 @@ class [[table_nice_name]]Base extends BasePage
      */
     public static function Put(): void
     {
-        self::$Request->FromSerialized(self::$Request->Get('serialized'));
+        Request::FromSerialized(Request::Get('serialized'));
 
         self::CheckUser();
 
@@ -97,23 +99,23 @@ class [[table_nice_name]]Base extends BasePage
             self::$Item = [[c_name]]::Get([[[get_params]]]);
         }
 
-        $req = self::$Request->ToArray();
-        $res = self::$Item->FromRequest($req, false, true);
+        $req = Request::toArray();
+        $res = self::$Item->FromRequest($req, false);
 
         if (isset($res['error']) && $res['error']) {
-            HTTP::ExitJSON(['error' => $res['error']], HTTP_STATUS_BAD_REQUEST);
+            HTTP::ExitJSON(['error' => $res['error']], HTTP::HTTP_STATUS_BAD_REQUEST);
         }
 
-        if (!self::$Item->VisibleTo(self::$CurrentUser)) {
-            HTTP::ExitJSON(['error' => 'No Permission'], HTTP_STATUS_BAD_REQUEST);
+        if (!self::$Item->VisibleTo()) {
+            HTTP::ExitJSON(['error' => 'No Permission'], HTTP::HTTP_STATUS_BAD_REQUEST);
         }
 
         $res = self::$Item->Save();
         if ($res['error']) {
-            HTTP::ExitJSON(['error' => $res['error']], HTTP_STATUS_BAD_REQUEST);
+            HTTP::ExitJSON(['error' => $res['error']], HTTP::HTTP_STATUS_BAD_REQUEST);
         }
 
-        HTTP::ExitJSON(['data' => self::$Item->ToArray()]);
+        HTTP::ExitJSON(['data' => self::$Item->toArray()]);
     }
 
     /**
@@ -122,14 +124,14 @@ class [[table_nice_name]]Base extends BasePage
      */
     public static function Delete(string $success_message = 'Item Removed'): void
     {
-        self::$Request->FromSerialized(self::$Request->Get('serialized'));
+        Request::FromSerialized(Request::Get('serialized'));
 
         self::CheckUser();
         self::LoadItem();
 
-        $res = self::$Item->Remove(self::$CurrentUser);
+        $res = self::$Item->Remove();
         if (isset($res['error']) && $res['error']) {
-            HTTP::ExitJSON(['error' => $res['error']], HTTP_STATUS_BAD_REQUEST);
+            HTTP::ExitJSON(['error' => $res['error']], HTTP::HTTP_STATUS_BAD_REQUEST);
         }
         HTTP::ExitJSON(['success' => $success_message]);
     }
@@ -139,11 +141,11 @@ class [[table_nice_name]]Base extends BasePage
      */
     public static function Find(): void
     {
-        self::$Request->FromSerialized(self::$Request->Get('serialized'));
+        Request::FromSerialized(Request::Get('serialized'));
 
         self::CheckUser();
 
-        HTTP::ExitJSON(['error' => 'Find Not Implemented'], HTTP_STATUS_BAD_REQUEST);
+        HTTP::ExitJSON(['error' => 'Find Not Implemented'], HTTP::HTTP_STATUS_BAD_REQUEST);
     }
 
     /**
@@ -151,7 +153,7 @@ class [[table_nice_name]]Base extends BasePage
      */
     public static function History(): void
     {
-        self::$Request->FromSerialized(self::$Request->Get('serialized'));
+        Request::FromSerialized(Request::Get('serialized'));
 
         self::CheckUser();
         self::LoadItem();
@@ -159,7 +161,7 @@ class [[table_nice_name]]Base extends BasePage
         self::$History = self::$Item->history;
 
         if (!self::$History || !sizeof(self::$History->changes)) {
-            HTTP::ExitJSON(['error' => 'No History Available'], HTTP_STATUS_NOT_FOUND);
+            HTTP::ExitJSON(['error' => 'No History Available'], HTTP::HTTP_STATUS_NOT_FOUND);
         }
 
         $report = [];

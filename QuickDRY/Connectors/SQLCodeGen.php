@@ -649,8 +649,8 @@ class SQLCodeGen extends strongType
         $get_params = [];
         $missing_params = [];
         foreach ($primary as $param) {
-            $get_params [] = '\'' . $param . '\' => self::$Request->Get(\'' . $param . '\')';
-            $missing_params [] = '!self::$Request->Get(\'' . $param . '\')';
+            $get_params [] = '\'' . $param . '\' => Request::Get(\'' . $param . '\')';
+            $missing_params [] = '!Request::Get(\'' . $param . '\')';
 
         }
         $get_params = implode(', ', $get_params);

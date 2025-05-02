@@ -781,7 +781,7 @@ class MySQL_Core extends SQL_Base
                 Debug($ex);
             }
 
-            if (strcmp($name, $primary) == 0 && !$this->$primary && !$force_insert) {
+            if ($primary && strcmp($name, $primary) == 0 && !$this->$primary && !$force_insert) {
                 continue;
             }
 

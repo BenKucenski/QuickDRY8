@@ -7,6 +7,7 @@ use QuickDRY\Utilities\SimpleExcel;
 use QuickDRY\Utilities\SimpleExcel_Column;
 use DateTime;
 use QuickDRY\Utilities\Dates;
+use QuickDRY\Web\ElementID;
 use ReflectionException;
 use ReflectionObject;
 
@@ -512,7 +513,7 @@ class SQL_Base
         } elseif (!is_null($old_val) && is_null($new_val)) {
             $changed = true;
             $change_reason = 'old not null, new null';
-        } elseif (strlen($old_val) != strlen($new_val)) {
+        } elseif (!is_null($old_val) && !is_null($new_val) && strlen($old_val) != strlen($new_val)) {
             $changed = true;
             $change_reason = '"' . $new_val . '" "' . $old_val . '" ' . strlen($new_val) . ' ' . strlen($old_val) . ': strcmp = ' . strcmp($new_val, $old_val);
         } elseif (is_numeric($old_val) && is_numeric($new_val)) {
@@ -526,7 +527,7 @@ class SQL_Base
                 $changed = true;
                 $change_reason = 'diff = ' . abs($new_val - $old_val);
             }
-        } elseif (strcmp($new_val, $old_val) != 0) {
+        } elseif (!is_null($old_val) && !is_null($new_val) && strcmp($new_val, $old_val) != 0) {
             $changed = true;
             $change_reason = '"' . $new_val . '" "' . $old_val . '" ' . strlen($new_val) . ' ' . strlen($old_val) . ': strcmp = ' . strcmp($new_val, $old_val);
         }
@@ -947,5 +948,117 @@ class SQL_Base
             $key [] = $col . ':' . $this->$col;
         }
         return implode('::', $key);
+    }
+
+    // occasionally we end up reusing a selection over and over on the same page
+    protected static array $_select_cache = [];
+
+    /**
+     * @param        $selected
+     * @param ElementID $id
+     * @param        $value
+     * @param        $order_by
+     * @param string $display
+     * @param null $where
+     * @param bool $show_none
+     * @param string $onchange
+     * @return string
+     */
+    protected static function _Select(
+        $selected,
+        ElementID $id,
+        $value,
+        $order_by,
+        string $display = '',
+        $where = null,
+        bool $show_none = true,
+        string $onchange = ''): string
+    {
+        if (is_null($show_none)) {
+            $show_none = true;
+        }
+
+        $type = get_called_class();
+
+
+        $hash = md5(serialize([$type, $order_by, $where]));
+        if (!isset(static::$_select_cache[$hash])) {
+            if (!method_exists($type, 'GetAll')) {
+                exit($type . '::GetAll');
+            }
+
+            $items = $type::GetAll($where, is_array($order_by) ? $order_by : [$order_by => 'asc']);
+            static::$_select_cache[$hash] = $items;
+        } else
+            $items = static::$_select_cache[$hash];
+
+        return self::_SelectItems($items, $selected, $id, $value, $order_by, $display, $show_none, $onchange);
+    }
+
+    /**
+     * @param        $items
+     * @param        $selected
+     * @param ElementID $id
+     * @param        $value
+     * @param        $order_by
+     * @param string $display
+     * @param bool $show_none
+     * @param string $onchange
+     * @return string
+     */
+    protected static function _SelectItems(
+        $items,
+        $selected,
+        ElementID $id,
+        $value,
+        $order_by,
+        string $display = '',
+        bool $show_none = true,
+        string $onchange = ''): string
+    {
+        if (is_null($show_none)) {
+            $show_none = true;
+        }
+
+        $name = $id->name;
+        $id = $id->id;
+
+        if ($display == '') {
+            if (is_array($order_by)) {
+                $display = array_keys($order_by)[0];
+            } else {
+                $display = $order_by;
+            }
+        }
+
+        $select = '';
+
+        if (is_array($selected)) {
+            $select .= '<select class="form-control" onchange="' . $onchange . '" multiple size="' . (sizeof($items) + 1 <= 10 ? sizeof($items) + 1 : 10) . '" id="' . $id . '" name="' . $name . '[]">';
+        } else {
+            $select .= '<select class="form-control" onchange="' . $onchange . '"  id="' . $id . '"name="' . $name . '">';
+        }
+
+        if ($show_none) {
+            $select .= '<option value="null">' . (is_bool($show_none) ? 'None' : $show_none) . '</option>' . "\r\n";
+        }
+
+        if (sizeof($items) > 0) {
+            if (is_array($selected)) {
+                foreach ($items as $item)
+                    if (in_array($item->$value, $selected))
+                        $select .= '<option selected="selected" value="' . $item->$value . '">' . $item->$display . '</option>\r\n';
+                    else
+                        $select .= '<option value="' . $item->$value . '">' . $item->$display . '</option>\r\n';
+            } else {
+                foreach ($items as $item)
+                    if ($selected != $item->$value) // needs to be a loose comparison otherwise it doesn't work with numbers
+                        $select .= '<option value="' . $item->$value . '">' . $item->$display . '</option>\r\n';
+                    else
+                        $select .= '<option selected="selected" value="' . $item->$value . '">' . $item->$display . '</option>\r\n';
+            }
+        }
+        $select .= '</select>';
+        return $select;
     }
 }

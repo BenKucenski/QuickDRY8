@@ -2,7 +2,6 @@
 
 namespace QuickDRY\Math;
 
-use JetBrains\PhpStorm\ArrayShape;
 use QuickDRY\Utilities\strongType;
 
 /**
@@ -10,6 +9,12 @@ use QuickDRY\Utilities\strongType;
  */
 class SnowballMath extends strongType
 {
+    /* @var PrincipalInterest[] $points */
+    public ?array $points = null;
+
+    /* @var Debt[] $history */
+    public ?array $history = null;
+
     private array $debts = [];
     private int $_last_id = 0;
 
@@ -28,25 +33,29 @@ class SnowballMath extends strongType
     public function SortByInterest(bool $desc = true): void
     {
         $list = [];
-        foreach ($this->debts as $debt)
-            $list[$debt->interest_rate][] = $debt;
+        foreach ($this->debts as $debt) {
+            $list[intval($debt->interest_rate * 100)][] = $debt;
+        }
 
-        if ($desc)
+        if ($desc) {
             krsort($list);
-        else
+        } else {
             ksort($list);
+        }
 
         $this->debts = [];
-        foreach ($list as $items)
-            foreach ($items as $debt)
+        foreach ($list as $items) {
+            foreach ($items as $debt) {
                 $this->debts[] = $debt;
+            }
+        }
     }
 
     /**
      * @param bool $apply_rollover
-     * @return array
+     * @return self
      */
-    #[ArrayShape(['points' => 'array', 'history' => 'array'])] public function DoSnowball(bool $apply_rollover = true): array
+    public function DoSnowball(bool $apply_rollover = true): self
     {
         $debts = $this->debts;
         $points = [];
@@ -74,7 +83,7 @@ class SnowballMath extends strongType
 
         $history[] = $h;
 
-        while ($in_debt && $cur_month < 1200) {
+        while ($in_debt && $cur_month < 360 && $point->principal < 1000000000) {
             $point->principal = 0;
             $point->interest_payment = 0;
             $point->principal_payment = 0;
@@ -118,6 +127,9 @@ class SnowballMath extends strongType
             while ($apply_rollover && $rollover > 0 && $has_debts) {
                 $remaining_debt = 0;
                 for ($k = 0; $k < sizeof($debts) && $rollover > 0; $k++) {
+                    if(!isset($h[$k])) {
+                        $h[$k] = new Debt();
+                    }
                     if ($debts[$k]->principal > 0) {
                         if ($debts[$k]->principal < $rollover) {
                             $rollover -= $debts[$k]->principal;
@@ -157,6 +169,9 @@ class SnowballMath extends strongType
                 $points[] = $p;
             }
         }
-        return ['points' => $points, 'history' => $history];
+        return new self([
+            'points' => $points,
+            'history' => $history,
+        ]);
     }
 }
