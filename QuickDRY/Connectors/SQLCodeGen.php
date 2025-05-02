@@ -727,11 +727,14 @@ class SQLCodeGen extends strongType
 
         $res = $DatabaseClass::GetForeignKeys($table_name);
         $refs = [];
+        $db_use = [];
 
         foreach ($res as $fk) {
             if (!is_array($fk->column_name)) {
                 /* @var MSSQL_ForeignKey $fk */
                 $refs[(string)$fk->column_name] = SQL_Base::TableToClass($this->DatabasePrefix, $fk->foreign_table_name, $this->LowerCaseTables, $this->DatabaseTypePrefix);
+                $namespace = strtolower($this->DatabaseConstant ? $this->DatabaseTypePrefix . '_' . $this->DatabaseConstant : $this->DatabaseTypePrefix . '_' . $this->Database);
+                $db_use [] = 'use common\\' . $namespace . '\\' . $refs[(string)$fk->column_name] . ';';
             }
         }
 
@@ -824,6 +827,7 @@ class SQLCodeGen extends strongType
             'table_nice_name' => $table_nice_name,
             'JSONFolder'      => $this->DatabaseTypePrefix . '_' . strtolower($this->DatabasePrefix),
             'form'            => $form,
+            'use_models'      => implode("\r\n", $db_use),
         ];
 
         $template = file_get_contents(__DIR__ . '/_templates/add.txt');

@@ -1,5 +1,8 @@
 <?php
 use QuickDRY\Web\ElementID;
+
+[[use_models]]
+
 ?>
 
 <script src="/pages/json/[[JSONFolder]]/[[table_nice_name]]/controls/add.js"></script>

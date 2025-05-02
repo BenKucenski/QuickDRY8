@@ -537,6 +537,9 @@ class Strings extends strongType
      */
     public static function Numeric($val): float|int|string
     {
+        if(!$val) {
+            return 0;
+        }
         // handle scientific notation, force into decimal format
         if (stristr($val, 'E')) {
             $temp = explode('E', $val);

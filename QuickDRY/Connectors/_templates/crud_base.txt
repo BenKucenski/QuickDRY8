@@ -77,8 +77,8 @@ class [[table_nice_name]]Base extends BasePage
 
         $req = Request::toArray();
         $res = self::$Item->FromRequest($req);
-        if (isset($res['error']) && $res['error']) {
-            HTTP::ExitJSON(['error' => $res['error']], HTTP::HTTP_STATUS_BAD_REQUEST);
+        if ($res->error) {
+            HTTP::ExitJSON(['error' => $res->error], HTTP::HTTP_STATUS_BAD_REQUEST);
         }
 
         HTTP::ExitJSON(['data' => self::$Item->toArray()]);
@@ -102,8 +102,8 @@ class [[table_nice_name]]Base extends BasePage
         $req = Request::toArray();
         $res = self::$Item->FromRequest($req, false);
 
-        if (isset($res['error']) && $res['error']) {
-            HTTP::ExitJSON(['error' => $res['error']], HTTP::HTTP_STATUS_BAD_REQUEST);
+        if ($res->error) {
+            HTTP::ExitJSON(['error' => $res->error], HTTP::HTTP_STATUS_BAD_REQUEST);
         }
 
         if (!self::$Item->VisibleTo()) {
@@ -130,9 +130,10 @@ class [[table_nice_name]]Base extends BasePage
         self::LoadItem();
 
         $res = self::$Item->Remove();
-        if (isset($res['error']) && $res['error']) {
-            HTTP::ExitJSON(['error' => $res['error']], HTTP::HTTP_STATUS_BAD_REQUEST);
+        if ($res->error) {
+            HTTP::ExitJSON(['error' => $res->error], HTTP::HTTP_STATUS_BAD_REQUEST);
         }
+
         HTTP::ExitJSON(['success' => $success_message]);
     }
 
