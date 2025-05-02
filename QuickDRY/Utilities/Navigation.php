@@ -56,7 +56,11 @@ class Navigation
         return false;
     }
 
-    private function _hasVisible(array $links)
+    /**
+     * @param array $links
+     * @return bool
+     */
+    private function _hasVisible(array $links): bool
     {
         $has_visible = false;
         if (sizeof($links)) {

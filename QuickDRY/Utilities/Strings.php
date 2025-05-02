@@ -502,7 +502,7 @@ class Strings extends strongType
      */
     public static function MakeUTF($desc): string
     {
-        $desc = utf8_encode($desc);
+        $desc = mb_convert_encoding($desc, 'UTF-8', 'ISO-8859-1');
         $desc = stripslashes($desc);
         return ($desc);
     }

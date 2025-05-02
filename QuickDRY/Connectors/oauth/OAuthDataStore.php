@@ -37,7 +37,7 @@ class OAuthDataStore
      * @param $timestamp
      * @return null
      */
-    public function lookup_nonce($consumer, $token, $nonce, $timestamp)
+    public function lookup_nonce($consumer, $token, $nonce, $timestamp): null
     {
         // implement me
         return null;

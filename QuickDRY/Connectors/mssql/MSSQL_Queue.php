@@ -3,6 +3,7 @@
 namespace QuickDRY\Connectors\mssql;
 
 use QuickDRY\Connectors\MSSQL;
+use QuickDRY\Connectors\QueryExecuteResult;
 use QuickDRY\Connectors\SQL_Query;
 use QuickDRY\Utilities\Metrics;
 use QuickDRY\Utilities\strongType;
@@ -41,9 +42,9 @@ class MSSQL_Queue extends strongType
     }
 
     /**
-     * @return array|null
+     * @return QueryExecuteResult|null
      */
-    public function Flush(): ?array
+    public function Flush(): ?QueryExecuteResult
     {
         if (!$this->Count()) {
             return null;
@@ -81,9 +82,9 @@ SET QUOTED_IDENTIFIER ON
 
     /**
      * @param SQL_Query $sp
-     * @return array|null
+     * @return QueryExecuteResult|null
      */
-    public function QueueSP(SQL_Query $sp): ?array
+    public function QueueSP(SQL_Query $sp): ?QueryExecuteResult
     {
         return $this->Queue($sp->SQL, $sp->Params);
     }
@@ -91,9 +92,9 @@ SET QUOTED_IDENTIFIER ON
     /**
      * @param string $sql
      * @param array|null $params
-     * @return array|null
+     * @return QueryExecuteResult|null
      */
-    public function Queue(string $sql, array $params = null): ?array
+    public function Queue(string $sql, array $params = null): ?QueryExecuteResult
     {
         $t = MSSQL::EscapeQuery($sql, $params);
         $this->_sql[] = $t;
@@ -102,6 +103,6 @@ SET QUOTED_IDENTIFIER ON
         if ($this->strlen > 1024 * 1024 * 50 || $this->Count() >= $this->QueueLimit) {
             return $this->Flush();
         }
-        return ['error' => '', 'query' => ''];
+        return new QueryExecuteResult();
     }
 }

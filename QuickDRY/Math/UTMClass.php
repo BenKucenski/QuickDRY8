@@ -316,7 +316,7 @@ class UTMClass extends strongType
      * @param $lat
      * @param $lon
      * @param $zone
-     * @return array
+     * @return UTMClass
      */
     public static function LatLonToUTMXY($lat, $lon, $zone): self
     {

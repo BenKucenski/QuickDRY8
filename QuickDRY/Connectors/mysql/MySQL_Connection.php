@@ -152,7 +152,7 @@ WHERE SCHEMA_NAME = :SCHEMA_NAME
 
     /**
      * @param string $sql
-     * @param int $time
+     * @param float $time
      * @param string|null $err
      */
     private function Log(string $sql, float $time = 0, string $err = null): void

@@ -123,9 +123,9 @@ class MSSQL_Core extends SQL_Base
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public static function GetDatabases(): mixed
+    public static function GetDatabases(): array
     {
         static::_connect();
         return static::$connection->GetDatabases();
@@ -144,9 +144,9 @@ class MSSQL_Core extends SQL_Base
 
     /**
      * @param string $table_name
-     * @return mixed
+     * @return array
      */
-    public static function GetTableColumns(string $table_name): mixed
+    public static function GetTableColumns(string $table_name): array
     {
         static::_connect();
 
@@ -155,9 +155,9 @@ class MSSQL_Core extends SQL_Base
 
     /**
      * @param string $table_name
-     * @return mixed
+     * @return array
      */
-    public static function GetTableIndexes(string $table_name): mixed
+    public static function GetTableIndexes(string $table_name): array
     {
         static::_connect();
 
@@ -252,9 +252,9 @@ class MSSQL_Core extends SQL_Base
 
     /**
      * @param string $table_name
-     * @return mixed
+     * @return array
      */
-    public static function GetPrimaryKey(string $table_name): mixed
+    public static function GetPrimaryKey(string $table_name): array
     {
         static::_connect();
 
@@ -395,17 +395,14 @@ class MSSQL_Core extends SQL_Base
         if (sizeof(static::$_primary) > 0) {
             foreach (static::$_primary as $column)
                 $where[] = $column . ' = ' . MSSQL::EscapeString($this->{$column});
+        } elseif (sizeof(static::$_unique) > 0) {
+            foreach (static::$_unique as $column)
+                $where[] = $column . ' = ' . MSSQL::EscapeString($this->{$column});
         } else {
-            if (sizeof(static::$_unique) > 0) {
-                foreach (static::$_unique as $column)
-                    $where[] = $column . ' = ' . MSSQL::EscapeString($this->{$column});
-            } else {
-                $q = new QueryExecuteResult();
-                $q->error = 'unique or primary key required';
-                return $q;
-            }
+            $q = new QueryExecuteResult();
+            $q->error = 'unique or primary key required';
+            return $q;
         }
-
 
         $sql = '
 			DELETE FROM
@@ -434,7 +431,7 @@ class MSSQL_Core extends SQL_Base
         $col = str_replace('+', '', $col);
 
         if (is_object($val)) {
-            if($val instanceof DateTime) {
+            if ($val instanceof DateTime) {
                 $val = $val->format('Y-m-d H:i:s');
             } else {
                 Debug(['QuickDRY Error' => '$val is object', $val]);
@@ -1052,7 +1049,7 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
                     $qs[] = 'NULL --' . $name . ' / ' . static::$prop_definitions[$name]['type'] . PHP_EOL;
                 } else {
                     $qs[] = '@ --' . $name . ' / ' . static::$prop_definitions[$name]['type'] . PHP_EOL;
-                    if($st_value instanceof DateTime) {
+                    if ($st_value instanceof DateTime) {
                         $st_value = $st_value->format('Y-m-d H:i:s');
                     }
                     $params[] = '{{{' . $st_value . '}}}'; // necessary to get past the null check in EscapeString
@@ -1106,7 +1103,7 @@ SET
                 } else {
                     $props[] = '[' . $name . '] = @ --' . $name . ' / ' . static::$prop_definitions[$name]['type'] . PHP_EOL;
 
-                    if($st_value instanceof DateTime) {
+                    if ($st_value instanceof DateTime) {
                         $st_value = $st_value->format('Y-m-d H:i:s');
                     }
                     $params[] = '{{{' . $st_value . '}}}'; // necessary to get past the null check in EscapeString
