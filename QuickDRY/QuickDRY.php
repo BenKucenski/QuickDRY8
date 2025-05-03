@@ -21,13 +21,15 @@ function Debug(...$args): void
     ], JSON_PRETTY_PRINT);
     file_put_contents($file, $data);
 
-    $email = Mailer::Queue(
-        SMTP_DEBUG_EMAIL,
-        SMTP_DEBUG_EMAIL,
-        'Purse Poor Error',
-        $data
-    );
-    $email->Send();
+    if(SEND_DEBUG_EMAILS) {
+        $email = Mailer::Queue(
+            SMTP_DEBUG_EMAIL,
+            SMTP_DEBUG_EMAIL,
+            'Purse Poor Error',
+            $data
+        );
+        $email->Send();
+    }
 
     if (!defined('CONST_OUTPUT_ERRORS') || !CONST_OUTPUT_ERRORS) {
         exit('<p>An Error Occurred: ' . $code . '</p>');

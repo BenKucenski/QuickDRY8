@@ -485,7 +485,7 @@ database = ' . $this->current_db . '
 			    `{{nq}}`;
 		';
         $res = $this->Query($sql, [$table]);
-        if ($res->error) {
+        if ($res['error']) {
             Debug($res);
         }
 
