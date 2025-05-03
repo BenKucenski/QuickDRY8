@@ -928,10 +928,12 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
                 return $value;
 
             case 'tinyint(1)':
+                $value = Strings::Numeric($value);
                 return $value ? 1 : 0;
 
             case 'decimal(18,2)':
             case 'int(10)':
+                $value = Strings::Numeric($value);
                 return $value * 1.0;
         }
         return $value;

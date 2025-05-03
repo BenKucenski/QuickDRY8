@@ -699,11 +699,7 @@ class MySQL_Core extends SQL_Base
                 if (is_null($value) && static::$prop_definitions[$name]['is_nullable']) {
                     return null;
                 }
-
-                if (!is_numeric($value)) {
-                    $value = 0;
-                }
-                return $value * 1.0;
+                return Strings::Numeric($value);
 
             case 'timestamp':
             case 'datetime':
