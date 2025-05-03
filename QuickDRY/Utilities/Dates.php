@@ -47,18 +47,17 @@ class Dates extends strongType
      * @param $datetime
      * @param $timezone
      * @return string
-     * @throws Exception
      */
     public static function ConvertToUserDate($datetime, $timezone): string
     {
         $datetime = Dates::Timestamp($datetime);
-        $tz = new DateTimeZone($timezone);
         try {
+            $tz = new DateTimeZone($timezone);
             $date = new DateTime($datetime . ' GMT');
             $date->setTimezone($tz);
             return $date->format('Y-m-d H:i:s');
         } catch (Exception $e) {
-            Debug::Halt($e);
+            Debug($e);
             exit;
         }
     }
@@ -71,13 +70,13 @@ class Dates extends strongType
     public static function ConvertToServerDate($datetime, $timezone): string
     {
         $datetime = Dates::Timestamp($datetime);
-        $tz = new DateTimeZone('GMT');
         try {
+            $tz = new DateTimeZone('GMT');
             $date = new DateTime($datetime . ' ' . $timezone);
             $date->setTimezone($tz);
             return $date->format('Y-m-d H:i:s');
         } catch (Exception $e) {
-            Debug::Halt($e);
+            Debug($e);
             exit;
         }
     }
@@ -174,7 +173,7 @@ class Dates extends strongType
         try {
             $d = new DateTime($year . '-01-01');
         } catch (Exception $e) {
-            Debug::Halt($e);
+            Debug($e);
         }
         date_modify($d, '+' . ($DayInYear - 1) . ' days');
         return self::Datestamp($d->getTimestamp());

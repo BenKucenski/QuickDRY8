@@ -295,19 +295,28 @@ class MySQL_Core extends SQL_Base
     }
 
     /**
-     * @param string $col
+     * @param string|null $col
      * @param string|null $val
      *
      * @return array
      */
     #[ArrayShape(['col' => 'string', 'val' => 'null|string|string[]'])] protected static function _parse_col_val(
-        string  $col,
+        ?string  $col,
         ?string $val = null
     ): array
     {
+        if(!$col) {
+            Debug($col);
+        }
+
         // extra + symbols allow us to do AND on the same column
         $col = str_replace('+', '', $col);
         $col = '`' . $col . '`';
+
+        if(is_null($val)) {
+            $col = $col . ' IS NULL ';
+            return ['col' => $col, 'val' => $val];
+        }
 
         // adding a space to ensure that "in_" is not mistaken for an IN query
         // and the parameter must START with the special SQL command
@@ -572,7 +581,7 @@ class MySQL_Core extends SQL_Base
                 $cv = self::_parse_col_val($c, $v);
                 $v = $cv['val'];
 
-                if (strtolower($v) !== 'null') {
+                if ($v && strtolower($v) !== 'null') {
                     $params[] = $cv['val'];
                 }
                 $t[] = $cv['col'];

@@ -173,7 +173,7 @@ class Helpers extends strongType
      */
     public static function Halt($var, $message = null): void
     {
-        Debug::Halt($var, $message);
+        Debug($var, $message);
     }
 
     /**
@@ -187,7 +187,7 @@ class Helpers extends strongType
         $iterator = new RecursiveIteratorIterator($filter);
         $files = [];
         foreach ($iterator as $info) {
-            $files[] = $info->getPathname();
+            $files[] = realpath($info->getPathname());
         }
         return $files;
     }

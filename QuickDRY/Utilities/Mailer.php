@@ -209,7 +209,7 @@ class Mailer extends strongType
         $matches = [];
         preg_match_all('/##(.*?)##/si', $html, $matches);
         if (sizeof($matches[1])) {
-            Debug::Halt(['Error' => 'HTML still contains variables', $matches[1], $html]);
+            Debug(['Error' => 'HTML still contains variables', $matches[1], $html]);
         }
         return $html;
     }

@@ -16,7 +16,7 @@ class [[sp_class]] extends db_[[sp_class]]
             $this->HaltOnError(false);
             $this->FromRow($row);
             if($this->HasMissingProperties()) {
-                Debug::Halt($this->GetMissingProperties());
+                Debug($this->GetMissingProperties());
             }
             $this->HaltOnError(true);
         }

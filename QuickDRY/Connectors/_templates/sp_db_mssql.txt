@@ -25,7 +25,7 @@ class db_[[sp_class]] extends SafeClass
         });
 
         if (self::$HaltSPOnError && isset($rows['error'])) {
-            Debug::Halt($rows);
+            Debug($rows);
         }
         return $rows;
     }
@@ -44,7 +44,7 @@ class db_[[sp_class]] extends SafeClass
         $res = [[DatabaseClass]]::Execute($sql, [[[params]]]);
 
         if (self::$HaltSPOnError && $res['error']) {
-            Debug::Halt($res);
+            Debug($res);
         }
         return $res;
     }

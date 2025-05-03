@@ -1273,4 +1273,12 @@ WHERE
 
         return static::Execute($sql, $params);
     }
+
+    /**
+     * @return bool
+     */
+    private function CanDelete(): bool
+    {
+        return false;
+    }
 }

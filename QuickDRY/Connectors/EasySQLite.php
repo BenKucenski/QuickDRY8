@@ -53,7 +53,7 @@ class EasySQLite extends SQLite3
         }
         $res = $this->query($sql);
         if ($this->lastErrorCode()) {
-            Debug::Halt([
+            Debug([
                 'sql' => $sql
                 , 'params' => $params
                 , 'lastErrorMsg' => $this->lastErrorMsg()

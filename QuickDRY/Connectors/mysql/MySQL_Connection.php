@@ -374,7 +374,7 @@ database = ' . $this->current_db . '
                     $list[] = !is_null($map_function) ? call_user_func($map_function, $r) : $r;
                 } else {
                     if (!class_exists($return_type)) {
-                        Debug::Halt($return_type . ' does not exist: MySQL_Connection::Query');
+                        Debug($return_type . ' does not exist: MySQL_Connection::Query');
                     }
 
                     $c = new $return_type();
@@ -485,7 +485,7 @@ database = ' . $this->current_db . '
 			    `{{nq}}`;
 		';
         $res = $this->Query($sql, [$table]);
-        if ($res['error']) {
+        if ($res->error) {
             Debug($res);
         }
 
@@ -582,7 +582,7 @@ database = ' . $this->current_db . '
             $res = $this->Query($sql);
 
             if ($res['error']) {
-                Debug::Halt($res);
+                Debug($res);
             }
 
             self::$_ForeignKeys[$this->current_db] = [];
@@ -629,9 +629,11 @@ SHOW INDEXES FROM
         ';
 
             $res = $this->Query($sql);
+
             if ($res['error']) {
                 Debug($res);
             }
+
             foreach ($res['data'] as $row) {
                 if (!$row['Non_unique'] && $row['Key_name'] === 'PRIMARY') {
                     if (!isset(self::$_PrimaryKey[$row['Table']][$row['Key_name']])) {
@@ -686,6 +688,7 @@ SHOW INDEXES FROM
             if ($res['error']) {
                 Debug($res);
             }
+
             foreach ($res['data'] as $row) {
                 if ($row['Key_name'] === 'PRIMARY') {
                     continue;

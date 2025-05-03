@@ -24,7 +24,7 @@ use QuickDRY\Utilities\Debug;
         });
 
         if (isset($rows['error']) && $rows['error']) {
-            Debug::Halt($rows);
+            Debug($rows);
         }
         return $rows;
     }

@@ -1,8 +1,49 @@
 <?php
-// SIMPLE_EXCEL
+use QuickDRY\Utilities\Mailer;
 use QuickDRY\Utilities\Metrics;
 use QuickDRY\Web\BrowserOS;
 
+
+/**
+ * @param ...$args
+ */
+function Debug(...$args): void
+{
+    if(!is_dir(DATA_FOLDER . '/logs')) {
+        mkdir(DATA_FOLDER . '/logs');
+    }
+
+    $code = time() . '.' . rand(0, 1000000);
+    $file = DATA_FOLDER . '/logs/' . $code . '.txt';
+    $data = json_encode([
+        'data' => $args,
+        'backtrace' => debug_backtrace(),
+    ], JSON_PRETTY_PRINT);
+    file_put_contents($file, $data);
+
+    $email = Mailer::Queue(
+        SMTP_DEBUG_EMAIL,
+        SMTP_DEBUG_EMAIL,
+        'Purse Poor Error',
+        $data
+    );
+    $email->Send();
+
+    if (!defined('CONST_OUTPUT_ERRORS') || !CONST_OUTPUT_ERRORS) {
+        exit('<p>An Error Occurred: ' . $code . '</p>');
+    }
+
+    dd(['data' => $args, 'backtrace' => debug_backtrace()]);
+}
+
+spl_autoload_register(function ($class_name) {
+    $class_name = str_replace('\\', '/', $class_name);
+    $file = __DIR__ . '/../' . $class_name . '.php';
+
+    if (file_exists($file)) {
+        require_once $file;
+    }
+});
 
 
 // BasePage
@@ -42,11 +83,6 @@ const PDF_PAGE_SIZE_LEDGER = 'Ledger';
 const PDF_PAGE_SIZE_LEGAL = 'Legal';
 const PDF_PAGE_SIZE_LETTER = 'Letter';
 const PDF_PAGE_SIZE_TABLOID = 'Tabloid';
-
-// Web
-const QUICKDRY_MODE_STATIC = 1;
-const QUICKDRY_MODE_INSTANCE = 2;
-const QUICKDRY_MODE_BASIC = 3;
 
 const REQUEST_VERB_GET = 'GET';
 const REQUEST_VERB_POST = 'POST';

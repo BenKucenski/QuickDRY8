@@ -26,7 +26,7 @@ class MSSQL extends strongType
     public static function EscapeString($data): string
     {
         if (is_array($data)) {
-            Debug::Halt($data);
+            Debug($data);
         }
         if (is_numeric($data)) return "'" . $data . "'";
 
@@ -68,7 +68,7 @@ class MSSQL extends strongType
         if ($test) {
             $matches = [];
             preg_match_all($pattern, $sql, $matches);
-            Debug::Halt($matches);
+            Debug($matches);
         }
         $count = 0;
         return preg_replace_callback($pattern, function ($result)

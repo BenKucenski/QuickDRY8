@@ -20,7 +20,7 @@ class [[table_nice_name]] extends BasePage
     /**
      * @return void
      */
-    public static function DoInit(): void
+    public static function Init(): void
     {
         self::$MasterPage = ' . $this->MasterPage . ';
     }
@@ -28,7 +28,7 @@ class [[table_nice_name]] extends BasePage
     /**
      * @return void
      */
-    public static function DoGet(): void
+    public static function Get(): void
     {
         $items = [[c_name]]::GetAllPaginated(null, null, PAGE, PER_PAGE);
         self::$TableHeader = [[c_name]]::GetHeader(SORT_BY, SORT_DIR, true);

@@ -22,7 +22,7 @@ class MySQL extends strongType
     {
 
         if (is_null($conn)) {
-            Debug::Halt('QuickDRY Error: No MySQL Connection');
+            Debug('QuickDRY Error: No MySQL Connection');
         }
         $matches = [];
         preg_match_all('/[\'\"][^\"\']*[\'\"](*SKIP)(*FAIL)|[:@](\w+[^\s+\,\;)])/i', $sql . ' ', $matches);

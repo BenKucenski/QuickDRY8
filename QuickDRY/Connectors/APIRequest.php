@@ -3,6 +3,7 @@
 namespace QuickDRY\Connectors;
 
 use QuickDRY\Utilities\Log;
+use QuickDRY\Web\Session;
 use stdClass;
 
 /**
@@ -327,12 +328,9 @@ class APIRequest
             return;
         }
 
-        if (!$Web->Session) {
-            return;
-        }
-        $a = $Web->Session->Get('api_log');
+        $a = Session::Get('api_log');
         $a[] = $this;
-        $Web->Session->Set('api_log', $a);
+        Session::Set('api_log', $a);
     }
 
     /**

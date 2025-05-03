@@ -70,7 +70,7 @@ class SimpleExcel extends strongType
         try {
             $sheet = $spreadsheet->getActiveSheet();
         } catch (Exception $ex) {
-            Debug::Halt($ex);
+            Debug($ex);
         }
         self::SetDefaultSecurity($sheet);
         $sheet->setTitle($se->Title);
@@ -122,7 +122,7 @@ class SimpleExcel extends strongType
                 $writer->save($se->Filename);
             }
         } catch (Exception $ex) {
-            Debug::Halt($ex);
+            Debug($ex);
         }
 
     }
@@ -159,7 +159,7 @@ class SimpleExcel extends strongType
             try {
                 $spreadsheet->setActiveSheetIndex($sheet);
             } catch (Exception $ex) {
-                Debug::Halt($ex);
+                Debug($ex);
             }
             $xls_sheet = null;
             try {
@@ -223,7 +223,7 @@ class SimpleExcel extends strongType
             }
         } catch (Exception $ex) {
             if ($exit_on_error) {
-                Debug::Halt($ex);
+                Debug($ex);
             }
             throw new Exception($ex);
         }
@@ -241,7 +241,7 @@ class SimpleExcel extends strongType
         try {
             $sheet = $spreadsheet->getActiveSheet();
         } catch (Exception $ex) {
-            Debug::Halt($ex);
+            Debug($ex);
         }
         $sheet->setTitle($se->Title);
         $sheet_row = 1;
@@ -274,7 +274,7 @@ class SimpleExcel extends strongType
                 $writer->save($se->Filename);
             }
         } catch (Exception $ex) {
-            Debug::Halt($ex);
+            Debug($ex);
         }
 
     }
@@ -315,7 +315,7 @@ class SimpleExcel extends strongType
                             NumberFormat::FORMAT_DATE_XLSX14_ACTUAL
                         );
                 } catch (Exception $ex) {
-                    Debug::Halt($ex);
+                    Debug($ex);
                 }
             }
             if ($property_type == SimpleExcel_Column::SIMPLE_EXCEL_PROPERTY_TYPE_CURRENCY) {
@@ -325,7 +325,7 @@ class SimpleExcel extends strongType
                         ->getNumberFormat()
                         ->setFormatCode('#,##0.00');
                 } catch (Exception $ex) {
-                    Debug::Halt($ex);
+                    Debug($ex);
                 }
             }
 
@@ -336,12 +336,12 @@ class SimpleExcel extends strongType
                         ->getHyperlink()
                         ->setUrl($value);
                 } catch (Exception $ex) {
-                    Debug::Halt($ex);
+                    Debug($ex);
                 }
             }
 
             if (is_array($value)) {
-                Debug::Halt(['value cannot be an array', $value]);
+                Debug(['value cannot be an array', $value]);
             }
             try {
                 $sheet->setCellValue($sheet_column . $sheet_row, $value);

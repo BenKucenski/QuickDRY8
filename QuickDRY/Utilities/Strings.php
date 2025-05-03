@@ -299,7 +299,7 @@ class Strings extends strongType
                         $php_stmt_att = $php_stmt . '[$x_tag]' . $add . '[$key] = $value;';
                         eval($php_stmt_att);
                     } catch (Exception $ex) {
-                        Debug::Halt([$xml_array, $ex]);
+                        Debug([$xml_array, $ex]);
                     }
                 }
             }
