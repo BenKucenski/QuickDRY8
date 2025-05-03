@@ -782,12 +782,12 @@ class SQLCodeGen extends strongType
 				';
                     }
 
-                    $form .= '<tr><td class="name">' . SQLCodeGen::FieldToDisplay($col->field) . '</td><td class="field"><?php echo ' . $refs[$col->field] . '::Select(null, new ElementID(\'' . $c_name . '_' . $col->field . '\', \'' . $col->field . '\')); ?></td></tr>' . "\r\n";
+                    $form .= '<tr><td class="name" id="' . $c_name . '_' . $col->field . '_td">' . SQLCodeGen::FieldToDisplay($col->field) . '</td><td class="field"><?php echo ' . $refs[$col->field] . '::Select(null, new ElementID(\'' . $c_name . '_' . $col->field . '\', \'' . $col->field . '\')); ?></td></tr>' . "\r\n";
 
                 } else
                     switch ($col->type) {
                         case 'text':
-                            $form .= '<tr><td class="name">' . SQLCodeGen::FieldToDisplay($col->field) . '</td><td class="field"><textarea class="form-control" name="' . $col->field . '" id="' . $c_name . '_' . $col->field . '"></textarea></td></tr>' . "\r\n";
+                            $form .= '<tr><td class="name" id="' . $c_name . '_' . $col->field . '_td">' . SQLCodeGen::FieldToDisplay($col->field) . '</td><td class="field"><textarea class="form-control" name="' . $col->field . '" id="' . $c_name . '_' . $col->field . '"></textarea></td></tr>' . "\r\n";
                             break;
 
                         case 'bit':
@@ -795,7 +795,7 @@ class SQLCodeGen extends strongType
                         case 'tinyint':
                             $elem = $c_name . '_' . $col->field;
 
-                            $form .= '<tr><td class="name">' . SQLCodeGen::FieldToDisplay($col->field) . '</td><td class="field">
+                            $form .= '<tr><td class="name" id="' . $c_name . '_' . $col->field . '_td">' . SQLCodeGen::FieldToDisplay($col->field) . '</td><td class="field">
 					<input type="checkbox" id="' . $elem . '" onclick="$(\'#' . $elem . '_hidden\').val(this.checked ? 1 : 0);" />
 					<input type="hidden" name="' . $col->field . '" id="' . $elem . '_hidden" value="0" />
 					</td></tr>' . "\r\n";
@@ -803,19 +803,19 @@ class SQLCodeGen extends strongType
 
                         case 'datetime':
                         case 'timestamp':
-                            $form .= '<tr><td class="name">' . SQLCodeGen::FieldToDisplay($col->field) . '</td><td class="field"><input class="time-picker form-control" type="text" name="' . $col->field . '" id="' . $c_name . '_' . $col->field . '" /></td></tr>' . "\r\n";
+                            $form .= '<tr><td class="name" id="' . $c_name . '_' . $col->field . '_td">' . SQLCodeGen::FieldToDisplay($col->field) . '</td><td class="field"><input class="time-picker form-control" type="text" name="' . $col->field . '" id="' . $c_name . '_' . $col->field . '" /></td></tr>' . "\r\n";
                             break;
 
                         case 'date':
-                            $form .= '<tr><td class="name">' . SQLCodeGen::FieldToDisplay($col->field) . '</td><td class="field"><input class="form-control" type="date" name="' . $col->field . '" id="' . $c_name . '_' . $col->field . '" /></td></tr>' . "\r\n";
+                            $form .= '<tr><td class="name" id="' . $c_name . '_' . $col->field . '_td">' . SQLCodeGen::FieldToDisplay($col->field) . '</td><td class="field"><input class="form-control" type="date" name="' . $col->field . '" id="' . $c_name . '_' . $col->field . '" /></td></tr>' . "\r\n";
                             break;
 
                         case 'varchar(6)':
-                            $form .= '<tr><td class="name">' . SQLCodeGen::FieldToDisplay($col->field) . '</td><td class="field"><input class="color form-control" type="text" name="' . $col->field . '" id="' . $c_name . '_' . $col->field . '" /></td></tr>' . "\r\n";
+                            $form .= '<tr><td class="name" id="' . $c_name . '_' . $col->field . '_td">' . SQLCodeGen::FieldToDisplay($col->field) . '</td><td class="field"><input class="color form-control" type="text" name="' . $col->field . '" id="' . $c_name . '_' . $col->field . '" /></td></tr>' . "\r\n";
                             break;
 
                         default:
-                            $form .= '<tr><td class="name">' . SQLCodeGen::FieldToDisplay($col->field) . '</td><td class="field"><input class="form-control" type="text" name="' . $col->field . '" id="' . $c_name . '_' . $col->field . '" /></td></tr>' . "\r\n";
+                            $form .= '<tr><td class="name" id="' . $c_name . '_' . $col->field . '_td">' . SQLCodeGen::FieldToDisplay($col->field) . '</td><td class="field"><input class="form-control" type="text" name="' . $col->field . '" id="' . $c_name . '_' . $col->field . '" /></td></tr>' . "\r\n";
                     }
             }
 

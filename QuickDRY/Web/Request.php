@@ -43,6 +43,8 @@ class Request
     public static function Set(string $name, $value): void
     {
         $_REQUEST[$name] = $value;
+        $_POST[$name] = $value;
+        $_GET[$name] = $value;
     }
 
     /**
