@@ -696,7 +696,7 @@ ORDER BY "TABLE_NAME"
 ';
         $res = $this->Query($sql);
         $list = [];
-        if ($res->error) {
+        if ($res['error']) {
             Debug($res);
         }
 
@@ -843,7 +843,7 @@ ORDER BY
         ';
 
             $res = $this->Query($sql);
-            if ($res->error) {
+            if ($res['error']) {
                 Debug($res);
             }
             foreach ($res['data'] as $row) {
@@ -1010,7 +1010,7 @@ ORDER BY obj.name, fkc.referenced_column_id
 				AND table_name = @
 		';
         $res = $this->Query($sql, [$table_name]);
-        if ($res->error) {
+        if ($res['error']) {
             Debug($res);
         }
         $list = [];
