@@ -43,8 +43,8 @@ class Curl
     private static function getResFromGuzzle(
         ResponseInterface $response,
         string            $path,
-        array             $params = null,
-        array             $additional_headers = null
+        ?array             $params = null,
+        ?array             $additional_headers = null
     ): Curl
     {
         $response_header = $response->getHeaders();
@@ -76,8 +76,8 @@ class Curl
      */
     public static function Post(
         string $path,
-        array  $params = null,
-        array  $additional_headers = null
+        ?array  $params = null,
+        ?array  $additional_headers = null
     ): Curl
     {
         try {
@@ -107,8 +107,8 @@ class Curl
      */
     public static function PostJSON(
         string $path,
-        array  $params = null,
-        array  $additional_headers = null
+        ?array  $params = null,
+        ?array  $additional_headers = null
     ): Curl
     {
 
@@ -138,8 +138,8 @@ class Curl
      */
     public static function PostXML(
         string $path,
-        string $xml = null,
-        array  $additional_headers = null
+        ?string $xml = null,
+        ?array  $additional_headers = null
     ): Curl
     {
         $additional_headers['Content-Type'] = 'text/xml; charset=UTF8';
@@ -170,8 +170,8 @@ class Curl
      */
     public static function PostForm(
         string $path,
-        array  $params = null,
-        array  $additional_headers = null
+        ?array  $params = null,
+        ?array  $additional_headers = null
     ): Curl
     {
         try {
@@ -197,8 +197,8 @@ class Curl
      */
     public static function Get(
         string $path,
-        array  $params = null,
-        array  $additional_headers = null
+        ?array  $params = null,
+        ?array  $additional_headers = null
     ): Curl
     {
 

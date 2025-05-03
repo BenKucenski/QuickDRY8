@@ -19,9 +19,9 @@ class OAuthConsumer extends strongType
      * @param string|NULL $callback_url
      */
     public function __construct(
-        string $key,
-        string $secret,
-        string $callback_url = NULL)
+        string  $key,
+        string  $secret,
+        ?string $callback_url = NULL)
     {
         $this->key = $key;
         $this->secret = $secret;

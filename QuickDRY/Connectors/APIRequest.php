@@ -120,8 +120,8 @@ class APIRequest
      */
     private function _Request(
         string $path,
-        array  $data = null,
-        array  $headers = null,
+        ?array  $data = null,
+        ?array  $headers = null,
         bool   $post = true,
                $custom_method = null): bool|string|null
     {

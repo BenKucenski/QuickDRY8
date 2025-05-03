@@ -15,7 +15,7 @@ class Meta
      * @param string|null $val
      * @return null|string
      */
-    public static function Title(string $val = null): ?string
+    public static function Title(?string $val = null): ?string
     {
         if (is_null($val)) {
             if(defined('DEMO_MODE') && DEMO_MODE) {

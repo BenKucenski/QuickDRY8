@@ -27,7 +27,7 @@ class EasySQLite extends SQLite3
      * @param array|null $params
      * @return array
      */
-    private function DoPreparedQuery(string $sql, array $params = null): array
+    private function DoPreparedQuery(string $sql, ?array $params = null): array
     {
         $statement = $this->prepare($sql);
         foreach ($params as $k => $v) {
@@ -46,7 +46,7 @@ class EasySQLite extends SQLite3
      * @param array|null $params
      * @return array
      */
-    public function DoQuery(string $sql, array $params = null): array
+    public function DoQuery(string $sql, ?array $params = null): array
     {
         if ($params) {
             return $this->DoPreparedQuery($sql, $params);

@@ -143,7 +143,7 @@ class HTTP extends strongType
     /**
      * @param string|null $url
      */
-    public static function Redirect(string $url = null): void
+    public static function Redirect(?string $url = null): void
     {
         if(self::$AJAXTestMode) {
             return;
@@ -331,7 +331,7 @@ class HTTP extends strongType
         string $content,
         string $filename,
         int $HTTP_STATUS = self::HTTP_STATUS_OK,
-        string $ContentType = null,
+        ?string $ContentType = null,
         bool $Download = true
     ): void
     {

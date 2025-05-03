@@ -16,7 +16,7 @@ class ElementID extends strongType
      * @param string|null $id
      * @param string|null $name
      */
-    public function __construct(string $id = null, string $name = null)
+    public function __construct(?string $id = null, ?string $name = null)
     {
         $this->id = $id ?? $name;
         $this->name = $name ?? $id;

@@ -145,11 +145,11 @@ class Helpers extends strongType
      */
     public static function BootstrapPaginationLinks(
         int    $count,
-        string $params = null,
-        string $_SORT_BY = null,
-        string $_SORT_DIR = null,
-        int    $_PER_PAGE = null,
-        string $_URL = null,
+        ?string $params = null,
+        ?string $_SORT_BY = null,
+        ?string $_SORT_DIR = null,
+        ?int    $_PER_PAGE = null,
+        ?string $_URL = null,
         bool   $ShowViewAll = true): string
     {
         return Navigation::BootstrapPaginationLinks($count, $params, $_SORT_BY, $_SORT_DIR, $_PER_PAGE, $_URL, $ShowViewAll);

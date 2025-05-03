@@ -54,8 +54,8 @@ class ACCESS
      */
     public function __construct(
         string $file,
-        string $user = null,
-        string $pass = null,
+        ?string $user = null,
+        ?string $pass = null,
         bool $skip_check = false
     )
     {

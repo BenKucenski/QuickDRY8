@@ -113,7 +113,7 @@ class Debug extends strongType
         if (defined('IS_PRODUCTION') && IS_PRODUCTION) {
             $uri = $_SERVER['REQUEST_URI'] ?? $_SERVER['SCRIPT_FILENAME'];
 
-            if(defined('EMAIL_ERRORS') && EMAIL_ERRORS) {
+            if (defined('EMAIL_ERRORS') && EMAIL_ERRORS) {
                 if (defined('SMTP_DEBUG_EMAIL') && defined('SMTP_FROM_NAME')) {
                     $t = Mailer::Queue(SMTP_DEBUG_EMAIL, SMTP_FROM_NAME, SMTP_FROM_NAME . ' HALT: ' . $uri, $finalMsg);
                     try {
@@ -137,7 +137,7 @@ class Debug extends strongType
                 exit(PRETTY_ERROR);
             }
 
-            if(defined('SHOW_ERRORS') && SHOW_ERRORS) {
+            if (defined('SHOW_ERRORS') && SHOW_ERRORS) {
                 Debug($var);
             }
 
@@ -217,7 +217,6 @@ class Debug extends strongType
             E_USER_ERROR => 'user error',
             E_USER_WARNING => 'user warning',
             E_USER_NOTICE => 'user notice',
-            E_STRICT => 'strict',
             default => 'unknown',
         };
     }

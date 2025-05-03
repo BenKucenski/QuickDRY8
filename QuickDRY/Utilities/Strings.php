@@ -163,7 +163,13 @@ class Strings extends strongType
      * @param bool $ignore_errors
      * @return array
      */
-    public static function TSVToArrayMap(&$tsv, $mapping_function = null, string $filename = null, string $class = null, bool $ignore_errors = false): array
+    public static function TSVToArrayMap(
+        &$tsv,
+        $mapping_function = null,
+        ?string $filename = null,
+        ?string $class = null,
+        bool $ignore_errors = false
+    ): array
     {
         $tsv = trim($tsv); // remove trailing whitespace
         // https://stackoverflow.com/questions/4801895/csv-to-associative-array
@@ -537,7 +543,7 @@ class Strings extends strongType
      */
     public static function Numeric($val): float|int|string
     {
-        if(!$val) {
+        if (!$val) {
             return 0;
         }
         // handle scientific notation, force into decimal format
@@ -722,7 +728,7 @@ class Strings extends strongType
             return get_object_vars($row);
         }
 
-        if($row instanceof Curl) {
+        if ($row instanceof Curl) {
             return $row->Body;
         }
 
@@ -737,17 +743,17 @@ class Strings extends strongType
 
     public static function fixBOOLs(&$val)
     {
-        if(is_string($val)) {
-            if($val === 'true') {
+        if (is_string($val)) {
+            if ($val === 'true') {
                 $val = true;
             }
-            if($val === 'false') {
+            if ($val === 'false') {
                 $val = false;
             }
         }
 
-        if(is_array($val)) {
-            foreach($val as $k => $v) {
+        if (is_array($val)) {
+            foreach ($val as $k => $v) {
                 $val[$k] = self::fixBOOLs($val[$k]);
             }
         }
@@ -774,7 +780,7 @@ class Strings extends strongType
                 $row = Strings::FixJSON(self::RowToJSON($row));
             }
 
-            if(is_null($row)) {
+            if (is_null($row)) {
                 $json[$i] = null;
             } elseif (is_array($row)) {
                 $json[$i] = Strings::FixJSON($row);

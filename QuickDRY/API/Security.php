@@ -174,7 +174,7 @@ class Security extends strongType
      * @param callable|null $checkCount
      * @return array|null
      */
-    public static function validateRequest(callable $checkCount = null): ?array
+    public static function validateRequest(?callable $checkCount = null): ?array
     {
         $token = $_SERVER['HTTP_AUTHORIZATION'] ?? ($_REQUEST['HTTP_AUTHORIZATION'] ?? null);
         if (!$token) {

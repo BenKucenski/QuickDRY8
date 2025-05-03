@@ -34,7 +34,7 @@ class MSSQL_CodeGen extends SQLCodeGen
         $master_page,
         $lowercase_tables,
         $use_fk_column_name,
-        string $DatabaseClass = null,
+        ?string $DatabaseClass = null,
         bool $GenerateJSON = true,
         string $DestinationFolder = '../httpdocs'
     ): void

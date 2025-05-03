@@ -267,7 +267,7 @@ class MSSQL_Core extends SQL_Base
      * @param bool $large
      * @return QueryExecuteResult|null
      */
-    public static function Execute(string &$sql, array $params = null, bool $large = false): ?QueryExecuteResult
+    public static function Execute(string &$sql, ?array $params = null, bool $large = false): ?QueryExecuteResult
     {
         static::_connect();
 
@@ -307,7 +307,7 @@ class MSSQL_Core extends SQL_Base
      * @param callable|null $map_function
      * @return array
      */
-    public static function Query(string $sql, array $params = null, bool $objects_only = false, callable $map_function = null): array
+    public static function Query(string $sql, ?array $params = null, bool $objects_only = false, ?callable $map_function = null): array
     {
         static::_connect();
 
@@ -502,7 +502,7 @@ class MSSQL_Core extends SQL_Base
      * @param array|null $where
      * @return mixed
      */
-    protected static function _Get(array $where = null): mixed
+    protected static function _Get(?array $where = null): mixed
     {
         $params = [];
         $t = [];
@@ -577,7 +577,7 @@ class MSSQL_Core extends SQL_Base
      *
      * @return array
      */
-    protected static function _GetAll(array $where = null, array $order_by = null, int $limit = null): array
+    protected static function _GetAll(?array $where = null, ?array $order_by = null, ?int $limit = null): array
     {
         $params = [];
 
@@ -653,7 +653,7 @@ class MSSQL_Core extends SQL_Base
      * @param array|null $where
      * @return int
      */
-    protected static function _GetCount(array $where = null): int
+    protected static function _GetCount(?array $where = null): int
     {
         $sql_where = '1=1';
         $params = [];
@@ -727,12 +727,12 @@ class MSSQL_Core extends SQL_Base
      * @return array
      */
     #[ArrayShape(['count' => 'int|mixed', 'items' => 'array', 'sql' => 'string'])] protected static function _GetAllPaginated(
-        array $where = null,
-        array $order_by = null,
-        int   $page = 0,
-        int   $per_page = 0,
-        array $left_join = null,
-        int   $limit = 0): array
+        ?array $where = null,
+        ?array $order_by = null,
+        int    $page = 0,
+        int    $per_page = 0,
+        ?array $left_join = null,
+        int    $limit = 0): array
     {
         $type = get_called_class();
 

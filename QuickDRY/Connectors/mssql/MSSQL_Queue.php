@@ -94,7 +94,7 @@ SET QUOTED_IDENTIFIER ON
      * @param array|null $params
      * @return QueryExecuteResult|null
      */
-    public function Queue(string $sql, array $params = null): ?QueryExecuteResult
+    public function Queue(string $sql, ?array $params = null): ?QueryExecuteResult
     {
         $t = MSSQL::EscapeQuery($sql, $params);
         $this->_sql[] = $t;

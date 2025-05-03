@@ -172,13 +172,13 @@ aria-expanded="false"
      * @return string
      */
     public static function BootstrapPaginationLinks(
-        int    $count,
-        string $params = null,
-        string $_SORT_BY = null,
-        string $_SORT_DIR = null,
-        int    $_PER_PAGE = null,
-        string $_URL = null,
-        bool   $ShowViewAll = true): string
+        int     $count,
+        ?string $params = null,
+        ?string $_SORT_BY = null,
+        ?string $_SORT_DIR = null,
+        ?int    $_PER_PAGE = null,
+        ?string $_URL = null,
+        bool    $ShowViewAll = true): string
     {
         if ($params == null) {
             $params = [];

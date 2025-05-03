@@ -98,7 +98,7 @@ WHERE SCHEMA_NAME = :SCHEMA_NAME
             $db_base = $this->current_db;
         }
 
-        if ($this->db && !mysqli_ping($this->db)) {
+        if ($this->db) {
             $this->db_conns[$this->current_db] = null;
             $this->current_db = null;
         }
@@ -155,7 +155,7 @@ WHERE SCHEMA_NAME = :SCHEMA_NAME
      * @param float $time
      * @param string|null $err
      */
-    private function Log(string $sql, float $time = 0, string $err = null): void
+    private function Log(string $sql, float $time = 0, ?string $err = null): void
     {
         if (is_null($err)) {
             $err = mysqli_error($this->db);
@@ -180,7 +180,7 @@ WHERE SCHEMA_NAME = :SCHEMA_NAME
      * @param bool $large
      * @return QueryExecuteResult
      */
-    public function Execute(string $sql, array $params = null, bool $large = false): QueryExecuteResult
+    public function Execute(string $sql, ?array $params = null, bool $large = false): QueryExecuteResult
     {
         $query_hash = 'all';
         if (self::$log_queries_to_file) { // don't log as a single array because it makes the queries unreadable
@@ -286,11 +286,11 @@ database = ' . $this->current_db . '
                 }
             }
             return new QueryExecuteResult([
-                'error' => $error,
-                'sql' => $sql,
-                'last_id' => $last_id,
+                'error'         => $error,
+                'sql'           => $sql,
+                'last_id'       => $last_id,
                 'affected_rows' => $aff,
-                'exec' => $exec,
+                'exec'          => $exec,
             ]);
         } catch (Exception $e) {
             Debug($e);
@@ -306,10 +306,10 @@ database = ' . $this->current_db . '
      * @return array|string
      */
     public function Query(
-        string $sql,
-        array $params = null,
-        string $return_type = null,
-        $map_function = null
+        string  $sql,
+        ?array  $params = null,
+        ?string $return_type = null,
+                $map_function = null
     ): array|string
     {
         $query_hash = 'all';

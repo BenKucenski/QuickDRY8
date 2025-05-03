@@ -21,7 +21,7 @@ class OAuthRequest
      * @param string $http_url
      * @param array|NULL $parameters
      */
-    public function __construct(string $http_method, string $http_url, array $parameters = NULL)
+    public function __construct(string $http_method, string $http_url, ?array $parameters = NULL)
     {
         $parameters = ($parameters) ?: [];
         $parameters = array_merge(OAuthUtil::parse_parameters(parse_url($http_url, PHP_URL_QUERY)), $parameters);
@@ -92,7 +92,7 @@ class OAuthRequest
         $token,
         string $http_method,
         string $http_url,
-        array $parameters = NULL): OAuthRequest
+        ?array $parameters = NULL): OAuthRequest
     {
         $parameters = ($parameters) ?: [];
         $defaults = ['oauth_version' => OAuthRequest::$version,

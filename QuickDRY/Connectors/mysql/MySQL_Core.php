@@ -192,9 +192,9 @@ class MySQL_Core extends SQL_Base
      * @return array
      */
     public static function QueryMap(
-        string   $sql,
-        ?array   $params = null,
-        callable $map_function = null): array
+        string    $sql,
+        ?array    $params = null,
+        ?callable $map_function = null): array
     {
         $res = self::Query($sql, $params, false, $map_function);
         if (isset($res['error'])) {
@@ -211,10 +211,10 @@ class MySQL_Core extends SQL_Base
      * @return array
      */
     public static function Query(
-        string   $sql,
-        array    $params = null,
-        bool     $objects_only = false,
-        callable $map_function = null): array
+        string    $sql,
+        ?array    $params = null,
+        bool      $objects_only = false,
+        ?callable $map_function = null): array
     {
         static::_connect();
 
@@ -300,7 +300,10 @@ class MySQL_Core extends SQL_Base
      *
      * @return array
      */
-    #[ArrayShape(['col' => 'string', 'val' => 'null|string|string[]'])] protected static function _parse_col_val(string $col, string $val = null): array
+    #[ArrayShape(['col' => 'string', 'val' => 'null|string|string[]'])] protected static function _parse_col_val(
+        string  $col,
+        ?string $val = null
+    ): array
     {
         // extra + symbols allow us to do AND on the same column
         $col = str_replace('+', '', $col);
@@ -379,7 +382,7 @@ class MySQL_Core extends SQL_Base
      *
      * @return static|null
      */
-    protected static function _Get(array $where = null): ?static
+    protected static function _Get(?array $where = null): ?static
     {
         $params = [];
         $t = [];
@@ -409,7 +412,7 @@ class MySQL_Core extends SQL_Base
 			';
 
         $res = static::Query($sql, $params, true);
-        if(isset($res['error'])) {
+        if (isset($res['error'])) {
             Debug($res);
         }
 
@@ -426,7 +429,7 @@ class MySQL_Core extends SQL_Base
      *
      * @return array|null
      */
-    protected static function _GetAll(?array $where = null, array $order_by = null, int $limit = null): ?array
+    protected static function _GetAll(?array $where = null, ?array $order_by = null, ?int $limit = null): ?array
     {
         $params = [];
 
@@ -535,10 +538,11 @@ class MySQL_Core extends SQL_Base
     #[ArrayShape(['count' => 'int|mixed', 'items' => 'array', 'sql' => 'string', 'res' => 'array'])] protected static function _GetAllPaginated(
         ?array $where = null,
         ?array $order_by = null,
-        int   $page = null,
-        int   $per_page = null,
-        array $left_join = null,
-        int   $limit = null): array
+        ?int   $page = null,
+        ?int   $per_page = null,
+        ?array $left_join = null,
+        ?int   $limit = null
+    ): array
     {
         $params = [];
 

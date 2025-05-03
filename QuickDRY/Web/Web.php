@@ -232,7 +232,7 @@ class Web extends strongType
         $temp = explode('.', $this->CurrentPageName);
         $this->PageClass = $this->Namespace . '\\' . $temp[0];
 
-        $this->Verb = strtoupper($_REQUEST['verb'] ?? $_SERVER['REQUEST_METHOD']);
+        $this->Verb = strtoupper($_REQUEST['verb'] ?? ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
 
         $this->SetURLs();
     }
@@ -288,7 +288,7 @@ class Web extends strongType
                 }
             }
 
-            switch ($_SERVER['REQUEST_METHOD']) {
+            switch ($this->Verb) {
                 case 'GET':
                     if ($_REQUEST['export'] ?? null) {
                         $this->Export($this->PageClass, $_REQUEST['export']);
@@ -316,7 +316,7 @@ class Web extends strongType
                     $class::Options();
                     break;
                 default:
-                    exit('unknown REQUEST_METHOD: ' . $_SERVER['REQUEST_METHOD']);
+                    exit('unknown REQUEST_METHOD: ' . $this->Verb);
             }
 
             if ($this->ViewFile) {

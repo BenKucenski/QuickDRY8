@@ -36,13 +36,13 @@ class Mailer extends strongType
      * @return Mailer
      */
     public static function Queue(
-        string $to_email,
-        string $to_name,
-        string $subject,
-        string $message,
-        array  $attachments = null,
-        string $from_email = null,
-        string $from_name = null): Mailer
+        string  $to_email,
+        string  $to_name,
+        string  $subject,
+        string  $message,
+        ?array  $attachments = null,
+        ?string $from_email = null,
+        ?string $from_name = null): Mailer
     {
         $t = new self();
         $t->to_email = $to_email;
@@ -102,8 +102,8 @@ class Mailer extends strongType
             }
             $mail->SMTPOptions = [
                 'ssl' => [
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
+                    'verify_peer'       => false,
+                    'verify_peer_name'  => false,
                     'allow_self_signed' => true
                 ]
             ];

@@ -317,7 +317,7 @@ class SQL_Base
      *
      * @return mixed
      */
-    public static function Get(array $where = null): mixed
+    public static function Get(?array $where = null): mixed
     {
         return static::_Get($where);
     }
@@ -329,7 +329,7 @@ class SQL_Base
      *
      * @return array|null
      */
-    public static function GetAll(array $where = null, array $order_by = null, int $limit = null): ?array
+    public static function GetAll(?array $where = null, ?array $order_by = null, ?int $limit = null): ?array
     {
         if (!is_null($order_by) && !is_array($order_by)) {
             Debug('QuickDRY Error: GetAll $order_by must be an assoc array ["col"=>"asc,desc",...]', true);
@@ -370,7 +370,7 @@ class SQL_Base
      *
      * @return int
      */
-    public static function GetCount(array $where = null): int
+    public static function GetCount(?array $where = null): int
     {
         return static::_GetCount($where);
     }
@@ -390,8 +390,8 @@ class SQL_Base
         ?array $order_by = null,
         int    $page = 0,
         int    $per_page = 0,
-        array  $left_join = null,
-        int    $limit = null)
+        ?array  $left_join = null,
+        ?int    $limit = null)
     {
         return static::_GetAllPaginated($where, $order_by, $page, $per_page, $left_join, $limit);
     }
@@ -410,7 +410,7 @@ class SQL_Base
      * @param string|null $name
      * @return mixed|null
      */
-    protected function GetProperty(string $name = null): mixed
+    protected function GetProperty(?string $name = null): mixed
     {
         if (array_key_exists($name, $this->props)) {
             return static::StrongType($name, $this->props[$name]);

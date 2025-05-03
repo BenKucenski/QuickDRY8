@@ -276,7 +276,7 @@ class MSSQL_Connection extends strongType
      * @param null $map_function
      * @return array|mixed
      */
-    private function QueryWindows($sql, array $params = null, $map_function = null): mixed
+    private function QueryWindows($sql, ?array $params = null, $map_function = null): mixed
     {
         Metrics::Start('MSSQL');
 
@@ -377,7 +377,7 @@ class MSSQL_Connection extends strongType
      * @param null $map_function
      * @return array|mixed
      */
-    public function Query($sql, array $params = null, $map_function = null): mixed
+    public function Query($sql, ?array $params = null, $map_function = null): mixed
     {
         $this->_connect();
 
@@ -630,7 +630,7 @@ class MSSQL_Connection extends strongType
      * @param bool $large
      * @return QueryExecuteResult
      */
-    public function Execute(string $sql, array $params = null, bool $large = false): QueryExecuteResult
+    public function Execute(string $sql, ?array $params = null, bool $large = false): QueryExecuteResult
     {
         Metrics::Start('MSSQL');
 

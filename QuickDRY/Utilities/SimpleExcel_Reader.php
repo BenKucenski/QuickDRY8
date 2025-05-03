@@ -18,7 +18,7 @@ class SimpleExcel_Reader extends strongType
      * @param int|null $row_limit
      * @return array
      */
-    public static function FromFilename(string $file, bool $process_cells = true, bool $debug = false, int $row_limit = null): array
+    public static function FromFilename(string $file, bool $process_cells = true, bool $debug = false, ?int $row_limit = null): array
     {
         if ($debug) {
             Log::Insert('SimpleExcel_Reader::FromFilename');
@@ -46,7 +46,7 @@ class SimpleExcel_Reader extends strongType
      * @param int|null $row_limit
      * @return array
      */
-    public static function ToReport(Spreadsheet $spreadsheet, bool $process_cells = true, bool $debug = false, int $row_limit = null): array
+    public static function ToReport(Spreadsheet $spreadsheet, bool $process_cells = true, bool $debug = false, ?int $row_limit = null): array
     {
         if ($debug) {
             Log::Insert('SimpleExcel_Reader::ToReport');

@@ -30,9 +30,9 @@ class SimpleExcel_Column extends strongType
      * @param int $PropertyType
      */
     public function __construct(
-        string $Header = null,
-        string $Property = null,
-        int    $PropertyType = self::SIMPLE_EXCEL_PROPERTY_TYPE_CALCULATED
+        ?string $Header = null,
+        ?string $Property = null,
+        int     $PropertyType = self::SIMPLE_EXCEL_PROPERTY_TYPE_CALCULATED
     )
     {
         $this->Header = is_null($Header) ? $Property : $Header;

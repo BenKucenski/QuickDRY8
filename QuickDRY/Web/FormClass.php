@@ -108,8 +108,8 @@ class FormClass
     public static function Textarea(
         string    $val,
         ElementID $elementID,
-        string    $outer_style = null,
-        string    $inner_style = null): string
+        ?string    $outer_style = null,
+        ?string    $inner_style = null): string
     {
         $name = $elementID->name;
         $id = $elementID->id;
@@ -129,8 +129,8 @@ class FormClass
     public static function Text(
         string    $val,
         ElementID $elementID,
-        string    $outer_style = null,
-        string    $inner_style = null): string
+        ?string    $outer_style = null,
+        ?string    $inner_style = null): string
     {
         $name = $elementID->name;
         $id = $elementID->id;
@@ -153,8 +153,8 @@ class FormClass
         array     $selected,
         array     $options,
         ElementID $elementID,
-        string    $outer_class = null,
-        string    $inner_style = null,
+        ?string    $outer_class = null,
+        ?string    $inner_style = null,
         bool      $new_line = false,
         string    $onchange = ''): string
     {
@@ -195,8 +195,8 @@ class FormClass
         string    $selected,
         array     $options,
         ElementID $elementID,
-        string    $outer_style = null,
-        string    $inner_style = null,
+        ?string    $outer_style = null,
+        ?string    $inner_style = null,
         bool      $new_line = false): string
     {
         $name = $elementID->name;

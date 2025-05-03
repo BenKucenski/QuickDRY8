@@ -209,7 +209,7 @@ class db_[[c_name]] extends [[DatabaseClassName]]
      *
      * @return static|null
      */
-    public static function Get(array $where = null): ?static
+    public static function Get(?array $where = null): ?static
     {
       return parent::Get($where);
     }
@@ -221,7 +221,7 @@ class db_[[c_name]] extends [[DatabaseClassName]]
      *
      * @return static[]|null
      */
-    public static function GetAll(array $where = null, array $order_by = null, int $limit = null): ?array
+    public static function GetAll(?array $where = null, ?array $order_by = null, ?int $limit = null): ?array
     {
 		  return parent::GetAll($where, $order_by, $limit);
     }
@@ -232,7 +232,7 @@ class db_[[c_name]] extends [[DatabaseClassName]]
    * @param ElementID|null $id
    * @return string
    */
-  public static function Select(string $selected = null, ElementID $id = null): string
+  public static function Select(?string $selected = null, ?ElementID $id = null): string
   {
     return print_r(['Select Not Implemented', $selected, $id], true);
   }
