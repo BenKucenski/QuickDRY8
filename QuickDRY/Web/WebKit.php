@@ -78,7 +78,7 @@ if (defined('PDF_API')) {
     }
 
 
-    $cmd = DOC_ROOT_PATH . '\\QuickDRY\\bin\\wkhtmltopdf.exe ' . implode(' ', $params) . ' ' . $html_file . ' ' . $FileName;
+    $cmd = WKHTMLTOPDF . ' ' . implode(' ', $params) . ' ' . $html_file . ' ' . $FileName;
     Log::Insert($cmd);
 
     $output = [];
