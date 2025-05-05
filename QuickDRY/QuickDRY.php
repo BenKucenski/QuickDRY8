@@ -47,6 +47,15 @@ spl_autoload_register(function ($class_name) {
     }
 });
 
+/**
+ * @param object $object
+ * @return string
+ */
+function get_base_class(object $object): string {
+    $fullClass = get_class($object);
+    $parts = explode('\\', $fullClass);
+    return end($parts);
+}
 
 // BasePage
 const PDF_PAGE_ORIENTATION_LANDSCAPE = 'landscape';

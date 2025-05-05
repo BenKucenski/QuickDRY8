@@ -561,8 +561,8 @@ class SQL_Base
      * @return string
      */
     public static function GetHeader(
-        string $sort_by = '',
-        string $dir = '',
+        ?string $sort_by = '',
+        ?string $dir = '',
         bool   $modify = false,
         array  $add = [],
         array  $ignore = [],
@@ -607,8 +607,8 @@ class SQL_Base
      */
     protected static function _GetHeader(
         array  $props,
-        string $sort_by,
-        string $dir,
+        ?string $sort_by,
+        ?string $dir,
         bool   $modify = false,
         array  $add = [],
         array  $ignore = [],
@@ -801,7 +801,7 @@ class SQL_Base
         if ($modify) {
             $res .= '
    			<td class="data_text">
-   				<a href="#"  onclick="' . get_class($this) . '.Load(' . $this->{static::$_primary[0]} . ')"><i class="fa fa-edit"></i></a>
+   				<a href="#"  onclick="' . get_base_class($this) . '.Load(' . $this->{static::$_primary[0]} . ')"><i class="fa fa-edit"></i></a>
    			</td>
    			';
         }
