@@ -300,7 +300,7 @@ class SQLCodeGen extends strongType
 
             $fk_class = SQL_Base::TableToClass($this->DatabasePrefix, $fk->foreign_table_name, $this->LowerCaseTables, $this->DatabaseTypePrefix);
 
-            $namespace = strtolower($this->DatabaseConstant ? $this->DatabaseTypePrefix . '_' . $this->DatabaseConstant : $this->DatabaseTypePrefix . '_' . $this->Database);
+            $namespace = $this->Namespace();
             $db_use [] = 'use common\\' . $namespace . '\\' . $fk_class . ';';
 
             $class_props[] = ' * @property ' . $fk_class . ' ' . $var;
@@ -357,7 +357,7 @@ class SQLCodeGen extends strongType
             $seens_vars[] = $var;
 
             $fk_class = SQL_Base::TableToClass($this->DatabasePrefix, $fk->foreign_table_name, $this->LowerCaseTables, $this->DatabaseTypePrefix);
-            $namespace = strtolower($this->DatabaseConstant ? $this->DatabaseTypePrefix . '_' . $this->DatabaseConstant : $this->DatabaseTypePrefix . '_' . $this->Database);
+            $namespace = $this->Namespace();
             $db_use [] = 'use common\\' . $namespace . '\\' . $fk_class . ';';
 
 
@@ -426,7 +426,7 @@ class SQLCodeGen extends strongType
 
         $template = file_get_contents(__DIR__ . '/_templates/class_db.txt');
         $vars = [
-            'namespace'          => 'common\\' . strtolower($this->DatabaseTypePrefix . '_' . $this->DatabasePrefix) . '\\db',
+            'namespace'          => 'common\\' . $this->Namespace() . '\\db',
             'use'                => implode(PHP_EOL, array_unique($db_use)),
             'c_name'             => $c_name,
             'class_props'        => implode("\r\n", $class_props),
@@ -478,8 +478,8 @@ class SQLCodeGen extends strongType
 
         $template = file_get_contents(__DIR__ . '/_templates/class.txt');
         $vars = [
-            'namespace'   => 'common\\' . strtolower($this->DatabaseTypePrefix . '_' . $this->DatabasePrefix),
-            'use'         => 'use common\\' . strtolower($this->DatabaseTypePrefix . '_' . $this->DatabasePrefix) . '\\db\\db_' . $c_name . ';',
+            'namespace'   => 'common\\' . $this->Namespace(),
+            'use'         => 'use common\\' . $this->Namespace() . '\\db\\db_' . $c_name . ';',
             'c_name'      => $c_name,
             'class_props' => implode("\r\n", $class_props),
             'HasUserLink' => $HasUserLink ? '
@@ -644,7 +644,7 @@ class SQLCodeGen extends strongType
         if (!sizeof($primary)) {
             return;
         }
-        $namespace = 'json\\' . $this->DatabaseTypePrefix . '_' . $this->Database;
+        $namespace = 'json\\' . $this->Namespace();
 
         $get_params = [];
         $missing_params = [];
@@ -685,7 +685,7 @@ class SQLCodeGen extends strongType
 
         $template = file_get_contents(__DIR__ . '/_templates/crud_base.txt');
         $vars = [
-            'namespace_c_name' => 'common\\' . $this->DatabaseTypePrefix . '_' . $this->Database . '\\' . $c_name,
+            'namespace_c_name' => 'common\\' . $this->Namespace() . '\\' . $c_name,
             'c_name'           => $c_name,
             'get_params'       => $get_params,
             'table_nice_name'  => $table_nice_name,
@@ -733,7 +733,7 @@ class SQLCodeGen extends strongType
             if (!is_array($fk->column_name)) {
                 /* @var MSSQL_ForeignKey $fk */
                 $refs[(string)$fk->column_name] = SQL_Base::TableToClass($this->DatabasePrefix, $fk->foreign_table_name, $this->LowerCaseTables, $this->DatabaseTypePrefix);
-                $namespace = strtolower($this->DatabaseConstant ? $this->DatabaseTypePrefix . '_' . $this->DatabaseConstant : $this->DatabaseTypePrefix . '_' . $this->Database);
+                $namespace = $this->Namespace();
                 $db_use [] = 'use common\\' . $namespace . '\\' . $refs[(string)$fk->column_name] . ';';
             }
         }
@@ -900,6 +900,14 @@ class SQLCodeGen extends strongType
     }
 
     /**
+     * @return string
+     */
+    protected function Namespace(): string
+    {
+        return strtolower($this->DatabaseConstant ? $this->DatabaseTypePrefix . '_' . $this->DatabaseConstant : $this->DatabaseTypePrefix . '_' . $this->Database);
+    }
+
+    /**
      * @param $c_name
      * @param $table_nice_name
      * @param $primary
@@ -910,7 +918,7 @@ class SQLCodeGen extends strongType
             return;
         }
 
-        $namespace = 'manage\\' . $this->DatabaseTypePrefix . '_' . $this->Database;
+        $namespace = 'manage\\' . $this->Namespace();
 
         $template = file_get_contents(__DIR__ . '/_templates/manage.txt');
         $vars = [
@@ -931,7 +939,7 @@ class SQLCodeGen extends strongType
 
         $template = file_get_contents(__DIR__ . '/_templates/manage.code.txt');
         $vars = [
-            'namespace_c_name' => 'common\\' . $this->DatabaseTypePrefix . '_' . $this->Database . '\\' . $c_name,
+            'namespace_c_name' => 'common\\' . $this->Namespace() . '\\' . $c_name,
             'c_name'           => $c_name,
             'namespace'        => $namespace,
             'table_nice_name'  => $table_nice_name,
