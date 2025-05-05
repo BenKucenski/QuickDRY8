@@ -293,7 +293,7 @@ database = ' . $this->current_db . '
                 'exec'          => $exec,
             ]);
         } catch (Exception $e) {
-            Debug($e);
+            Debug($e->getMessage());
         }
         return new QueryExecuteResult();
     }
