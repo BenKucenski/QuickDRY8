@@ -943,6 +943,7 @@ class SQLCodeGen extends strongType
             'c_name'           => $c_name,
             'namespace'        => $namespace,
             'table_nice_name'  => $table_nice_name,
+            'master_page'      => $this->MasterPage,
         ];
 
         $include_php = $template;

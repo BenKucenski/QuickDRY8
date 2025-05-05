@@ -22,7 +22,7 @@ class [[table_nice_name]] extends BasePage
      */
     public static function Init(): void
     {
-        self::$MasterPage = ' . $this->MasterPage . ';
+        self::$MasterPage = [[master_page]];
     }
 
     /**
