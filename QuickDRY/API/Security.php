@@ -235,7 +235,7 @@ class Security extends strongType
         int    $expire = 3600
     ): string
     {
-        $check = APIUser::Get($client_id);
+        $check = APIUser::GetForClientId($client_id);
 
         if (!$check) {
             HTTP::ExitJSON([
