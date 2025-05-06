@@ -1,4 +1,5 @@
 <?php
+
 use QuickDRY\Utilities\Mailer;
 use QuickDRY\Utilities\Metrics;
 use QuickDRY\Web\BrowserOS;
@@ -9,19 +10,19 @@ use QuickDRY\Web\BrowserOS;
  */
 function Debug(...$args): void
 {
-    if(!is_dir(DATA_FOLDER . '/logs')) {
+    if (!is_dir(DATA_FOLDER . '/logs')) {
         mkdir(DATA_FOLDER . '/logs');
     }
 
     $code = time() . '.' . rand(0, 1000000);
     $file = DATA_FOLDER . '/logs/' . $code . '.txt';
     $data = json_encode([
-        'data' => $args,
+        'data'      => $args,
         'backtrace' => debug_backtrace(),
     ], JSON_PRETTY_PRINT);
     file_put_contents($file, $data);
 
-    if(SEND_DEBUG_EMAILS) {
+    if (SEND_DEBUG_EMAILS) {
         $email = Mailer::Queue(
             SMTP_DEBUG_EMAIL,
             SMTP_DEBUG_EMAIL,
@@ -51,11 +52,49 @@ spl_autoload_register(function ($class_name) {
  * @param object $object
  * @return string
  */
-function get_base_class(object $object): string {
+function get_base_class(object $object): string
+{
     $fullClass = get_class($object);
     $parts = explode('\\', $fullClass);
     return end($parts);
 }
+
+/**
+ * @param string|null $data
+ * @return string|null
+ */
+function base64_encode_id_safe(?string $data): ?string
+{
+    if (!$data) {
+        return null;
+    }
+
+    $encoded = base64_encode($data);
+    // Make it safe for HTML IDs
+    $safe = strtr($encoded, ['+' => '-', '/' => '_']);
+    return rtrim($safe, '='); // remove padding
+}
+
+/**
+ * @param string|null $safeData
+ * @return string|null
+ */
+function base64_decode_id_safe(?string $safeData): ?string
+{
+    if (!$safeData) {
+        return null;
+    }
+
+    // Restore to standard base64 format
+    $base64 = strtr($safeData, ['-' => '+', '_' => '/']);
+    // Add padding if needed
+    $padLen = 4 - (strlen($base64) % 4);
+    if ($padLen < 4) {
+        $base64 .= str_repeat('=', $padLen);
+    }
+    return base64_decode($base64);
+}
+
 
 // BasePage
 const PDF_PAGE_ORIENTATION_LANDSCAPE = 'landscape';

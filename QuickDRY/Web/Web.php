@@ -106,6 +106,10 @@ class Web extends strongType
             }
         }
 
+        if(!defined('HTTP_HOST')) {
+            define('HTTP_HOST', 'command line');
+        }
+
         if (defined('HTTP_HOST')) {
             $this->SettingsFile = 'settings.' . HTTP_HOST . '.php';
         }
@@ -157,6 +161,10 @@ class Web extends strongType
 
         $page = str_replace('?' . $qs, '', $ru);
         $page = str_replace('/' . $qs, '/', $page);
+
+        if(!$page) {
+            $page = '/';
+        }
 
         if ($page[strlen($page) - 1] == '/') {
             $page = substr($page, 0, strlen($page) - 1);
@@ -243,7 +251,7 @@ class Web extends strongType
     public function SetURLs(): void
     {
         // this must be done after the settings file is loaded to support proxy situations
-        define('FULL_URL', (HTTP::IsSecure() ? 'https://' : 'http://') . HTTP_HOST . $_SERVER['REQUEST_URI']);
+        define('FULL_URL', (HTTP::IsSecure() ? 'https://' : 'http://') . HTTP_HOST . ($_SERVER['REQUEST_URI'] ?? '/'));
 
         if (isset($_SERVER['HTTPS'])) { // check if page being accessed by browser
             $protocol = HTTP::IsSecure() ? 'https://' : 'http://';
