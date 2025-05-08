@@ -164,11 +164,11 @@ class Strings extends strongType
      * @return array
      */
     public static function TSVToArrayMap(
-        &$tsv,
-        $mapping_function = null,
-        ?string $filename = null,
-        ?string $class = null,
-        bool $ignore_errors = false
+        string   &$tsv,
+        callable $mapping_function = null,
+        ?string  $filename = null,
+        ?string  $class = null,
+        bool     $ignore_errors = false
     ): array
     {
         $tsv = trim($tsv); // remove trailing whitespace

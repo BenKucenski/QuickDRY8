@@ -390,8 +390,9 @@ class SQL_Base
         ?array $order_by = null,
         int    $page = 0,
         int    $per_page = 0,
-        ?array  $left_join = null,
-        ?int    $limit = null)
+        ?array $left_join = null,
+        ?int   $limit = null
+    )
     {
         return static::_GetAllPaginated($where, $order_by, $page, $per_page, $left_join, $limit);
     }

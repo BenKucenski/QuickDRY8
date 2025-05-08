@@ -5,10 +5,7 @@ namespace QuickDRY\Utilities;
 // HTTPStatus
 
 
-
 use QuickDRY\JSON\JsonStatusResult;
-
-
 
 
 /**
@@ -62,9 +59,9 @@ class HTTP extends strongType
     public const int HTTP_STATUS_CALM_DOWN = 420;
     public const int HTTP_STATUS_UNPROCESSABLE_ENTITY = 422;
     public const int HTTP_STATUS_TOO_MANY_REQUESTS = 429;
-    
+
     public static bool $AJAXTestMode = false;
-    
+
     /**
      * @param $url
      * @return mixed
@@ -145,7 +142,7 @@ class HTTP extends strongType
      */
     public static function Redirect(?string $url = null): void
     {
-        if(self::$AJAXTestMode) {
+        if (self::$AJAXTestMode) {
             return;
         }
 
@@ -188,7 +185,7 @@ class HTTP extends strongType
      */
     public static function RedirectNotice($notice, string $url = '/'): void
     {
-        if(self::$AJAXTestMode) {
+        if (self::$AJAXTestMode) {
             return;
         }
 
@@ -207,7 +204,7 @@ class HTTP extends strongType
      */
     public static function ReloadPage(): void
     {
-        if(self::$AJAXTestMode) {
+        if (self::$AJAXTestMode) {
             return;
         }
 
@@ -221,7 +218,7 @@ class HTTP extends strongType
      */
     public static function ExitJavascript($url, $title): void
     {
-        if(self::$AJAXTestMode) {
+        if (self::$AJAXTestMode) {
             return;
         }
 
@@ -252,7 +249,7 @@ class HTTP extends strongType
      */
     public static function ExitOData($json, int $HTTP_STATUS = self::HTTP_STATUS_OK): void
     {
-        if(self::$AJAXTestMode) {
+        if (self::$AJAXTestMode) {
             return;
         }
 
@@ -264,7 +261,7 @@ class HTTP extends strongType
         header('Cache-Control: no-store');
         header('Pragma: no-cache');
 
-        if(is_string($json)) {
+        if (is_string($json)) {
             if (self::isJson($json)) {
                 exit($json);
             }
@@ -272,7 +269,7 @@ class HTTP extends strongType
 
         $json = json_encode(Strings::FixJSON($json), JSON_PRETTY_PRINT);
         $error = json_last_error_msg();
-        if(json_last_error()) {
+        if (json_last_error()) {
             exit($error);
         }
         exit($json);
@@ -286,11 +283,11 @@ class HTTP extends strongType
      */
     public static function ExitJSON($json, int $HTTP_STATUS = self::HTTP_STATUS_OK)
     {
-        if(self::$AJAXTestMode) {
+        if (self::$AJAXTestMode) {
             return $json;
         }
 
-        if($_SERVER['HTTP_HOST'] ?? null) {
+        if ($_SERVER['HTTP_HOST'] ?? null) {
             if ($HTTP_STATUS) {
                 header('HTTP/1.1 ' . $HTTP_STATUS . ': ' . HTTPStatus::GetDescription($HTTP_STATUS));
             }
@@ -299,9 +296,9 @@ class HTTP extends strongType
             header('Pragma: no-cache');
         }
 
-        if(is_string($json)) {
+        if (is_string($json)) {
             if (self::isJson($json)) {
-                if(self::$AJAXTestMode) {
+                if (self::$AJAXTestMode) {
                     return $json;
                 }
                 exit($json);
@@ -310,8 +307,8 @@ class HTTP extends strongType
 
         $json = json_encode(Strings::FixJSON($json), JSON_PRETTY_PRINT);
         $error = json_last_error_msg();
-        if(json_last_error()) {
-            if(self::$AJAXTestMode) {
+        if (json_last_error()) {
+            if (self::$AJAXTestMode) {
                 Debug($error);
             }
             exit($error);
@@ -328,14 +325,14 @@ class HTTP extends strongType
      * @param bool $Download
      */
     public static function ExitFile(
-        string $content,
-        string $filename,
-        int $HTTP_STATUS = self::HTTP_STATUS_OK,
+        string  $content,
+        string  $filename,
+        int     $HTTP_STATUS = self::HTTP_STATUS_OK,
         ?string $ContentType = null,
-        bool $Download = true
+        bool    $Download = true
     ): void
     {
-        if(self::$AJAXTestMode) {
+        if (self::$AJAXTestMode) {
             return;
         }
 

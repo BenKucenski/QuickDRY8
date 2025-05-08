@@ -301,11 +301,11 @@ class MySQL_Core extends SQL_Base
      * @return array
      */
     #[ArrayShape(['col' => 'string', 'val' => 'null|string|string[]'])] protected static function _parse_col_val(
-        ?string  $col,
+        ?string $col,
         ?string $val = null
     ): array
     {
-        if(!$col) {
+        if (!$col) {
             Debug($col);
         }
 
@@ -313,7 +313,7 @@ class MySQL_Core extends SQL_Base
         $col = str_replace('+', '', $col);
         $col = '`' . $col . '`';
 
-        if(is_null($val)) {
+        if (is_null($val)) {
             $col = $col . ' IS NULL ';
             return ['col' => $col, 'val' => $val];
         }

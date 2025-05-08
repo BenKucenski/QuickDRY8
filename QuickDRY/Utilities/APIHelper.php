@@ -25,6 +25,7 @@ class APIHelper
 
     /**
      * @param string $filename
+     * @param string $placeholder
      * @return string
      */
     public static function getSQL(string $filename, string $placeholder = ':'): string

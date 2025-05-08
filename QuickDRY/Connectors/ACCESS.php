@@ -53,10 +53,10 @@ class ACCESS
      * @param bool $skip_check
      */
     public function __construct(
-        string $file,
+        string  $file,
         ?string $user = null,
         ?string $pass = null,
-        bool $skip_check = false
+        bool    $skip_check = false
     )
     {
         if(!file_exists($file)) {

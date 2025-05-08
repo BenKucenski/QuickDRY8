@@ -57,11 +57,14 @@ class Security extends strongType
     }
 
     /**
-     * @param $plaintext
-     * @return string
+     * @param string|null $plaintext
+     * @return string|null
      */
-    public static function encrypt($plaintext): string
+    public static function encrypt(?string $plaintext): ?string
     {
+        if(!$plaintext) {
+            return null;
+        }
         $ivlen = openssl_cipher_iv_length(self::$cipher);
         $iv = openssl_random_pseudo_bytes($ivlen);
         $ciphertext = openssl_encrypt($plaintext, self::$cipher, MASTER_SECRET_KEY, 0, $iv, $tag);
