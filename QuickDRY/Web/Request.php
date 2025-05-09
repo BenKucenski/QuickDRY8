@@ -3,7 +3,6 @@
 namespace QuickDRY\Web;
 
 use QuickDRY\Utilities\HTTP;
-use QuickDRY\Utilities\strongType;
 
 /**
  *

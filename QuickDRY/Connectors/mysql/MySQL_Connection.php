@@ -9,7 +9,6 @@ use mysqli;
 use QuickDRY\Connectors\mssql\MSSQL_ForeignKey;
 use QuickDRY\Connectors\MySQL;
 use QuickDRY\Connectors\QueryExecuteResult;
-use QuickDRY\Utilities\Debug;
 use QuickDRY\Utilities\Log;
 use QuickDRY\Utilities\Metrics;
 

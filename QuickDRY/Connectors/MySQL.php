@@ -2,7 +2,6 @@
 
 namespace QuickDRY\Connectors;
 
-use QuickDRY\Utilities\Debug;
 use QuickDRY\Utilities\Strings;
 use QuickDRY\Utilities\strongType;
 

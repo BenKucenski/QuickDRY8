@@ -3,7 +3,6 @@
 /* @var Web $Web */
 
 use QuickDRY\Connectors\Curl;
-use QuickDRY\Utilities\Debug;
 use QuickDRY\Utilities\Log;
 use QuickDRY\Web\Web;
 

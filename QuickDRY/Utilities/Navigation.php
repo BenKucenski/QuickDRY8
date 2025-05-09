@@ -3,7 +3,6 @@
 namespace QuickDRY\Utilities;
 
 use QuickDRY\API\Security;
-use QuickDRY\Web\Server;
 
 /**
  * Class Navigation

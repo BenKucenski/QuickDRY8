@@ -52,16 +52,28 @@ class BasePage extends strongType
         return self::$MasterPage;
     }
 
+    /**
+     * @param string $masterpage
+     * @return void
+     */
     public static function setMasterPage(string $masterpage): void
     {
         self::$MasterPage = $masterpage;
     }
 
+    /**
+     * @param string $value
+     * @return void
+     */
     public static function setPDFOrientation(string $value): void
     {
         self::$PDFPageOrientation = $value;
     }
 
+    /**
+     * @param string $value
+     * @return void
+     */
     public static function setPDFFilename(string $value): void
     {
         self::$PDFFileName = $value;
@@ -75,6 +87,10 @@ class BasePage extends strongType
         return self::$MetaTitle;
     }
 
+    /**
+     * @param string $metaTitle
+     * @return void
+     */
     public static function setMetaTitle(string $metaTitle): void
     {
         self::$MetaTitle = $metaTitle;

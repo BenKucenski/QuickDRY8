@@ -550,8 +550,8 @@ class SQL_Base
     }
 
     /**
-     * @param string $sort_by
-     * @param string $dir
+     * @param string|null $sort_by
+     * @param string|null $dir
      * @param bool $modify
      * @param array $add
      * @param array $ignore
@@ -595,8 +595,8 @@ class SQL_Base
 
     /**
      * @param array $props
-     * @param string $sort_by
-     * @param string $dir
+     * @param string|null $sort_by
+     * @param string|null $dir
      * @param bool $modify
      * @param array $add
      * @param array $ignore

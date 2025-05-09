@@ -2,11 +2,8 @@
 
 namespace QuickDRY\Connectors;
 
-use Exception;
-use QuickDRY\Utilities\Debug;
 use QuickDRY\Utilities\Strings;
 use QuickDRY\Utilities\strongType;
-use SimpleXMLElement;
 
 /**
  * Class googleRequest

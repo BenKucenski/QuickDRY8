@@ -8,7 +8,6 @@ namespace QuickDRY\Utilities;
 class Log extends strongType
 {
     private static ?LogFile $_log_file = null;
-    private static ?array $StartTime = null;
 
     /**
      *

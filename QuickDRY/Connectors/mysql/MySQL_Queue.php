@@ -2,9 +2,7 @@
 
 namespace QuickDRY\Connectors\mysql;
 
-use DateTime;
 use QuickDRY\Connectors\QueryExecuteResult;
-use QuickDRY\Utilities\Dates;
 use QuickDRY\Utilities\Log;
 
 /**

@@ -273,6 +273,9 @@ class Web extends strongType
         }
     }
 
+    /**
+     * @return void
+     */
     public function Exec(): void
     {
 
@@ -342,6 +345,11 @@ class Web extends strongType
         }
     }
 
+    /**
+     * @param string $class
+     * @param string $export
+     * @return void
+     */
     public function Export(
         string $class,
         string $export

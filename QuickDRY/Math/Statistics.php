@@ -2,8 +2,6 @@
 
 namespace QuickDRY\Math;
 
-use QuickDRY\Utilities\Debug;
-
 /**
  *
  */

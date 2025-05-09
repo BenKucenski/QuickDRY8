@@ -2,8 +2,6 @@
 
 namespace QuickDRY\Utilities;
 
-use ReflectionException;
-
 /**
  * Class SimpleReport
  */

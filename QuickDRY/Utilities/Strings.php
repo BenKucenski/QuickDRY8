@@ -13,6 +13,10 @@ use stdClass;
  */
 class Strings extends strongType
 {
+    /**
+     * @param string $emails
+     * @return array
+     */
     public static function SplitEmails(string $emails): array
     {
         $list = [];
@@ -156,8 +160,8 @@ class Strings extends strongType
     }
 
     /**
-     * @param $tsv
-     * @param null $mapping_function
+     * @param string $tsv
+     * @param callable|null $mapping_function
      * @param string|null $filename
      * @param string|null $class
      * @param bool $ignore_errors
@@ -704,6 +708,10 @@ class Strings extends strongType
         return $str;
     }
 
+    /**
+     * @param $row
+     * @return array|string|void|null
+     */
     private static function RowToJSON($row)
     {
         if (!is_object($row)) {
@@ -741,6 +749,10 @@ class Strings extends strongType
 
     }
 
+    /**
+     * @param $val
+     * @return array|mixed|string|true
+     */
     public static function fixBOOLs(&$val)
     {
         if (is_string($val)) {
@@ -1140,6 +1152,12 @@ class Strings extends strongType
         }
     }
 
+    /**
+     * @param int $count
+     * @param string $str
+     * @param bool $increment
+     * @return string
+     */
     public static function GetValues(int $count, string $str, bool $increment): string
     {
         if ($increment) {
