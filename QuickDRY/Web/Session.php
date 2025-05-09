@@ -32,11 +32,15 @@ class Session extends strongType
      * @param string $name
      * @return mixed|null
      */
-    public static function Get(string $name)
+    public static function Get(string $name): mixed
     {
         return $_SESSION[$name] ?? null;
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     */
     public static function isset(string $name): bool
     {
         return isset($_SESSION[$name]);
