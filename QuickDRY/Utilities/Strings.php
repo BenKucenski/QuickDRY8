@@ -165,7 +165,7 @@ class Strings extends strongType
      */
     public static function TSVToArrayMap(
         string   &$tsv,
-        callable $mapping_function = null,
+        ?callable $mapping_function = null,
         ?string  $filename = null,
         ?string  $class = null,
         bool     $ignore_errors = false

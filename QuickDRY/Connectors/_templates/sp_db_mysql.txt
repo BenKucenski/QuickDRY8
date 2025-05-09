@@ -1,11 +1,11 @@
 <?php
-use QuickDRY\Utilities\SafeClass;
+use QuickDRY\Utilities\strongType;
 use QuickDRY\Utilities\Debug;
 
 /**
  * Class db_[[sp_class]]
  */
- class db_[[sp_class]] extends SafeClass
+ class db_[[sp_class]] extends strongType
 {
     /**
      * @return [[sp_class]][]
