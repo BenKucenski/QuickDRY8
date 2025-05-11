@@ -82,25 +82,38 @@ class Dates extends strongType
     }
 
     /**
-     * @param $min_date
-     * @param $max_date
+     * @param $startDate
+     * @param $endDate
      * @return int
      */
-    public static function MonthsBetweenDates($min_date, $max_date): int
+    public static function MonthsBetweenDates($startDate, $endDate): int
     {
-        $date1 = $min_date;
-        $date2 = $max_date;
+        $startDate = self::Datestamp($startDate);
+        $endDate = self::Datestamp($endDate);
 
-        $ts1 = strtotime(Dates::Datestamp($date1));
-        $ts2 = strtotime(Dates::Datestamp($date2));
+        // Convert to DateTime objects
+        try {
+            $start = new DateTime($startDate);
+        } catch (Exception $e) {
+            Debug($e->getMessage());
+        }
 
-        $year1 = (int)date('Y', $ts1);
-        $year2 = (int)date('Y', $ts2);
+        try {
+            $end = new DateTime($endDate);
+        } catch (Exception $e) {
+            Debug($e->getMessage());
+        }
 
-        $month1 = (int)date('m', $ts1);
-        $month2 = (int)date('m', $ts2);
+        // Swap if start is after end
+        if ($start > $end) {
+            [$start, $end] = [$end, $start];
+        }
 
-        return (($year2 - $year1) * 12) + ($month2 - $month1);
+        // Calculate the difference
+        $interval = $start->diff($end);
+
+        // Return total months difference
+        return ($interval->y * 12) + $interval->m;
     }
 
     /**
@@ -470,17 +483,19 @@ class Dates extends strongType
             return 'just now';
         }
 
-        $a = [365 * 24 * 60 * 60 => 'year',
-            30 * 24 * 60 * 60 => 'month',
-            24 * 60 * 60 => 'day',
-            60 * 60 => 'hour',
-            60 => 'minute',
-            1 => 'second'
+        $a = [
+            365 * 24 * 60 * 60 => 'year',
+            30 * 24 * 60 * 60  => 'month',
+            24 * 60 * 60       => 'day',
+            60 * 60            => 'hour',
+            60                 => 'minute',
+            1                  => 'second'
         ];
-        $a_plural = ['year' => 'years',
-            'month' => 'months',
-            'day' => 'days',
-            'hour' => 'hours',
+        $a_plural = [
+            'year'   => 'years',
+            'month'  => 'months',
+            'day'    => 'days',
+            'hour'   => 'hours',
             'minute' => 'minutes',
             'second' => 'seconds'
         ];
