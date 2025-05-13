@@ -498,11 +498,11 @@ class SQL_Base
         $old_val = static::StrongType($name, $this->props[$name]);
         $new_val = static::StrongType($name, $value);
 
-        if($old_val instanceof DateTime) {
+        if ($old_val instanceof DateTime) {
             $old_val = Dates::Timestamp($old_val);
         }
 
-        if($new_val instanceof DateTime) {
+        if ($new_val instanceof DateTime) {
             $new_val = Dates::Timestamp($new_val);
         }
 
@@ -564,12 +564,12 @@ class SQL_Base
     public static function GetHeader(
         ?string $sort_by = '',
         ?string $dir = '',
-        bool   $modify = false,
-        array  $add = [],
-        array  $ignore = [],
-        string $add_params = '',
-        bool   $sortable = true,
-        array  $column_order = []): string
+        bool    $modify = false,
+        array   $add = [],
+        array   $ignore = [],
+        string  $add_params = '',
+        bool    $sortable = true,
+        array   $column_order = []): string
     {
         return static::_GetHeader(static::$prop_definitions, $sort_by, $dir, $modify, $add, $ignore, $add_params, $sortable, $column_order);
     }
@@ -607,15 +607,15 @@ class SQL_Base
      * @return string
      */
     protected static function _GetHeader(
-        array  $props,
+        array   $props,
         ?string $sort_by,
         ?string $dir,
-        bool   $modify = false,
-        array  $add = [],
-        array  $ignore = [],
-        string $add_params = '',
-        bool   $sortable = true,
-        array  $column_order = []): string
+        bool    $modify = false,
+        array   $add = [],
+        array   $ignore = [],
+        string  $add_params = '',
+        bool    $sortable = true,
+        array   $column_order = []): string
     {
         $not_dir = $dir == 'asc' ? 'desc' : 'asc';
         $arrow = $dir == 'asc' ? '&uarr;' : '&darr;';
@@ -755,24 +755,31 @@ class SQL_Base
         }
 
         foreach ($this->props as $name => $value) {
-            if (!in_array($name, $ignore)) {
-                if (array_key_exists($name, $swap)) {
+            if (in_array($name, $ignore)) {
+                continue;
+            }
+
+
+            if (array_key_exists($name, $swap)) {
+                if(method_exists($this, $swap[$name])) {
+                    $value = $this->{$swap[$name]}();
+                } else {
                     $value = $this->{$swap[$name]};
-                } else {
-                    $value = $this->ValueToNiceValue($name, $this->$name);
                 }
+            } else {
+                $value = $this->ValueToNiceValue($name, $this->$name);
+            }
 
 
-                if (!is_object($value)) {
-                    if (is_array($value)) {
-                        $value = implode(',', $value);
-                    }
-                    $columns[$name] = '<td>' . $value . '</td>';
-                } elseif ($value instanceof DateTime) {
-                    $columns[$name] = '<td>' . Dates::Timestamp($value) . '</td>';
-                } else {
-                    $columns[$name] = '<td><i>Object: </i>' . get_class($value) . '</td>';
+            if (!is_object($value)) {
+                if (is_array($value)) {
+                    $value = implode(',', $value);
                 }
+                $columns[$name] = '<td>' . $value . '</td>';
+            } elseif ($value instanceof DateTime) {
+                $columns[$name] = '<td>' . Dates::Timestamp($value) . '</td>';
+            } else {
+                $columns[$name] = '<td><i>Object: </i>' . get_class($value) . '</td>';
             }
         }
 

@@ -31,8 +31,8 @@ class FormClass
      * @param array $options
      * @param string|null $selected
      * @param ElementID $elementID
-     * @param string $class
-     * @param string $onchange
+     * @param string|null $class
+     * @param string|null $onchange
      * @param bool $add_none
      * @return string
      */
@@ -40,9 +40,10 @@ class FormClass
         array     $options,
         ?string   $selected,
         ElementID $elementID,
-        string    $class = '',
-        string    $onchange = '',
-        bool      $add_none = false): string
+        ?string    $class = null,
+        ?string    $onchange = null,
+        bool      $add_none = false
+    ): string
     {
         $name = $elementID->name;
         $id = $elementID->id;
