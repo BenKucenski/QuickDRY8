@@ -374,12 +374,6 @@ class MSSQL_Core extends SQL_Base
             return new QueryExecuteResult();
         }
 
-        // if this instance wasn't loaded from the database
-        // don't try to remove it
-        if (!$this->_from_db) {
-            return new QueryExecuteResult();
-        }
-
         if ($this->HasChangeLog()) {
             $uuid = $this->PrimaryKey();
 
@@ -1276,10 +1270,7 @@ WHERE
         return static::Execute($sql, $params);
     }
 
-    /**
-     * @return bool
-     */
-    private function CanDelete(): bool
+    public function CanDelete(): bool
     {
         return false;
     }

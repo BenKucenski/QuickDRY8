@@ -108,7 +108,7 @@ class strongType
      * @param array $data
      * @return $this
      */
-    public function fromData(array $data): strongType
+    public function fromData(array $data, bool $strict = true): strongType
     {
         foreach ($data as $k => $v) {
             if (is_numeric($k[0])) {
@@ -166,7 +166,9 @@ class strongType
             }
         }
 
-        self::checkMissingProperties($this->_missing_properties, static::class);
+        if($strict) {
+            self::checkMissingProperties($this->_missing_properties, static::class);
+        }
 
         return $this;
     }

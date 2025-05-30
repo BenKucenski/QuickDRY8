@@ -179,17 +179,18 @@ class Helpers extends strongType
     }
 
     /**
-     * @param $path
+     * @param string $path
+     * @param bool $realpath
      * @return array
      */
-    public static function GetFolderFilesRecursive($path): array
+    public static function GetFolderFilesRecursive(string $path, bool $realpath = true): array
     {
         $directory = new RecursiveDirectoryIterator($path, FilesystemIterator::FOLLOW_SYMLINKS);
         $filter = new MyRecursiveFilterIterator($directory);
         $iterator = new RecursiveIteratorIterator($filter);
         $files = [];
         foreach ($iterator as $info) {
-            $files[] = realpath($info->getPathname());
+            $files[] = $realpath ? realpath($info->getPathname()) : $info->getPathname();
         }
         return $files;
     }
