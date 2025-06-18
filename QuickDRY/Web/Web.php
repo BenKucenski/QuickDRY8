@@ -293,12 +293,6 @@ class Web extends strongType
 
             $class::Init();
 
-            if(CurrentUser::$ResetPassword) {
-                if($this->CurrentPage !== '/my_account') {
-                    HTTP::Redirect('/my_account');
-                }
-            }
-
             switch ($this->Verb) {
                 case 'GET':
                     if ($_REQUEST['export'] ?? null) {

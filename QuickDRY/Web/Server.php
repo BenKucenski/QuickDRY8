@@ -31,7 +31,31 @@ class Server
      */
     public static function REMOTE_ADDR(): ?string
     {
-        return ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? null) ? explode(':', $_SERVER['HTTP_X_FORWARDED_FOR'])[0] : ($_SERVER['REMOTE_ADDR'] ?? 'script');
+        $ip = null;
+
+        // Check HTTP_X_FORWARDED_FOR
+        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            // X-Forwarded-For can be a comma-separated list: client, proxy1, proxy2
+            $forwardedIps = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+
+            // Take the first valid IP in the list
+            foreach ($forwardedIps as $forwardedIp) {
+                $forwardedIp = trim($forwardedIp);
+                if (filter_var($forwardedIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6)) {
+                    $ip = $forwardedIp;
+                    break;
+                }
+            }
+        }
+
+        // Fallback to REMOTE_ADDR
+        if (!$ip && !empty($_SERVER['REMOTE_ADDR'])) {
+            if (filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6)) {
+                $ip = $_SERVER['REMOTE_ADDR'];
+            }
+        }
+
+        return $ip;
     }
 
     /**
@@ -73,5 +97,20 @@ class Server
     public static function HTTP_HOST(): ?string
     {
         return $_SERVER['HTTP_HOST'] ?? null;
+    }
+
+    public static function getCurrentDomain(): string
+    {
+        // Determine if HTTPS is on
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || $_SERVER['SERVER_PORT'] == 443
+            ? "https"
+            : "http";
+
+        // Get the host name
+        $host = $_SERVER['HTTP_HOST'];
+
+        // Combine and return
+        return $scheme . "://" . $host;
     }
 }

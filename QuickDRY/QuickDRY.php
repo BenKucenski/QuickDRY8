@@ -22,11 +22,11 @@ function Debug(...$args): void
     ], JSON_PRETTY_PRINT);
     file_put_contents($file, $data);
 
-    if (SEND_DEBUG_EMAILS) {
+    if (defined('SEND_DEBUG_EMAILS') && SEND_DEBUG_EMAILS) {
         $email = Mailer::Queue(
             SMTP_DEBUG_EMAIL,
             SMTP_DEBUG_EMAIL,
-            'Purse Poor Error',
+            'System Error',
             $data
         );
         $email->Send();
