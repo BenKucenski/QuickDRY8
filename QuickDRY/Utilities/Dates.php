@@ -104,13 +104,13 @@ class Dates extends strongType
             Debug($e->getMessage());
         }
 
-        // Swap if start is after end
-        if ($start > $end) {
-            [$start, $end] = [$end, $start];
-        }
-
         // Calculate the difference
         $interval = $start->diff($end);
+
+        // if end date is before start date, you have to negate the result
+        if ($start > $end) {
+            return -(($interval->y * 12) + $interval->m);
+        }
 
         // Return total months difference
         return ($interval->y * 12) + $interval->m;
