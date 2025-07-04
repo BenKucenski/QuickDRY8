@@ -26,7 +26,7 @@ class Dates extends strongType
             $months = ($interval->y * 12) + $interval->m; // Total number of whole months
             $months += round($interval->d / 30, 1); // Add the month fraction
         } catch (Exception $ex) {
-            Debug($ex);
+            Exception($ex);
         }
         return $months;
     }
@@ -57,7 +57,7 @@ class Dates extends strongType
             $date->setTimezone($tz);
             return $date->format('Y-m-d H:i:s');
         } catch (Exception $e) {
-            Debug($e);
+            Exception($e);
             exit;
         }
     }
@@ -76,7 +76,7 @@ class Dates extends strongType
             $date->setTimezone($tz);
             return $date->format('Y-m-d H:i:s');
         } catch (Exception $e) {
-            Debug($e);
+            Exception($e);
             exit;
         }
     }
@@ -95,22 +95,22 @@ class Dates extends strongType
         try {
             $start = new DateTime($startDate);
         } catch (Exception $e) {
-            Debug($e->getMessage());
+            Exception($e->getMessage());
         }
 
         try {
             $end = new DateTime($endDate);
         } catch (Exception $e) {
-            Debug($e->getMessage());
+            Exception($e->getMessage());
+        }
+
+        // Swap if start is after end
+        if ($start > $end) {
+            [$start, $end] = [$end, $start];
         }
 
         // Calculate the difference
         $interval = $start->diff($end);
-
-        // if end date is before start date, you have to negate the result
-        if ($start > $end) {
-            return -(($interval->y * 12) + $interval->m);
-        }
 
         // Return total months difference
         return ($interval->y * 12) + $interval->m;
@@ -186,7 +186,7 @@ class Dates extends strongType
         try {
             $d = new DateTime($year . '-01-01');
         } catch (Exception $e) {
-            Debug($e);
+            Exception($e);
         }
         date_modify($d, '+' . ($DayInYear - 1) . ' days');
         return self::Datestamp($d->getTimestamp());
@@ -438,7 +438,7 @@ class Dates extends strongType
             try {
                 $dateTime = new DateTime($dateTime);
             } catch (Exception $ex) {
-                Debug($ex);
+                Exception($ex->getMessage());
             }
         }
         $t = $dateTime->format('Y-m-d H:i:s.u');
@@ -660,7 +660,7 @@ class Dates extends strongType
             $dt->setTimezone(new DateTimeZone('GMT'));
             return $dt->format('Y-m-d H:i:s');
         } catch (Exception $e) {
-            Debug('ToGMT');
+            Exception($e->getMessage());
         }
         return '';
     }

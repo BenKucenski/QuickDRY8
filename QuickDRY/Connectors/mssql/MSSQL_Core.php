@@ -94,7 +94,7 @@ class MSSQL_Core extends SQL_Base
         ';
         $res = static::Query($sql);
         if ($res['error']) {
-            Debug($res);
+            Exception($res);
         }
         $list = [];
         foreach ($res['data'] as $row) {
@@ -278,7 +278,7 @@ class MSSQL_Core extends SQL_Base
         try {
             return static::$connection->Execute($sql, $params, $large);
         } catch (Exception $ex) {
-            Debug($ex);
+            Exception($ex);
         }
         return null;
     }
@@ -341,7 +341,7 @@ class MSSQL_Core extends SQL_Base
 
         $res = static::$connection->Query($sql);
         if ($res['error']) {
-            Debug($res);
+            Exception($res);
         }
         return $res['data'][0]['guid'];
     }
@@ -428,7 +428,7 @@ class MSSQL_Core extends SQL_Base
             if ($val instanceof DateTime) {
                 $val = $val->format('Y-m-d H:i:s');
             } else {
-                Debug(['QuickDRY Error' => '$val is object', $val]);
+                Exception(['QuickDRY Error' => '$val is object', $val]);
             }
         }
         if (str_starts_with($val, '{BETWEEN} ')) {
@@ -550,7 +550,7 @@ class MSSQL_Core extends SQL_Base
         }
 
         if ($res['error']) {
-            Debug($res);
+            Exception($res);
         }
 
         if (isset($res['data'])) {
@@ -631,7 +631,7 @@ class MSSQL_Core extends SQL_Base
         $res = static::Query($sql, $params, true);
 
         if (isset($res['error'])) {
-            Debug($res);
+            Exception($res);
         }
 
         if (self::$UseLog) {
@@ -701,7 +701,7 @@ class MSSQL_Core extends SQL_Base
 
 
         if ($res['error']) {
-            Debug($res);
+            Exception($res);
         }
 
         foreach ($res['data'] as $r) {
@@ -804,7 +804,7 @@ FROM (
 
         $res = static::Query($sql, $params);
         if ($res['error']) {
-            Debug($res);
+            Exception($res);
         }
 
         $count = $res['data'][0]['num'] ?? 0;
@@ -829,7 +829,7 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
             $res = static::Query($sql, $params);
 
             if ($res['error']) {
-                Debug($res);
+                Exception($res);
             }
 
             foreach ($res['data'] as $r) {
@@ -881,7 +881,7 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
         if ($value && strcasecmp($value, 'null') == 0) {
             if (!$just_checking) {
                 if (!static::$prop_definitions[$name]['is_nullable']) {
-                    Debug($name . ' cannot be null');
+                    Exception($name . ' cannot be null');
                 }
             }
             return null;
@@ -910,7 +910,7 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
                     } else {
                         $value = Strings::Numeric($value);
                         if (!$value) {
-                            Debug([
+                            Exception([
                                 'name'  => $name,
                                 'value' => $value,
                                 'type'  => static::$prop_definitions[$name]['type'],
@@ -974,7 +974,7 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
 
             $type = static::class;
             if (!method_exists($type, 'Get')) {
-                Debug("$type::Get");
+                Exception("$type::Get");
             }
             $t = $type::Get($params);
             if (!$t) {
@@ -1067,7 +1067,7 @@ WHERE
             $res = static::Execute($sql, $params);
 
             if ($res->error) {
-                Debug($res);
+                Exception($res);
             }
 
             if (!$primary_set) {

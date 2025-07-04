@@ -15,19 +15,19 @@ class MySQL_A extends MySQL_Core
     protected static function _connect(): void
     {
         if (!defined('MYSQL_HOST')) {
-            Debug('MYSQL_HOST');
+            Exception('MYSQL_HOST');
         }
 
         if (!defined('MYSQL_USER')) {
-            Debug('MYSQL_USER');
+            Exception('MYSQL_USER');
         }
 
         if (!defined('MYSQL_PASS')) {
-            Debug('MYSQL_PASS');
+            Exception('MYSQL_PASS');
         }
 
         if (!defined('MYSQL_PORT')) {
-            Debug('MYSQL_PORT');
+            Exception('MYSQL_PORT');
         }
 
         if (is_null(static::$connection)) {

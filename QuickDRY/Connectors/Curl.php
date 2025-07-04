@@ -94,7 +94,7 @@ class Curl
 
             return self::getResFromGuzzle($response, $path, $params, $additional_headers);
         } catch (GuzzleException $e) {
-            Debug($e);
+            Exception($e->getMessage());
             return new self();
         }
     }
@@ -125,7 +125,7 @@ class Curl
 
             return self::getResFromGuzzle($response, $path, $params, $additional_headers);
         } catch (GuzzleException $e) {
-            Debug($e);
+            Exception($e->getMessage());
             return new self();
         }
     }
@@ -157,7 +157,7 @@ class Curl
 
             return self::getResFromGuzzle($response, $path, ['xml' => $xml], $additional_headers);
         } catch (GuzzleException $e) {
-            Debug($e);
+            Exception($e->getMessage());
             return new self();
         }
     }
@@ -184,7 +184,7 @@ class Curl
 
             return self::getResFromGuzzle($response, $path, $params, $additional_headers);
         } catch (GuzzleException $e) {
-            Debug($e);
+            Exception($e->getMessage());
             return new self();
         }
     }
@@ -215,7 +215,7 @@ class Curl
 
             return self::getResFromGuzzle($response, $path, $params, $additional_headers);
         } catch (GuzzleException $e) {
-            Debug($e);
+            Exception($e->getMessage());
             return new self();
         }
     }

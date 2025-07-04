@@ -87,7 +87,7 @@ class GoogleAPI extends strongType
         } else {
             $error = 'No Google Maps Api Key';
         }
-        Debug($error);
+        Exception($error);
     }
 
     /**

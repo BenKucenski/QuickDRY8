@@ -192,7 +192,7 @@ class Strings extends strongType
             }
             if (sizeof($row) != $n) {
                 if (!$ignore_errors) {
-                    Debug([$header, $row]);
+                    Exception([$header, $row]);
                 }
             }
             if ($mapping_function) {
@@ -303,7 +303,7 @@ class Strings extends strongType
                         $php_stmt_att = $php_stmt . '[$x_tag]' . $add . '[$key] = $value;';
                         eval($php_stmt_att);
                     } catch (Exception $ex) {
-                        Debug([$xml_array, $ex]);
+                        Exception([$xml_array, $ex]);
                     }
                 }
             }

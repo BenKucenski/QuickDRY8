@@ -51,7 +51,7 @@ class Security extends strongType
         try {
             return self::convertToken(bin2hex(random_bytes(64)));
         } catch (Exception $ex) {
-            Debug($ex);
+            Exception($ex->getMessage());
         }
         return '';
     }
@@ -101,7 +101,7 @@ class Security extends strongType
         try {
             $expire = $issuedAt->modify('+' . $expire_seconds . ' seconds')->getTimestamp();
         } catch (Exception $e) {
-            Debug($e->getMessage());
+            Exception($e->getMessage());
         }
         $serverName = $_SERVER['HTTP_HOST'];
 
@@ -286,7 +286,7 @@ class Security extends strongType
         }
 
         if (!defined('URL_SECRET_KEY')) {
-            Debug('URL_SECRET_KEY is not in the env');
+            Exception('URL_SECRET_KEY is not in the env');
         }
 
         // https://stackoverflow.com/questions/48017856/correct-way-to-use-php-openssl-encrypt
@@ -316,7 +316,7 @@ class Security extends strongType
         }
 
         if (!defined('URL_SECRET_KEY')) {
-            Debug('URL_SECRET_KEY is not in the env');
+            Exception('URL_SECRET_KEY is not in the env');
         }
 
         $data = base64_decode($data);
@@ -373,7 +373,7 @@ class Security extends strongType
         try {
             return str_pad((string)random_int($min, $max), $length, '0', STR_PAD_LEFT);
         } catch (RandomException $e) {
-            Debug($e->getMessage());
+            Exception($e->getMessage());
         }
         return '';
     }

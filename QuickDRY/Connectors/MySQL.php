@@ -21,7 +21,7 @@ class MySQL extends strongType
     {
 
         if (is_null($conn)) {
-            Debug('QuickDRY Error: No MySQL Connection');
+            Exception('QuickDRY Error: No MySQL Connection');
         }
         $matches = [];
         preg_match_all('/[\'\"][^\"\']*[\'\"](*SKIP)(*FAIL)|[:@](\w+[^\s+\,\;)])/i', $sql . ' ', $matches);
@@ -66,7 +66,7 @@ class MySQL extends strongType
                     return 'null';
                 }
 
-                Debug([$sql, $params], $result[0] . ' does not having a matching parameter (mysql_escape_query).');
+                Exception([$sql, $params], $result[0] . ' does not having a matching parameter (mysql_escape_query).');
             }
             return null;
         }, $sql);

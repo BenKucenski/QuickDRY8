@@ -172,7 +172,7 @@ class MySQL_Core extends SQL_Base
         try {
             return static::$connection->Execute($sql, $params, $large);
         } catch (Exception $ex) {
-            Debug($ex);
+            Exception($ex);
         }
         return new QueryExecuteResult();
     }
@@ -198,7 +198,7 @@ class MySQL_Core extends SQL_Base
     {
         $res = self::Query($sql, $params, false, $map_function);
         if (isset($res['error'])) {
-            Debug($res);
+            Exception($res);
         }
         return $res;
     }
@@ -306,7 +306,7 @@ class MySQL_Core extends SQL_Base
     ): array
     {
         if (!$col) {
-            Debug($col);
+            Exception($col);
         }
 
         // extra + symbols allow us to do AND on the same column
@@ -422,7 +422,7 @@ class MySQL_Core extends SQL_Base
 
         $res = static::Query($sql, $params, true);
         if (isset($res['error'])) {
-            Debug($res);
+            Exception($res);
         }
 
         foreach ($res as $t) {
@@ -564,7 +564,7 @@ class MySQL_Core extends SQL_Base
                     $sql_order_by[] .= '`' . trim($col[0]) . '`.`' . trim($col[1]) . '` ' . $dir;
                 } else {
                     if (is_array($col)) {
-                        Debug(['QuickDRY Error' => '$col cannot be array', $col]);
+                        Exception(['QuickDRY Error' => '$col cannot be array', $col]);
                     }
                     $sql_order_by[] .= '`' . trim($col) . '` ' . $dir;
                 }
@@ -593,7 +593,7 @@ class MySQL_Core extends SQL_Base
         if (is_array($left_join)) {
             foreach ($left_join as $join) {
                 if (!isset($join['database'])) {
-                    Debug($join, 'invalid join');
+                    Exception($join, 'invalid join');
                 }
                 $sql_left .= 'LEFT JOIN  `' . $join['database'] . '`.`' . $join['table'] . '` AS ' . $join['as'] . ' ON ' . $join['on']
                     . "\r\n";
@@ -739,7 +739,7 @@ class MySQL_Core extends SQL_Base
                 if ($unique_set && !$this->$primary) {
                     $type = static::class;
                     if (!method_exists($type, 'Get')) {
-                        Debug($type . '::Get');
+                        Exception($type . '::Get');
                     }
                     $t = $type::Get($params);
 
@@ -787,7 +787,7 @@ class MySQL_Core extends SQL_Base
             try {
                 $st_value = static::StrongType($name, $value);
             } catch (Exception $ex) {
-                Debug($ex);
+                Exception($ex);
             }
 
             if ($primary && strcmp($name, $primary) == 0 && !$this->$primary && !$force_insert) {

@@ -14,10 +14,9 @@ class Request
      */
     public static function toArray(): array
     {
-        $vals = [];
-        foreach ($_POST as $k => $v) {
-            $vals[$k] = $v;
-        }
+        $vals = array_map(function ($v) {
+            return $v;
+        }, $_POST);
         foreach ($_GET as $k => $v) {
             $vals[$k] = $v;
         }

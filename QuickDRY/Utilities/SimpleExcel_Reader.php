@@ -103,7 +103,7 @@ class SimpleExcel_Reader extends strongType
                 }
 
             } catch (Exception $ex) {
-                Debug($ex);
+                Exception($ex->getMessage());
             }
         }
         return $report;

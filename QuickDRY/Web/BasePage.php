@@ -168,7 +168,7 @@ class BasePage extends strongType
      */
     public static function ExportToXLS(): void
     {
-        Debug('QuickDRY Error: ExportToXLS is not implemented');
+        Exception('QuickDRY Error: ExportToXLS is not implemented');
     }
 
     /**
@@ -176,7 +176,7 @@ class BasePage extends strongType
      */
     public static function ExportToPDF(): void
     {
-        Debug('QuickDRY Error: ExportToPDF is not implemented');
+        Exception('QuickDRY Error: ExportToPDF is not implemented');
     }
 
     /**
@@ -184,7 +184,7 @@ class BasePage extends strongType
      */
     public static function ExportToDOCX(): void
     {
-        Debug('QuickDRY Error: ExportToDOCX is not implemented');
+        Exception('QuickDRY Error: ExportToDOCX is not implemented');
     }
 
     /**
@@ -192,7 +192,7 @@ class BasePage extends strongType
      */
     public static function ExportToCSV(): void
     {
-        Debug('QuickDRY Error: ExportToCSV is not implemented');
+        Exception('QuickDRY Error: ExportToCSV is not implemented');
     }
 
     /**
@@ -200,6 +200,6 @@ class BasePage extends strongType
      */
     public static function ExportToJSON(): void
     {
-        Debug('QuickDRY Error: ExportToJSON is not implemented');
+        Exception('QuickDRY Error: ExportToJSON is not implemented');
     }
 }

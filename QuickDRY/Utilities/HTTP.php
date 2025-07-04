@@ -309,7 +309,7 @@ class HTTP extends strongType
         $error = json_last_error_msg();
         if (json_last_error()) {
             if (self::$AJAXTestMode) {
-                Debug($error);
+                Testing($error);
             }
             exit($error);
         }
@@ -332,6 +332,10 @@ class HTTP extends strongType
         bool    $Download = true
     ): void
     {
+        if (ob_get_length()) {
+            ob_end_clean();
+        }
+
         if (self::$AJAXTestMode) {
             return;
         }
@@ -341,17 +345,24 @@ class HTTP extends strongType
         }
 
         if ($Download) {
-            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            // Set headers to initiate download
+            $contentType = 'application/octet-stream';
+            header('Content-Description: File Transfer');
+            header('Content-Type: ' . $contentType);
+            header('Content-Disposition: attachment; filename="' . basename($filename) . '"');
+            header('Content-Transfer-Encoding: binary');
+            header('Content-Length: ' . strlen($content));
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Expires: 0');
+
+            // Output the file content
+            echo $content;
+            exit;
         } else {
             header('Content-Type: ' . $ContentType);
         }
 
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Credentials: true');
-        header('Access-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT');
-        header(
-            'Access-Control-Allow-Headers: X-User-Email, X-User-Token, Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers'
-        );
         exit($content);
     }
 

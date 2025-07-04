@@ -87,12 +87,17 @@ if (defined('PDF_API')) {
 
     $e = error_get_last();
     if (!is_null($e) && !stristr($e['message'], 'statically')) {
-        Debug($e);
+        Exception($e);
     }
 
 
     if (!file_exists($FileName)) {
-        Debug(['file not created', 'file' => $FileName, 'cmd' => $cmd, 'output' => $output]);
+        Exception([
+            'file not created',
+            'file'   => $FileName,
+            'cmd'    => $cmd,
+            'output' => $output
+        ]);
     }
 
     if ($Web->PDFPostFunction) {
