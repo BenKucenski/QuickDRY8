@@ -77,16 +77,6 @@ class Navigation
         return $this->renderMenu($CurrentPage, $additional_params, $additional_html);
     }
 
-    /**
-     * @param int $count
-     * @param string|null $params
-     * @param string|null $_SORT_BY
-     * @param string|null $_SORT_DIR
-     * @param int|null $_PER_PAGE
-     * @param string|null $_URL
-     * @param bool $ShowViewAll
-     * @return string
-     */
     public static function BootstrapPaginationLinks(
         int     $count,
         ?string $params = null,
@@ -94,70 +84,70 @@ class Navigation
         ?string $_SORT_DIR = null,
         ?int    $_PER_PAGE = null,
         ?string $_URL = null,
-        bool    $ShowViewAll = true): string
-    {
-        if ($params == null) {
-            $params = [];
+        bool    $ShowViewAll = true
+    ): string {
+        // Parse and build query parameters
+        if ($params === null) {
+            $query = [];
             foreach ($_GET as $k => $v) {
                 if (!in_array($k, ['sort_by', 'dir', 'page', 'per_page'])) {
-                    $params[] = $k . '=' . $v;
+                    $query[] = $k . '=' . urlencode($v);
                 }
             }
-        }
-        if (is_array($params)) {
-            $params = implode('&', $params);
+            $params = implode('&', $query);
         }
 
+        $_SORT_BY  ??= SORT_BY;
+        $_SORT_DIR ??= SORT_DIR;
+        $_PER_PAGE ??= PER_PAGE;
+        $_URL      ??= CURRENT_PAGE;
 
-        $_SORT_BY = $_SORT_BY ?: SORT_BY;
-        $_SORT_DIR = $_SORT_DIR ?: SORT_DIR;
-        $_PER_PAGE = $_PER_PAGE ?: PER_PAGE;
-        $_URL = $_URL ?: CURRENT_PAGE;
-
-        if ($_PER_PAGE > 0) {
-            $num_pages = ceil($count / $_PER_PAGE);
-            if ($num_pages <= 1) return '';
-
-            $start_page = PAGE - 10;
-            $end_page = PAGE + 10;
-            if ($start_page < 0)
-                $start_page = 0;
-            if ($start_page >= $num_pages)
-                $start_page = $num_pages - 1;
-            if ($end_page < 0)
-                $end_page = 0;
-            if ($end_page >= $num_pages)
-                $end_page = $num_pages - 1;
-
-            $html = '<ul class="pagination">';
-            if (PAGE > 10) {
-                $html .= '<li class="page-item first"><a class="page-link" href="' . $_URL . '?sort_by=' . $_SORT_BY . '&dir=' . $_SORT_DIR . '&page=' . (0) . '&per_page=' . $_PER_PAGE . '&' . $params . '">&lt;&lt;</a></li>';
-                $html .= '<li class="page-item previous"><a class="page-link" href="' . $_URL . '?sort_by=' . $_SORT_BY . '&dir=' . $_SORT_DIR . '&page=' . (PAGE - 10) . '&per_page=' . $_PER_PAGE . '&' . $params . '">&lt;</a></li>';
-            }
-
-            for ($j = $start_page; $j <= $end_page; $j++) {
-                if ($j != PAGE)
-                    $html .= '<li class="page-item"><a class="page-link" href="' . $_URL . '?sort_by=' . $_SORT_BY . '&dir=' . $_SORT_DIR . '&page=' . $j . '&per_page=' . $_PER_PAGE . '&' . $params . '">' . ($j + 1) . '</a></li>';
-                else
-                    $html .= '<li class="page-item active"><a class="page-link" href="#">' . ($j + 1) . '</a></li>';
-            }
-            if (PAGE < $num_pages - 10 && $num_pages > 10) {
-                $html .= '<li class="page-item next"><a class="page-link" href="' . $_URL . '?sort_by=' . $_SORT_BY . '&dir=' . $_SORT_DIR . '&page=' . (PAGE + 10) . '&per_page=' . $_PER_PAGE . '&' . $params . '">&gt;</a></li>';
-                $html .= '<li class="page-item last"><a class="page-link" href="' . $_URL . '?sort_by=' . $_SORT_BY . '&dir=' . $_SORT_DIR . '&page=' . ($num_pages - 1) . '&per_page=' . $_PER_PAGE . '&' . $params . '">&gt;&gt;</a></li>';
-            }
-
+        // No pagination needed
+        if ($_PER_PAGE <= 0 || $count <= $_PER_PAGE) {
             if ($ShowViewAll) {
-                $html .= '<li class="page-item  view_all"><a href="' . $_URL . '?sort_by=' . $_SORT_BY . '&dir=' . $_SORT_DIR . '&page=' . $j . '&per_page=0&' . $params . '">View All</a></li>';
+                return '<ul class="pagination mt-3"><li class="page-item"><a class="page-link" href="' . $_URL . '?sort_by=' . $_SORT_BY . '&dir=' . $_SORT_DIR . '&page=0&' . $params . '">View Paginated</a></li></ul>';
             }
-            return $html . '</ul>';
+            return '';
         }
-        $html = '<br/><ul class="pagination">';
-        if ($ShowViewAll) {
-            $html .= '<li class="page-item view_all"><a href="' . $_URL . '?sort_by=' . $_SORT_BY . '&dir=' . $_SORT_DIR . '&page=0&' . $params . '">View Paginated</a></li>';
-        }
-        return $html . '</ul>';
-    }
 
+        $num_pages = ceil($count / $_PER_PAGE);
+        $current   = PAGE;
+        $start     = max($current - 10, 0);
+        $end       = min($current + 10, $num_pages - 1);
+
+        $buildUrl = function ($page) use ($_URL, $_SORT_BY, $_SORT_DIR, $_PER_PAGE, $params) {
+            return "{$_URL}?sort_by={$_SORT_BY}&dir={$_SORT_DIR}&page={$page}&per_page={$_PER_PAGE}&{$params}";
+        };
+
+        $html = '<ul class="pagination mt-3">';
+
+        // First and Previous
+        if ($current > 10) {
+            $html .= '<li class="page-item"><a class="page-link" href="' . $buildUrl(0) . '">&laquo;</a></li>';
+            $html .= '<li class="page-item"><a class="page-link" href="' . $buildUrl($current - 10) . '">&lsaquo;</a></li>';
+        }
+
+        // Page links
+        for ($i = $start; $i <= $end; $i++) {
+            $active = $i === $current ? ' active' : '';
+            $html .= '<li class="page-item' . $active . '">';
+            $html .= '<a class="page-link" href="' . ($active ? '#' : $buildUrl($i)) . '">' . ($i + 1) . '</a></li>';
+        }
+
+        // Next and Last
+        if ($current < $num_pages - 10 && $num_pages > 10) {
+            $html .= '<li class="page-item"><a class="page-link" href="' . $buildUrl($current + 10) . '">&rsaquo;</a></li>';
+            $html .= '<li class="page-item"><a class="page-link" href="' . $buildUrl($num_pages - 1) . '">&raquo;</a></li>';
+        }
+
+        // View All
+        if ($ShowViewAll) {
+            $html .= '<li class="page-item"><a class="page-link" href="' . $_URL . '?sort_by=' . $_SORT_BY . '&dir=' . $_SORT_DIR . '&page=0&per_page=0&' . $params . '">View All</a></li>';
+        }
+
+        $html .= '</ul>';
+        return $html;
+    }
 
     /**
      * @param string|null $CurrentPage

@@ -332,10 +332,21 @@ class Web extends strongType
             $this->MetaTitle = $class::getMetaTitle();
 
             if ($class::getMasterPage()) {
-                require_once __DIR__ . '/../../masterpages/' . $class::getMasterPage();
+                if (($_REQUEST['export'] ?? null) == 'pdf') {
+                    ob_start();
+                    require_once __DIR__ . '/../../masterpages/' . $class::getMasterPage();
+                    $this->HTML = ob_get_clean();
+
+                    global $Web;
+                    $Web = $this;
+                    require_once __DIR__ . '/WebKit.php';
+                } else {
+                    require_once __DIR__ . '/../../masterpages/' . $class::getMasterPage();
+                }
             } else {
                 exit ($this->HTML);
             }
+
         }
     }
 
