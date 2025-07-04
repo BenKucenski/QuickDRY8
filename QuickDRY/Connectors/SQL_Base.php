@@ -332,17 +332,17 @@ class SQL_Base
     public static function GetAll(?array $where = null, ?array $order_by = null, ?int $limit = null): ?array
     {
         if (!is_null($order_by) && !is_array($order_by)) {
-            Debug('QuickDRY Error: GetAll $order_by must be an assoc array ["col"=>"asc,desc",...]', true);
+            Exception('QuickDRY Error: GetAll $order_by must be an assoc array ["col"=>"asc,desc",...]', true);
         }
 
         if (!is_null($where) && !is_array($where)) {
-            Debug('QuickDRY Error: GetAll $where must be an assoc array ["col"=>"val",...]', true);
+            Exception('QuickDRY Error: GetAll $where must be an assoc array ["col"=>"val",...]', true);
         }
 
         if (!is_null($order_by)) {
             foreach ($order_by as $col => $dir) {
                 if (!self::check_props(trim($col))) {
-                    Debug('QuickDRY Error: ' . $col . ' is not a valid order by column for ' . get_called_class());
+                    Exception('QuickDRY Error: ' . $col . ' is not a valid order by column for ' . get_called_class());
                     return null;
                 }
             }
@@ -356,7 +356,7 @@ class SQL_Base
             foreach ($where as $col => $dir) {
                 $col = str_replace('+', '', $col);
                 if (!self::check_props(trim($col))) {
-                    Debug('QuickDRY Error: ' . $col . ' is not a valid where column for ' . get_called_class());
+                    Exception('QuickDRY Error: ' . $col . ' is not a valid where column for ' . get_called_class());
                     return null;
                 }
             }
@@ -416,7 +416,7 @@ class SQL_Base
         if (array_key_exists($name, $this->props)) {
             return static::StrongType($name, $this->props[$name]);
         }
-        Debug($name . ' is not a property of ' . get_class($this) . "\r\n");
+        Exception($name . ' is not a property of ' . get_class($this) . "\r\n");
         return null;
     }
 
@@ -476,18 +476,18 @@ class SQL_Base
     protected function SetProperty($name, $value): mixed
     {
         if (!array_key_exists($name, $this->props)) {
-            Debug('QuickDRY Error: ' . $name . ' is not a property of ' . get_class($this) . "\r\n");
+            Exception('QuickDRY Error: ' . $name . ' is not a property of ' . get_class($this) . "\r\n");
         }
 
         if (is_array($value)) {
-            Debug(['QuickDRY Error: Value assigned to property cannot be an array.', $value]);
+            Exception(['QuickDRY Error: Value assigned to property cannot be an array.', $value]);
         }
 
         if (is_object($value)) {
             if ($value instanceof DateTime) {
                 $value = Dates::Timestamp($value);
             } else {
-                Debug(['QuickDRY Error: Value assigned to property cannot be an object.', $value]);
+                Exception(['QuickDRY Error: Value assigned to property cannot be an object.', $value]);
             }
         }
 
@@ -874,7 +874,7 @@ class SQL_Base
         }
 
         if ($strict && sizeof($missing)) {
-            Debug([
+            Exception([
                 'error'   => 'QuickDRY Error: Missing Columns',
                 'Object'  => get_class($this),
                 'Columns' => $missing,

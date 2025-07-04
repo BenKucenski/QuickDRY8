@@ -130,13 +130,8 @@ class Network
      */
     public static function ValidateIP($ip, $valid_ips): bool
     {
-        foreach ($valid_ips as $valid_ip => $netmask) {
-            if (Network::cidr_match($ip, $valid_ip, $netmask)) {
-                return true;
-            }
-        }
+        return array_any($valid_ips, fn($netmask, $valid_ip) => Network::cidr_match($ip, $valid_ip, $netmask));
 
-        return false;
     }
 }
 

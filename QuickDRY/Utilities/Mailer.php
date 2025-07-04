@@ -130,13 +130,13 @@ class Mailer extends strongType
             try {
                 $mail->addAddress($to, $to);
             } catch (Exception $e) {
-                Debug('Mailer Add Address', $e->getMessage());
+                Exception('Mailer Add Address', $e->getMessage());
             }
             $mail->Subject = $this->subject;
             try {
                 $mail->msgHTML($this->message);
             } catch (Exception $e) {
-                Debug('Mailer MsgHTML', $e->getMessage());
+                Exception('Mailer MsgHTML', $e->getMessage());
             }
 
             $attachments = unserialize($this->headers);
@@ -175,7 +175,7 @@ class Mailer extends strongType
             try {
                 if (!$mail->send()) {
                     if ($debug) {
-                        Debug([$mail->ErrorInfo, $mail]);
+                        Testing([$mail->ErrorInfo, $mail]);
                     }
                     $this->log = $mail->ErrorInfo;
                     $this->mail = $mail;
@@ -200,7 +200,7 @@ class Mailer extends strongType
     public static function Template(string $filename, array $values): string
     {
         if (!file_exists($filename)) {
-            Debug(['error' => 'File does not exist', $filename]);
+            Exception(['error' => 'File does not exist', $filename]);
         }
         $html = file_get_contents($filename);
         foreach ($values as $key => $value) {
@@ -209,7 +209,7 @@ class Mailer extends strongType
         $matches = [];
         preg_match_all('/##(.*?)##/si', $html, $matches);
         if (sizeof($matches[1])) {
-            Debug(['Error' => 'HTML still contains variables', $matches[1], $html]);
+            Exception(['Error' => 'HTML still contains variables', $matches[1], $html]);
         }
         return $html;
     }

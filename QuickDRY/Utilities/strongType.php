@@ -47,7 +47,7 @@ class strongType
                 $code[] = 'public ?string $' . $key . ' = null; // ' . $val;
             }
         }
-        Debug([
+        Exception([
             implode("\r\n", $code),
             $class . ' missing properties' => $missing_properties,
             'backtrace'                    => debug_backtrace()
@@ -132,7 +132,7 @@ class strongType
                     try {
                         $this->$k = is_string($v) ? new DateTime($v) : $v;
                     } catch (Exception $e) {
-                        Debug($e->getMessage());
+                        Exception($e->getMessage());
                     }
                     break;
 
@@ -162,7 +162,7 @@ class strongType
                         $this->$k = $v;
                         break;
                     }
-                    Debug($rp->getType()->getName() . ' unknown type', debug_backtrace());
+                    Exception($rp->getType()->getName() . ' unknown type', debug_backtrace());
             }
         }
 
@@ -223,7 +223,7 @@ class strongType
     ): void
     {
         if (!sizeof($items)) {
-            Debug('QuickDRY Error: Not an array or empty');
+            Exception('QuickDRY Error: Not an array or empty');
         }
 
         $cols = self::getHeaders($items[0]);
@@ -236,7 +236,7 @@ class strongType
             $output = fopen($filename, 'w');
         }
         if (!$output) {
-            Debug('could not open ' . $filename);
+            Exception('could not open ' . $filename);
         }
 
         fputcsv($output, $cols);

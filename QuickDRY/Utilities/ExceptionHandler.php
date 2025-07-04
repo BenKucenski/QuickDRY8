@@ -15,7 +15,7 @@ class ExceptionHandler
     public static function Exception(string $err): void
     {
         if (defined('SHOW_ERRORS') && SHOW_ERRORS) {
-            Debug($err);
+            Exception($err);
         }
         self::LogError(-1, $err, '', '');
     }
@@ -63,7 +63,7 @@ class ExceptionHandler
                 try {
                     self::Error($error['type'], $error['message'], $error['file'], $error['line']);
                 } catch (Exception $e) {
-                    Debug($e);
+                    Exception($e);
                 }
             }
         }

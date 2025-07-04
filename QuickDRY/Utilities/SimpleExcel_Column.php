@@ -85,7 +85,7 @@ class SimpleExcel_Column extends strongType
                 return self::SIMPLE_EXCEL_PROPERTY_TYPE_CALCULATED;
 
             default:
-                Debug($type_name);
+                Exception($type_name);
         }
 
         return self::SIMPLE_EXCEL_PROPERTY_TYPE_CALCULATED;

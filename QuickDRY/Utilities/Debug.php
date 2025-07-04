@@ -138,7 +138,7 @@ class Debug extends strongType
             }
 
             if (defined('SHOW_ERRORS') && SHOW_ERRORS) {
-                Debug($var);
+                Exception($var);
             }
 
             exit('An Error Occurred.  Please Try Again Later.');

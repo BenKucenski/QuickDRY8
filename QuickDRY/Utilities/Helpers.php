@@ -91,7 +91,7 @@ class Helpers extends strongType
     public static function LoadFile($filename): bool|string
     {
         if (!file_exists($filename)) {
-            Debug($filename . ' doesn\'t exist');
+            Exception($filename . ' doesn\'t exist');
         }
 
         if (filesize($filename) == 0) {
@@ -175,7 +175,7 @@ class Helpers extends strongType
      */
     public static function Halt($var, $message = null): void
     {
-        Debug($var, $message);
+        Exception($var, $message);
     }
 
     /**

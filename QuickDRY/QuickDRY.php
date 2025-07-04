@@ -7,6 +7,20 @@ use QuickDRY\Web\BrowserOS;
 
 /**
  * @param ...$args
+ * @return void
+ */
+function Exception(...$args): void
+{
+    Debug('Exception', $args);
+}
+
+function Testing(...$args): void
+{
+    Debug('Testing', $args);
+}
+
+/**
+ * @param ...$args
  */
 function Debug(...$args): void
 {
@@ -154,3 +168,35 @@ const SELECT_YES = 2;
 Metrics::StartGlobal();
 BrowserOS::Configure();
 
+
+/**
+ * Deep compare two arrays: same keys and same values.
+ *
+ * @param array $a
+ * @param array $b
+ * @return bool
+ */
+function arrays_are_equal(array $a, array $b): bool
+{
+    // Check that both have the same keys
+    if (array_keys($a) !== array_keys($b)) {
+        return false;
+    }
+
+    foreach ($a as $key => $valueA) {
+        $valueB = $b[$key];
+
+        if (is_array($valueA) && is_array($valueB)) {
+            // Recursively compare sub-arrays
+            if (!arrays_are_equal($valueA, $valueB)) {
+                return false;
+            }
+        } elseif ($valueA !== $valueB) {
+
+            // Mismatch for scalar values
+            return false;
+        }
+    }
+
+    return true;
+}

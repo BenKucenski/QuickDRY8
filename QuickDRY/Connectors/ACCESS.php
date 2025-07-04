@@ -79,7 +79,7 @@ class ACCESS
         try {
             $this->connection = odbc_connect('Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=' . $file, $user, $pass);
         } catch (Exception $ex) {
-            Debug($ex->getMessage());
+            Exception($ex->getMessage());
         }
     }
 
@@ -91,14 +91,14 @@ class ACCESS
     public function Query($sql, $params = null): array
     {
         if (!$this->connection) {
-            Debug('Not Connected');
+            Exception('Not Connected');
         }
 
         $query = $this->EscapeQuery($sql, $params);
 
         $res = odbc_exec($this->connection, $query);
         if (odbc_error($this->connection)) {
-            Debug([
+            Exception([
                 'sql' => $sql,
                 'params' => $params,
                 'query' => $query,
@@ -122,14 +122,14 @@ class ACCESS
     public function Execute($sql, $params = null): void
     {
         if (!$this->connection) {
-            Debug('Not Connected');
+            Exception('Not Connected');
         }
 
         $query = $this->EscapeQuery($sql, $params);
 
         odbc_exec($this->connection, $query);
         if (odbc_error($this->connection)) {
-            Debug([
+            Exception([
                 'sql' => $sql,
                 'params' => $params,
                 'query' => $query,
@@ -149,14 +149,14 @@ class ACCESS
     public function QueryMap(string $sql, ?array $params, callable $func, bool $return = true): array
     {
         if (!$this->connection) {
-            Debug('Not Connected');
+            Exception('Not Connected');
         }
 
         $query = $this->EscapeQuery($sql, $params);
 
         $res = odbc_exec($this->connection, $query);
         if (odbc_error($this->connection)) {
-            Debug([
+            Exception([
                 'sql' => $sql,
                 'params' => $params,
                 'query' => $query,

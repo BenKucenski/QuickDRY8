@@ -14,7 +14,7 @@ class HTTPStatus extends strongType
     public static function GetDescription($http_status_code): ?string
     {
         if (!is_numeric($http_status_code)) {
-            Debug('QuickDRY Error: Invalid status code: ' . $http_status_code);
+            Exception('QuickDRY Error: Invalid status code: ' . $http_status_code);
         }
 
         switch ($http_status_code) {
@@ -51,7 +51,7 @@ class HTTPStatus extends strongType
 
         }
 
-        Debug('QuickDRY Error: Invalid status code: ' . $http_status_code);
+        Exception('QuickDRY Error: Invalid status code: ' . $http_status_code);
         return $http_status_code;
     }
 }

@@ -137,7 +137,7 @@ WHERE SCHEMA_NAME = :SCHEMA_NAME
                     );
                 }
                 if (!$this->db_conns[$db_base]) {
-                    Debug(['Could not connect', $this->DB_HOST, $this->DB_USER]);
+                    Exception(['Could not connect', $this->DB_HOST, $this->DB_USER]);
                 }
 
             } catch (Exception $e) {
@@ -161,7 +161,7 @@ WHERE SCHEMA_NAME = :SCHEMA_NAME
         }
 
         if ($err && defined('MYSQL_EXIT_ON_ERROR') && MYSQL_EXIT_ON_ERROR) {
-            Debug($err);
+            Exception($err);
         }
 
         //$this->log[] = $sql;
@@ -195,7 +195,7 @@ WHERE SCHEMA_NAME = :SCHEMA_NAME
             $this->_connect();
 
             if (!$this->db) {
-                Debug([$sql, $params, 'mysql went away']);
+                Exception([$sql, $params, 'mysql went away']);
             }
 
             $start = microtime(true);
@@ -225,7 +225,7 @@ WHERE SCHEMA_NAME = :SCHEMA_NAME
                     fwrite($fp, $sql);
                     fclose($fp);
                 } else {
-                    Debug('QuickDRY Error: error writing mysql file');
+                    Exception('QuickDRY Error: error writing mysql file');
                 }
 
                 $file = 'mysql_config.' . GUID . '.cnf';
@@ -292,7 +292,7 @@ database = ' . $this->current_db . '
                 'exec'          => $exec,
             ]);
         } catch (Exception $e) {
-            Debug($e->getMessage());
+            Exception($e->getMessage());
         }
         return new QueryExecuteResult();
     }
@@ -339,7 +339,7 @@ database = ' . $this->current_db . '
             if (isset($matches[1][0])) {
                 self::SetDatabase($matches[1][0]);
             } else {
-                Debug(['QuickDRY Error' => 'Database not set and database could not be determined from query', 'sql' => $sql]);
+                Exception(['QuickDRY Error' => 'Database not set and database could not be determined from query', 'sql' => $sql]);
             }
         }
 
@@ -373,7 +373,7 @@ database = ' . $this->current_db . '
                     $list[] = !is_null($map_function) ? call_user_func($map_function, $r) : $r;
                 } else {
                     if (!class_exists($return_type)) {
-                        Debug($return_type . ' does not exist: MySQL_Connection::Query');
+                        Exception($return_type . ' does not exist: MySQL_Connection::Query');
                     }
 
                     $c = new $return_type();
@@ -485,7 +485,7 @@ database = ' . $this->current_db . '
 		';
         $res = $this->Query($sql, [$table]);
         if ($res['error']) {
-            Debug($res);
+            Exception($res);
         }
 
         $list = [];
@@ -523,7 +523,7 @@ database = ' . $this->current_db . '
 		';
             $res = $this->Query($sql);
             if ($res['error']) {
-                Debug($res);
+                Exception($res);
             }
 
             /* @var MSSQL_ForeignKey $fk */
@@ -581,7 +581,7 @@ database = ' . $this->current_db . '
             $res = $this->Query($sql);
 
             if ($res['error']) {
-                Debug($res);
+                Exception($res);
             }
 
             self::$_ForeignKeys[$this->current_db] = [];
@@ -630,7 +630,7 @@ SHOW INDEXES FROM
             $res = $this->Query($sql);
 
             if ($res['error']) {
-                Debug($res);
+                Exception($res);
             }
 
             foreach ($res['data'] as $row) {
@@ -685,7 +685,7 @@ SHOW INDEXES FROM
 
             $res = $this->Query($sql);
             if ($res['error']) {
-                Debug($res);
+                Exception($res);
             }
 
             foreach ($res['data'] as $row) {
@@ -739,7 +739,7 @@ ORDER BY
 		';
         $res = $this->Query($sql, null, MySQL_StoredProc::class);
         if (isset($res['error'])) {
-            Debug($res);
+            Exception($res);
         }
         return $res;
     }
@@ -763,7 +763,7 @@ AND (t100.ROUTINE_TYPE IN(\'FUNCTION\',\'PROCEDURE\'))
 		';
         $res = $this->Query($sql, null, MySQL_StoredProcParam::class);
         if (isset($res['error'])) {
-            Debug($res);
+            Exception($res);
         }
         return $res;
     }

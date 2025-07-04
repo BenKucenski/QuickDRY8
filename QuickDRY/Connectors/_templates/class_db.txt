@@ -115,7 +115,7 @@ class db_[[c_name]] extends [[DatabaseClassName]]
      */
     public static function Suggest($search, CurrentUser $user): array
     {
-        Debug(['error' => 'Suggest not implemented', 'search' => $search, 'user' => $user]);
+        Exception(['error' => 'Suggest not implemented', 'search' => $search, 'user' => $user]);
         return [];
     }
 

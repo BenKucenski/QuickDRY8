@@ -139,7 +139,7 @@ class MSSQL_Connection extends strongType
                     }
                     $this->db_conns[$db_base] = mssql_connect($this->DB_HOST, $this->DB_USER, $this->DB_PASS);
                     if (!$this->db_conns[$db_base]) {
-                        Debug(['Could not connect', $this->DB_HOST, $this->DB_USER]);
+                        Exception(['Could not connect', $this->DB_HOST, $this->DB_USER]);
                     }
                     mssql_min_error_severity(1);
                     if ($db_base) {
@@ -174,7 +174,7 @@ class MSSQL_Connection extends strongType
                 }
             } catch (Exception $e) {
                 // Log exception
-                Debug($e);
+                Exception($e);
             }
         }
 
@@ -182,7 +182,7 @@ class MSSQL_Connection extends strongType
 
         $this->db = $this->db_conns[$db_base];
         if (!$this->db) {
-            Debug($this->_LastConnection);
+            Exception($this->_LastConnection);
         }
         $this->current_db = $db_base;
         $time = microtime(true) - $time;
@@ -227,7 +227,7 @@ class MSSQL_Connection extends strongType
             return;
 
         if (!$sql) {
-            Debug('QuickDRY Error: empty query');
+            Exception('QuickDRY Error: empty query');
         }
 
         $this->query_time += $time;
@@ -308,7 +308,7 @@ class MSSQL_Connection extends strongType
             if (!$result) {
                 $returnval = ['error_type' => 'No Result Set', 'error' => static::SQLErrorsToString(), 'query' => $query, 'params' => $params];
                 if ($returnval['error'] && defined('MYSQL_EXIT_ON_ERROR') && MYSQL_EXIT_ON_ERROR) {
-                    Debug($returnval);
+                    Exception($returnval);
                 }
             } else {
                 while ($r = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
@@ -348,7 +348,7 @@ class MSSQL_Connection extends strongType
 
             Metrics::Stop('MSSQL');
             if ($map_function || (defined('MSSQL_EXIT_ON_ERROR') && MSSQL_EXIT_ON_ERROR)) {
-                Debug($returnval);
+                Exception($returnval);
             }
             return $returnval;
         }
@@ -359,7 +359,7 @@ class MSSQL_Connection extends strongType
 
         if ($returnval['error']) {
             if ($map_function || defined('MSSQL_EXIT_ON_ERROR') && MSSQL_EXIT_ON_ERROR) {
-                Debug($returnval);
+                Exception($returnval);
             }
             return $returnval;
         }
@@ -443,7 +443,7 @@ class MSSQL_Connection extends strongType
             if (!$result) {
                 $returnval = ['error' => print_r(mssql_get_last_message(), true), 'query' => $query, 'params' => $params, 'sql' => $sql];
                 if ($returnval['error']) {
-                    Debug($returnval);
+                    Exception($returnval);
                 }
             } else {
                 while ($r = mssql_fetch_assoc($result)) {
@@ -462,7 +462,7 @@ class MSSQL_Connection extends strongType
             $returnval['error'] = 'Exception: ' . $e->getMessage();
             $returnval['sql'] = print_r([$sql, $params], true);
             if ($map_function || (defined('MSSQL_EXIT_ON_ERROR') && MSSQL_EXIT_ON_ERROR)) {
-                Debug($returnval);
+                Exception($returnval);
             }
             Metrics::Stop('MSSQL');
             return $returnval;
@@ -475,7 +475,7 @@ class MSSQL_Connection extends strongType
 
         if ($returnval['error']) {
             if ($map_function || (defined('MSSQL_EXIT_ON_ERROR') && MSSQL_EXIT_ON_ERROR)) {
-                Debug($returnval);
+                Exception($returnval);
             }
         }
 
@@ -668,7 +668,7 @@ class MSSQL_Connection extends strongType
         $res = $this->Query($sql);
         $list = [];
         if ($res->error) {
-            Debug($res);
+            Exception($res);
         }
         foreach ($res['data'] as $row) {
             $t = $row['name'];
@@ -696,7 +696,7 @@ ORDER BY "TABLE_NAME"
         $res = $this->Query($sql);
         $list = [];
         if ($res['error']) {
-            Debug($res);
+            Exception($res);
         }
 
         foreach ($res['data'] as $row) {
@@ -843,7 +843,7 @@ ORDER BY
 
             $res = $this->Query($sql);
             if ($res['error']) {
-                Debug($res);
+                Exception($res);
             }
             foreach ($res['data'] as $row) {
                 if ($row['is_primary_key']) {
@@ -1010,7 +1010,7 @@ ORDER BY obj.name, fkc.referenced_column_id
 		';
         $res = $this->Query($sql, [$table_name]);
         if ($res['error']) {
-            Debug($res);
+            Exception($res);
         }
         $list = [];
         foreach ($res['data'] as $col) {
@@ -1045,7 +1045,7 @@ WHERE
             return $t;
         });
         if (isset($res['error'])) {
-            Debug($res);
+            Exception($res);
         }
         return $res;
     }
@@ -1069,7 +1069,7 @@ ORDER BY type_desc, OBJECT_NAME(sm.object_id)
             return new MSSQL_Definition($row);
         });
         if (isset($res['error'])) {
-            Debug($res);
+            Exception($res);
         }
         return $res;
     }
@@ -1093,7 +1093,7 @@ select
             return new MSSQL_StoredProc($row);
         });
         if (isset($res['error'])) {
-            Debug($res);
+            Exception($res);
         }
         return $res;
     }

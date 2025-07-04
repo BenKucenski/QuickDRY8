@@ -104,13 +104,13 @@ class Server
         // Determine if HTTPS is on
         $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
         || $_SERVER['SERVER_PORT'] == 443
-            ? "https"
-            : "http";
+            ? 'https'
+            : 'http';
 
         // Get the host name
         $host = $_SERVER['HTTP_HOST'];
 
         // Combine and return
-        return $scheme . "://" . $host;
+        return $scheme . '://' . $host;
     }
 }

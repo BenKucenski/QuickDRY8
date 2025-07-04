@@ -57,7 +57,7 @@ class SimpleExcel extends strongType
     public static function ExportSpreadsheet(SimpleExcel $se, bool $SafeMode = false): void
     {
         if (!$se->Filename) {
-            Debug('QuickDRY Error: Filename required');
+            Exception('QuickDRY Error: Filename required');
         }
         $se->Title = $se->Title ? substr($se->Title, 0, 31) : 'Sheet'; // max 31 characters
         $parts = pathinfo($se->Filename);
@@ -70,7 +70,7 @@ class SimpleExcel extends strongType
         try {
             $sheet = $spreadsheet->getActiveSheet();
         } catch (Exception $ex) {
-            Debug($ex);
+            Exception($ex->getMessage());
         }
         self::SetDefaultSecurity($sheet);
         $sheet->setTitle($se->Title);
@@ -83,18 +83,22 @@ class SimpleExcel extends strongType
         $sheet_row++;
         foreach ($se->Report as $item) {
             if (!is_object($item)) {
-                Debug($item);
+                Exception($item);
             }
 
             $is_std = get_class($item) === 'stdClass';
 
             $sheet_column = 'A';
             foreach ($se->Columns as $column) {
+
+                $col = $column->Property;
+                $value = method_exists($item, $col) ? $item->$col() : $item->{$col};
+
                 try { // need to use try catch so that magic __get columns are accessible
                     if (!$is_std) { // if the class type is not a stdClass, then let the class type handle errors
-                        $value = $SafeMode ? Strings::KeyboardOnly($item->{$column->Property}) : $item->{$column->Property};
-                    } elseif (isset($item->{$column->Property})) { // otherwise, check to see if properties exist or set the value to an empty string
-                        $value = $SafeMode ? Strings::KeyboardOnly($item->{$column->Property}) : $item->{$column->Property};
+                        $value = $SafeMode ? Strings::KeyboardOnly($value) : $value;
+                    } elseif (!is_null($value)) { // otherwise, check to see if properties exist or set the value to an empty string
+                        $value = $SafeMode ? Strings::KeyboardOnly($value) : $value;
                     } else {
                         $value = '';
                     }
@@ -122,7 +126,7 @@ class SimpleExcel extends strongType
                 $writer->save($se->Filename);
             }
         } catch (Exception $ex) {
-            Debug($ex);
+            Exception($ex->getMessage());
         }
 
     }
@@ -153,20 +157,20 @@ class SimpleExcel extends strongType
                 try {
                     $spreadsheet->createSheet($sheet);
                 } catch (Exception $ex) {
-                    Debug($ex);
+                    Exception($ex->getMessage());
                 }
             }
             try {
                 $spreadsheet->setActiveSheetIndex($sheet);
             } catch (Exception $ex) {
-                Debug($ex);
+                Exception($ex->getMessage());
             }
             $xls_sheet = null;
             try {
                 $xls_sheet = $spreadsheet->getActiveSheet();
                 $xls_sheet->setTitle($report->Title ?: 'Sheet ' . ($sheet + 1));
             } catch (Exception $ex) {
-                Debug($ex);
+                Exception($ex->getMessage());
             }
             self::SetDefaultSecurity($xls_sheet);
 
@@ -182,7 +186,7 @@ class SimpleExcel extends strongType
                 // $m = sizeof($report->Report);
                 foreach ($report->Report as $item) {
                     if (!is_object($item)) {
-                        Debug($item);
+                        Exception($item);
                     }
 
                     $is_std = get_class($item) === 'stdClass';
@@ -223,7 +227,7 @@ class SimpleExcel extends strongType
             }
         } catch (Exception $ex) {
             if ($exit_on_error) {
-                Debug($ex);
+                Exception($ex->getMessage());
             }
             throw new Exception($ex);
         }
@@ -241,7 +245,7 @@ class SimpleExcel extends strongType
         try {
             $sheet = $spreadsheet->getActiveSheet();
         } catch (Exception $ex) {
-            Debug($ex);
+            Exception($ex->getMessage());
         }
         $sheet->setTitle($se->Title);
         $sheet_row = 1;
@@ -254,7 +258,12 @@ class SimpleExcel extends strongType
         foreach ($se->Report as $item) {
             $sheet_column = 'A';
             foreach ($se->Columns as $column) {
-                self::_SetSpreadsheetCellValue($sheet, $sheet_column, $sheet_row, $item->{$column->Property}, $column->PropertyType);
+                $col = $column->Property;
+                if(method_exists($item, $col)) {
+                    self::_SetSpreadsheetCellValue($sheet, $sheet_column, $sheet_row, $item->{$column->Property}(), $column->PropertyType);
+                } else {
+                    self::_SetSpreadsheetCellValue($sheet, $sheet_column, $sheet_row, $item->{$column->Property}, $column->PropertyType);
+                }
                 $sheet_column++;
             }
             $sheet_row++;
@@ -274,7 +283,7 @@ class SimpleExcel extends strongType
                 $writer->save($se->Filename);
             }
         } catch (Exception $ex) {
-            Debug($ex);
+            Exception($ex->getMessage());
         }
 
     }
@@ -315,7 +324,7 @@ class SimpleExcel extends strongType
                             NumberFormat::FORMAT_DATE_XLSX14_ACTUAL
                         );
                 } catch (Exception $ex) {
-                    Debug($ex);
+                    Exception($ex->getMessage());
                 }
             }
             if ($property_type == SimpleExcel_Column::SIMPLE_EXCEL_PROPERTY_TYPE_CURRENCY) {
@@ -325,7 +334,7 @@ class SimpleExcel extends strongType
                         ->getNumberFormat()
                         ->setFormatCode('#,##0.00');
                 } catch (Exception $ex) {
-                    Debug($ex);
+                    Exception($ex->getMessage());
                 }
             }
 
@@ -336,17 +345,17 @@ class SimpleExcel extends strongType
                         ->getHyperlink()
                         ->setUrl($value);
                 } catch (Exception $ex) {
-                    Debug($ex);
+                    Exception($ex->getMessage());
                 }
             }
 
             if (is_array($value)) {
-                Debug(['value cannot be an array', $value]);
+                Exception(['value cannot be an array', $value]);
             }
             try {
                 $sheet->setCellValue($sheet_column . $sheet_row, $value);
             } catch (Exception $ex) {
-                Debug($ex);
+                Exception($ex->getMessage());
             }
         }
     }
