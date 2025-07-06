@@ -75,7 +75,6 @@ class ExceptionHandler
     public static function Init(): void
     {
         register_shutdown_function(['QuickDRY\Utilities\ExceptionHandler', 'Fatal']);
-
         set_exception_handler(['QuickDRY\Utilities\ExceptionHandler', 'Exception']);
         set_error_handler(['QuickDRY\Utilities\ExceptionHandler', 'Error']);
 

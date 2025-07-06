@@ -135,50 +135,6 @@ class Helpers extends strongType
 
 
     /**
-     * @param int $count
-     * @param string|null $params
-     * @param string|null $_SORT_BY
-     * @param string|null $_SORT_DIR
-     * @param int|null $_PER_PAGE
-     * @param string|null $_URL
-     * @param bool $ShowViewAll
-     * @return string
-     */
-    public static function BootstrapPaginationLinks(
-        int     $count,
-        ?string $params = null,
-        ?string $_SORT_BY = null,
-        ?string $_SORT_DIR = null,
-        ?int    $_PER_PAGE = null,
-        ?string $_URL = null,
-        bool    $ShowViewAll = true
-    ): string
-    {
-        return Navigation::BootstrapPaginationLinks($count, $params, $_SORT_BY, $_SORT_DIR, $_PER_PAGE, $_URL, $ShowViewAll);
-    }
-
-// debug functions
-
-    /**
-     * @param $var
-     * @param $message
-     * @return void
-     */
-    public static function CleanHalt($var, $message = null): void
-    {
-        Debug::CleanHalt($var, $message);
-    }
-
-    /**
-     * @param $var
-     * @param null $message
-     */
-    public static function Halt($var, $message = null): void
-    {
-        Exception($var, $message);
-    }
-
-    /**
      * @param string $path
      * @param bool $realpath
      * @return array
