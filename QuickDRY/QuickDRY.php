@@ -44,9 +44,15 @@ function Debug(...$args): void
             $data
         );
         $email->Send();
+
+
     }
 
+
     if (!defined('CONST_OUTPUT_ERRORS') || !CONST_OUTPUT_ERRORS) {
+        if(function_exists('post_debug_handler')) {
+            post_debug_handler();
+        }
         exit('<p>An Error Occurred: ' . $code . '</p>');
     }
 

@@ -77,6 +77,16 @@ class Navigation
         return $this->renderMenu($CurrentPage, $additional_params, $additional_html);
     }
 
+    /**
+     * @param int $count
+     * @param string|null $params
+     * @param string|null $_SORT_BY
+     * @param string|null $_SORT_DIR
+     * @param int|null $_PER_PAGE
+     * @param string|null $_URL
+     * @param bool $ShowViewAll
+     * @return string
+     */
     public static function BootstrapPaginationLinks(
         int     $count,
         ?string $params = null,
