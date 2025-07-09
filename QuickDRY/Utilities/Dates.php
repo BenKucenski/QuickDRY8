@@ -51,6 +51,9 @@ class Dates extends strongType
     public static function ConvertToUserDate($datetime, $timezone): string
     {
         $datetime = Dates::Timestamp($datetime);
+        if(!$timezone) {
+            return $datetime;
+        }
         try {
             $tz = new DateTimeZone($timezone);
             $date = new DateTime($datetime . ' GMT');

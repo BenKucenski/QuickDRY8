@@ -336,10 +336,7 @@ class Web extends strongType
                     ob_start();
                     require_once __DIR__ . '/../../masterpages/' . $class::getMasterPage();
                     $this->HTML = ob_get_clean();
-
-                    global $Web;
-                    $Web = $this;
-                    require_once __DIR__ . '/WebKit.php';
+                    WebKit::Render($this);
                 } else {
                     require_once __DIR__ . '/../../masterpages/' . $class::getMasterPage();
                 }
@@ -367,6 +364,12 @@ class Web extends strongType
                 break;
             case 'PDF':
                 $class::ExportToPDF();
+
+                $this->RenderPDF = true;
+                $this->PDFPageSize = $class::$PDFPageSize;
+                $this->PDFFileName = $class::$PDFFileName;
+                $this->PDFPageOrientation = $class::$PDFPageOrientation;
+                $this->PDFShrinkToFit = $class::$PDFShrinkToFit;
                 break;
         }
     }
