@@ -95,6 +95,9 @@ class Dates extends strongType
         $endDate = self::Datestamp($endDate);
 
         // Convert to DateTime objects
+        $start = null;
+        $end = null;
+
         try {
             $start = new DateTime($startDate);
         } catch (Exception $e) {
@@ -110,8 +113,9 @@ class Dates extends strongType
         // Calculate the difference
         $interval = $start->diff($end);
 
+
         // Return total months difference
-        return ($interval->y * 12) + $interval->m;
+        return (($interval->y * 12) + $interval->m) * ($interval->invert ? -1 : 1);
     }
 
     /**
