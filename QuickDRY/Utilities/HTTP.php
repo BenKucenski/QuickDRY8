@@ -162,7 +162,7 @@ class HTTP extends strongType
      * @param $err
      * @param string $url
      */
-    public static function RedirectError($err, string $url = '/'): void
+    public static function RedirectError($err, ?string $url = null): void
     {
         if (!isset($_SERVER['HTTP_HOST'])) {
             Log::Insert($err);
@@ -171,7 +171,7 @@ class HTTP extends strongType
 
         $_SESSION['error'] = $err;
 
-        if ($url == '/' && isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER']) {
+        if (is_null($url) && isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER']) {
             header('location: ' . $_SERVER['HTTP_REFERER']);
         } else {
             header('location: ' . $url);
@@ -181,9 +181,9 @@ class HTTP extends strongType
 
     /**
      * @param $notice
-     * @param string $url
+     * @param string|null $url
      */
-    public static function RedirectNotice($notice, string $url = '/'): void
+    public static function RedirectNotice($notice, ?string $url = null): void
     {
         if (self::$AJAXTestMode) {
             return;
@@ -191,7 +191,7 @@ class HTTP extends strongType
 
         $_SESSION['notice'] = $notice;
 
-        if ($url === '/' && isset($_SERVER['HTTP_REFERER'])) {
+        if (is_null($url) && isset($_SERVER['HTTP_REFERER'])) {
             header('location: ' . $_SERVER['HTTP_REFERER']);
         } else {
             header('location: ' . $url);
