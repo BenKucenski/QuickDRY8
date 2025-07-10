@@ -65,12 +65,14 @@ class Security extends strongType
         if(!$plaintext) {
             return null;
         }
+
+        $tag = '';
         $ivlen = openssl_cipher_iv_length(self::$cipher);
         $iv = openssl_random_pseudo_bytes($ivlen);
         $ciphertext = openssl_encrypt($plaintext, self::$cipher, MASTER_SECRET_KEY, 0, $iv, $tag);
         //store $cipher, $iv, and $tag for decryption later
 
-        return $ciphertext . '::' . base64_encode($iv) . '::' . base64_encode($tag);
+        return $ciphertext . '::' . base64_encode($iv) . '::' . base64_encode($tag ?? '');
     }
 
     /**
