@@ -107,11 +107,6 @@ class Dates extends strongType
             Exception($e->getMessage());
         }
 
-        // Swap if start is after end
-        if ($start > $end) {
-            [$start, $end] = [$end, $start];
-        }
-
         // Calculate the difference
         $interval = $start->diff($end);
 
