@@ -9,6 +9,7 @@ use QuickDRY\Connectors\QueryExecuteResult;
 use QuickDRY\Connectors\SQL_Base;
 use QuickDRY\Connectors\SQL_Query;
 use QuickDRY\Utilities\Dates;
+use QuickDRY\Utilities\Log;
 use QuickDRY\Utilities\Strings;
 
 /**

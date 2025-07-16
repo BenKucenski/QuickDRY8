@@ -120,7 +120,7 @@ WHERE SCHEMA_NAME = :SCHEMA_NAME
                     );
                     mysqli_real_connect(
                         $con,
-                        $this->DB_HOST,
+                        'p:' . $this->DB_HOST,
                         $this->DB_USER,
                         $this->DB_PASS,
                         $db_base,
@@ -129,7 +129,7 @@ WHERE SCHEMA_NAME = :SCHEMA_NAME
                     $this->db_conns[$db_base] = $con;
                 } else {
                     $this->db_conns[$db_base] = mysqli_connect(
-                        $this->DB_HOST,
+                        'p:' . $this->DB_HOST,
                         $this->DB_USER,
                         $this->DB_PASS,
                         $db_base,
