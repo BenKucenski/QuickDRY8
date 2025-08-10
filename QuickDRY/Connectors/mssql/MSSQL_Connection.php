@@ -704,10 +704,6 @@ ORDER BY "TABLE_NAME"
             if (str_starts_with($t, 'TEMP')) {
                 continue;
             }
-            if (str_starts_with($t, 'lss_')) {
-                continue;
-            }
-
             $list[] = $t;
         }
         return $list;

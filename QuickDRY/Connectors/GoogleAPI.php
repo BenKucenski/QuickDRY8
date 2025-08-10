@@ -120,6 +120,14 @@ class GoogleAPI extends strongType
             }
         }
 
+
+        if (isset($xml->error_message)) {
+            $res['error'] = $xml->error_message;
+        }
+        if (isset($xml->result[0]) && is_object($xml->result[0])) {
+            $res['latitude'] = strip_tags($xml->result[0]->geometry->location->lat->asXML());
+            $res['longitude'] = strip_tags($xml->result[0]->geometry->location->lng->asXML());
+        }
         return $res;
     }
 

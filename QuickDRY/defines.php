@@ -59,4 +59,3 @@ const MASTERPAGE_BLANK = null;
 const MASTERPAGE_DEFAULT = null;
 const HALT_ON_DEBUG = null;
 const ROLE_ID_ADMIN = null;
-const PDF_API = null;

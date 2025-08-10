@@ -143,7 +143,7 @@ class strongType
                 continue;
             }
 
-            if (!$rp->getType()) {
+            if (!$rp || !$rp->getType()) {
                 $this->$k = $v;
                 continue;
             }

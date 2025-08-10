@@ -23,9 +23,9 @@ class Meta
             }
 
             if(!self::$title) {
-                return 'Servicing Pros';
+                return '';
             }
-            return str_replace('"', '\\"', self::$title);
+            return ': ' . str_replace('"', '\\"', self::$title);
         }
         self::$title = $val;
 

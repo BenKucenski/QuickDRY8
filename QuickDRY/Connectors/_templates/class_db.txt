@@ -110,10 +110,9 @@ class db_[[c_name]] extends [[DatabaseClassName]]
 
     /**
      * @param $search
-     * @param CurrentUser $user
      * @return array
      */
-    public static function Suggest($search, CurrentUser $user): array
+    public static function Suggest($search): array
     {
         Exception(['error' => 'Suggest not implemented', 'search' => $search, 'user' => $user]);
         return [];
