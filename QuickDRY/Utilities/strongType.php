@@ -24,6 +24,25 @@ class strongType
         self::checkMissingProperties($this->_missing_properties, static::class);
     }
 
+
+    /**
+     * @param $value
+     * @return string
+     */
+    private static function inferType($value): string
+    {
+        return match (gettype($value)) {
+            'integer' => 'int',
+            'double'  => 'float',
+            'boolean' => 'bool',
+            'string'  => 'string',
+            'array'   => 'array',
+            'object'  => 'object',
+            default   => 'mixed',
+        };
+    }
+
+
     /**
      * @param array $missing_properties
      * @param string $class
@@ -44,7 +63,7 @@ class strongType
             } elseif (is_object($val) && get_class($val) === DateTime::class) {
                 $code[] = 'public ?DateTime $' . $key . ' = null; // ' . Dates::Timestamp($val);
             } else {
-                $code[] = 'public ?string $' . $key . ' = null; // ' . $val;
+                $code[] = 'public ?' . self::inferType($val) . ' $' . $key . ' = null; // ' . $val;
             }
         }
         Exception([
@@ -56,11 +75,13 @@ class strongType
 
     /**
      * @param $name
+     * @return null
      */
     public function __get($name)
     {
         $this->_missing_properties[$name] = null;
         self::checkMissingProperties($this->_missing_properties, static::class);
+        return null;
     }
 
     /**
