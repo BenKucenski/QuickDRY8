@@ -212,7 +212,7 @@ style="background-color: #fff; color: var(--bs-primary); border-color: #fff;"
                 $html .= sprintf('<ul class="dropdown-menu" aria-labelledby="%s">', htmlspecialchars($id)) . PHP_EOL;
                 foreach ($items as $itemLabel => $href) {
 
-                    $active = strcmp($CurrentPage, $href) == 0;
+                    $active = strcmp($CurrentPage ?? '', $href ?? '') == 0;
                     // Determine classes
                     $classes = '';
                     if ($active) {
@@ -233,7 +233,7 @@ style="background-color: #fff; color: var(--bs-primary); border-color: #fff;"
                     continue;
                 }
 
-                $active = strcmp($CurrentPage, $items) == 0;
+                $active = strcmp($CurrentPage ?? '', $items) == 0;
                 // Determine classes
                 $classes = 'btn btn-primary';
                 if ($active) {

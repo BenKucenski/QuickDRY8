@@ -4,6 +4,7 @@ namespace QuickDRY\Utilities;
 
 use DateTime;
 use Exception;
+use QuickDRY\Connectors\Curl;
 use QuickDRY\Connectors\SQL_Base;
 use stdClass;
 

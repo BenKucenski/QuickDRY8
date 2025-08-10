@@ -361,34 +361,6 @@ class Dates extends strongType
     }
 
     /**
-     * @param mixed $time
-     * @param int $offset
-     * @return string|null
-     */
-    public static function AdjustedTime(mixed $time = 0, int $offset = 0): ?string
-    {
-        if (!$time) $time = time();
-
-        if (!is_numeric($time)) {
-            $time = strtotime($time);
-        }
-
-        if ($offset < 0) {
-            $time = strtotime($offset . ' hour', $time);
-        } else {
-            $time = strtotime('+' . $offset . ' hour', $time);
-        }
-
-        global $CurrentUser;
-
-        if (!is_null($CurrentUser) && $CurrentUser->id) {
-            return strtotime(Dates::FromGMT($time, $CurrentUser->timezone_name));
-        }
-
-        return $time;
-    }
-
-    /**
      * @param null $date
      * @param null $null
      * @return string|null

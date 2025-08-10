@@ -4,6 +4,7 @@ namespace QuickDRY\Math;
 
 
 use JetBrains\PhpStorm\ArrayShape;
+use QuickDRY\Utilities\Dates;
 
 /**
  * Class MathClass
@@ -53,7 +54,7 @@ class MathClass
      * @param $arr
      * @return int
      */
-    public static function Mode($arr):int
+    public static function Mode($arr): int
     {
         $summary = [];
         foreach ($arr as $val) {
@@ -87,14 +88,22 @@ class MathClass
         return $principal * pow(1 + $rate, $periods) - $principal;
     }
 
-    /**
-     * @param $rate
-     * @param $principal
-     * @param $payment
-     * @return null|PrincipalInterest
-     */
-    public static function MonthsToRepay($rate, $principal, $payment): ?PrincipalInterest
+    public static function MonthsToRepay(
+        $rate,
+        $principal,
+        $payment,
+        $start_date = null,
+        $maturity_date = null
+    ): ?PrincipalInterest
     {
+        if ($start_date) {
+            $start_date = strtotime(Dates::Datestamp($start_date));
+        }
+
+        if ($maturity_date) {
+            $maturity_date = strtotime(Dates::Datestamp($maturity_date));
+        }
+
         $res = new PrincipalInterest();
         $res->table = [];
         $res->principal = $principal;
@@ -114,17 +123,49 @@ class MathClass
             }
             $res->principal -= $p;
             $res->month++;
-            $res->table[] = [
-                'month' => $res->month,
-                'payment' => $payment,
-                'principal' => $p,
-                'interest' => $interest_paid,
+            $row = [
+                'month'          => $res->month,
+                'payment'        => $payment,
+                'principal'      => $p,
+                'interest'       => $interest_paid,
                 'total_interest' => $res->interest,
-                'balance' => $res->principal
+                'balance'        => $res->principal
             ];
+            if ($start_date) {
+                $row['month_date'] = Dates::Datestamp($start_date);
+                $res->table[] = $row;
+
+                $start_date = strtotime('+1 month', $start_date);
+                if ($maturity_date) {
+                    if ($start_date > $maturity_date) {
+                        $start_date = strtotime('-1 month', $start_date);
+                        $days = ($maturity_date - $start_date) / (3600 * 24);
+                        $r = $rate / 365.0 / 100.0 * $days;
+                        $interest_paid = $res->principal * $r;
+
+                        $res->month++;
+                        $res->interest += $interest_paid;
+                        $row = [
+                            'month_date'     => Dates::Datestamp($maturity_date),
+                            'month'          => $res->month,
+                            'payment'        => $res->principal + $interest_paid,
+                            'principal'      => $res->principal,
+                            'interest'       => $interest_paid,
+                            'total_interest' => $res->interest,
+                            'balance'        => 0
+                        ];
+                        $res->principal = 0;
+                        $res->table[] = $row;
+                    }
+                }
+            } else {
+                $res->table[] = $row;
+            }
         }
+        $res->last_month = $res->table[sizeof($res->table) - 1]['month_date'] ?? null;
         return $res;
     }
+
 
     /**
      * @param $rate

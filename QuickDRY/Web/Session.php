@@ -45,5 +45,10 @@ class Session extends strongType
     {
         return isset($_SESSION[$name]);
     }
+
+    public static function Clear(): void
+    {
+        session_destroy();
+    }
 }
 

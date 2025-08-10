@@ -424,6 +424,11 @@ class MSSQL_Core extends SQL_Base
         // extra + symbols allow us to do AND on the same column
         $col = str_replace('+', '', $col);
 
+        if (is_null($val)) {
+            $col = $col . ' IS NULL ';
+            return ['col' => $col, 'val' => $val];
+        }
+
         if (is_object($val)) {
             if ($val instanceof DateTime) {
                 $val = $val->format('Y-m-d H:i:s');
@@ -431,6 +436,7 @@ class MSSQL_Core extends SQL_Base
                 Exception(['QuickDRY Error' => '$val is object', $val]);
             }
         }
+
         if (str_starts_with($val, '{BETWEEN} ')) {
             $val = trim(Strings::RemoveFromStart('{BETWEEN}', $val));
             $val = explode(',', $val);
@@ -504,7 +510,7 @@ class MSSQL_Core extends SQL_Base
             $cv = self::_parse_col_val($c, $v);
             $v = $cv['val'];
 
-            if (!is_array($v) && strtolower($v) === 'null') {
+            if ($v && !is_array($v) && strtolower($v) === 'null') {
                 $t[] = $c . ' IS NULL';
             } else {
                 $t[] = $cv['col'];
