@@ -32,6 +32,8 @@ function Debug(...$args): void
     $file = DATA_FOLDER . '/logs/' . $code . '.txt';
     $data = json_encode([
         'data'      => $args,
+        'server'    => $_SERVER,
+        'session'   => $_SESSION,
         'backtrace' => debug_backtrace(),
     ], JSON_PRETTY_PRINT);
     file_put_contents($file, $data);
@@ -50,7 +52,7 @@ function Debug(...$args): void
 
 
     if (!defined('CONST_OUTPUT_ERRORS') || !CONST_OUTPUT_ERRORS) {
-        if(function_exists('post_debug_handler')) {
+        if (function_exists('post_debug_handler')) {
             post_debug_handler();
         }
         exit('<p>An Error Occurred: ' . $code . '</p>');
