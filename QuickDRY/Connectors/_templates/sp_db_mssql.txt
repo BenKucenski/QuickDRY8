@@ -1,26 +1,29 @@
 <?php
+namespace common\[[namespace]]\sp_db;
+
+use common\[[namespace]]\sp\[[sp_class]];
+use QuickDRY\Connectors\QueryExecuteResult;
 use QuickDRY\Utilities\strongType;
-use QuickDRY\Utilities\Debug;
 
 /**
  * Class db_[[sp_class]]
  */
 class db_[[sp_class]] extends strongType
 {
-    public static $HaltSPOnError = true;
+    public static ?bool $HaltSPOnError = true;
     /**
      * @param  [[clean_params]]
      * @return [[sp_class]][]
      */
-    public static function getReport([[func_params]]): ?array
+    public static function getReport([[func_params]]): array
     {
         $sql = '
         EXEC [[DatabaseConstant]].[dbo].[[[SPECIFIC_NAME]]]
         [[sql_params]]
 
         ';
-        /* @var $rows [[sp_class]][] */
-        $rows = [[DatabaseClass]]::QueryMap($sql, [[[params]]], function ($row) {
+        /* @var [[sp_class]][] $rows */
+        $rows = \[[DatabaseClass]]::QueryMap($sql, [[[params]]], function ($row) {
             return new [[sp_class]]($row);
         });
 
@@ -32,16 +35,16 @@ class db_[[sp_class]] extends strongType
 
     /**
      * @param  [[clean_params]]
-     * @return array
+     * @return QueryExecuteResult
      */
-    public static function Exec([[func_params]]): array
+    public static function Exec([[func_params]]): QueryExecuteResult
     {
         $sql = '
         EXEC [[DatabaseConstant]].[dbo].[[[SPECIFIC_NAME]]]
         [[sql_params]]
 
         ';
-        $res = [[DatabaseClass]]::Execute($sql, [[[params]]]);
+        $res = \[[DatabaseClass]]::Execute($sql, [[[params]]]);
 
         if (self::$HaltSPOnError && $res['error']) {
             Debug($res);

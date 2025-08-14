@@ -155,6 +155,7 @@ class SQLCodeGen extends strongType
         $template = file_get_contents(__DIR__ . '/_templates/sp.txt');
         $vars = [
             'sp_class' => $sp_class,
+            'namespace' => self::Namespace(),
         ];
 
         $include_php = $template;

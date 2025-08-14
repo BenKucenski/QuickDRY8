@@ -2,7 +2,6 @@
 
 namespace QuickDRY\Web;
 
-use models\CurrentUser;
 use QuickDRY\Connectors\mssql\MSSQL_Connection;
 use QuickDRY\Connectors\mysql\MySQL_Connection;
 use QuickDRY\Utilities\HTTP;
