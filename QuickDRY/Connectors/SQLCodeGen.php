@@ -471,7 +471,7 @@ class SQLCodeGen extends strongType
 
         $include_php = $template;
         foreach ($vars as $name => $v) {
-            $include_php = str_replace('[[' . $name . ']]', $v, $include_php);
+            $include_php = str_replace('[[' . $name . ']]', (string)$v, $include_php);
         }
 
         $fp = fopen($this->CommonClassDBFolder . '/db_' . $c_name . '.php', 'w');

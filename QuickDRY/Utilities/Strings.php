@@ -546,7 +546,7 @@ class Strings extends strongType
      * @param mixed $val
      * @return float|int|string
      */
-    public static function Numeric($val): float|int|string
+    public static function Numeric(mixed $val): float|int|string
     {
         // Treat only null/empty-string as empty; don't special-case "0"
         if ($val === null || trim((string)$val) === '') {

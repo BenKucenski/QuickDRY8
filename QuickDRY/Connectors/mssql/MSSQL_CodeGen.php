@@ -58,8 +58,8 @@ class MSSQL_CodeGen extends SQLCodeGen
         $this->UserIdColumn = $user_id_column ?: 'id';
         $this->MasterPage = $master_page ?: 'MASTERPAGE_DEFAULT';
         $this->DatabasePrefix = $this->DatabaseConstant ?: $this->Database;
-        $this->LowerCaseTables = $lowercase_tables;
-        $this->UseFKColumnName = $use_fk_column_name;
+        $this->LowerCaseTables = (int)$lowercase_tables;
+        $this->UseFKColumnName = (int)$use_fk_column_name;
         $this->GenerateJSON = $GenerateJSON;
 
         $DatabaseClass::SetDatabase($this->Database);

@@ -27,7 +27,7 @@ class APIRequest
     private ?array $_return_headers = null;
 
     /* @var mixed $_curl_info */
-    private $_curl_info = null;
+    private mixed $_curl_info = null;
 
     public static bool $UseLog = false;
     public static ?int $CacheTimeoutSeconds = null;

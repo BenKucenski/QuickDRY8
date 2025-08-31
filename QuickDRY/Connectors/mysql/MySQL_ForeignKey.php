@@ -8,17 +8,17 @@ namespace QuickDRY\Connectors\mysql;
  */
 class MySQL_ForeignKey
 {
-    public ?string $table_name;
+    public ?string $table_name = null;
 
     /* @var mixed $column_name */
-    public $column_name;
+    public mixed $column_name = null;
 
-    public ?string $foreign_table_name;
+    public ?string $foreign_table_name = null;
 
     /* @var mixed $foreign_column_name */
-    public $foreign_column_name;
+    public mixed $foreign_column_name = null;
 
-    public ?string $FK_CONSTRAINT_NAME;
+    public ?string $FK_CONSTRAINT_NAME = null;
 
     /**
      * @param array $row

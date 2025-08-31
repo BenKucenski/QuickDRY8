@@ -12,14 +12,14 @@ class MSSQL_ForeignKey
     public ?string $table_name = null;
 
     /* @var mixed $column_name */
-    public $column_name;
+    public mixed $column_name;
 
     public ?string $foreign_table_name = null;
     public ?string $foreign_column_name = null;
     public ?array $foreign_column_names = null;
     public ?string $FK_CONSTRAINT_NAME = null;
     public ?string $REFERENCED_CONSTRAINT_NAME = null;
-    public ?string $REFERENCED_COLUMN_ID = null;
+    public ?int $REFERENCED_COLUMN_ID = null;
 
     /**
      * @param $row

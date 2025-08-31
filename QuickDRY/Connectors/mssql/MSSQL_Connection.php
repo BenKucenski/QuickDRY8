@@ -30,7 +30,7 @@ class MSSQL_Connection extends strongType
     protected array $db_conns = [];
 
     /* @var mixed $db */
-    protected $db = null;
+    protected mixed $db = null;
 
     protected ?string $current_db = null;
 
@@ -691,7 +691,6 @@ SELECT
     * 
 FROM [' . $this->current_db . '].information_schema.tables 
 WHERE "TABLE_TYPE" <> \'VIEW\' 
-AND TABLE_NAME NOT LIKE \'lss_%\'
 ORDER BY "TABLE_NAME"
 ';
         $res = $this->Query($sql);

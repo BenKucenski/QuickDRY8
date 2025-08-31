@@ -543,7 +543,7 @@ class Dates extends strongType
         if ($offset) {
             $date += $offset * 3600;
         }
-        return date($format, $date);
+        return date($format, (int)$date);
     }
 
     /**
