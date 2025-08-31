@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Web;
 
@@ -94,6 +95,7 @@ class BasePage extends strongType
     public static function setMetaTitle(string $metaTitle): void
     {
         self::$MetaTitle = $metaTitle;
+        Meta::setTitle($metaTitle);
     }
 
 
@@ -102,7 +104,7 @@ class BasePage extends strongType
      */
     public static function Init(): void
     {
-        $temp = parse_url($_SERVER['REQUEST_URI']);
+        $temp = parse_url($_SERVER['REQUEST_URI'] ?? '');
         self::$CurrentPage = $temp['path'] ?? '/';
         self::$PostData = json_decode(file_get_contents('php://input'), true); // return an array
     }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Connectors\mysql;
 
@@ -435,7 +436,7 @@ database = ' . $this->current_db . '
             $values = 'NULL';
         } elseif (is_bool($values)) {
             $values = $values ? 1 : 0;
-        } elseif (strlen($values) != strlen($values * 1.0) || !is_numeric($values) || $values[0] == '0') {
+        } elseif (strlen($values) != strlen((string)(float)$values) || !is_numeric($values) || $values[0] == '0') {
             $values = mysqli_real_escape_string($this->db, $values);
             if ($quotes) {
                 $values = '"' . $values . '"';

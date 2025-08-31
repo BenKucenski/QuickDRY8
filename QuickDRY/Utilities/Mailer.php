@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Utilities;
 
@@ -15,7 +16,7 @@ class Mailer extends strongType
     public ?string $subject = null;
     public ?string $to_email = null;
     public ?string $to_name = null;
-    public ?int $is_sent = null;
+    public ?bool $is_sent = null;
     public ?string $sent_at = null;
     public ?string $log = null;
     public ?string $headers = null;

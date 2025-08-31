@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Connectors;
 
@@ -14,34 +15,34 @@ use QuickDRY\Utilities\strongType;
  */
 class SQLCodeGen extends strongType
 {
-    protected string $DestinationFolder;
-    protected string $Database;
-    protected string $DatabaseConstant;
-    protected string $DatabasePrefix;
-    protected string $UserClass;
-    protected string $UserVar;
-    protected string $UserIdColumn;
-    protected string $MasterPage;
-    protected array $Tables;
-    protected int $LowerCaseTables;
-    protected int $UseFKColumnName;
-    protected string $DatabaseTypePrefix;
-    protected string $DatabaseClass;
-    protected string $DatabaseType;
-    protected int $GenerateJSON;
+    protected ?string $DestinationFolder= null;
+    protected ?string $Database= null;
+    protected ?string $DatabaseConstant= null;
+    protected ?string $DatabasePrefix= null;
+    protected ?string $UserClass= null;
+    protected ?string $UserVar= null;
+    protected ?string $UserIdColumn= null;
+    protected ?string $MasterPage= null;
+    protected ?array $Tables= null;
+    protected ?int $LowerCaseTables= null;
+    protected ?int $UseFKColumnName= null;
+    protected ?string $DatabaseTypePrefix= null;
+    protected ?string $DatabaseClass= null;
+    protected ?string $DatabaseType= null;
+    protected ?bool $GenerateJSON= null;
 
-    protected string $CommonFolder;
-    protected string $CommonClassFolder;
-    protected string $CommonClassDBFolder;
-    protected string $CommonClassSPFolder;
-    protected string $CommonClassSPDBFolder;
-    protected string $PagesBaseJSONFolder;
-    protected string $PagesJSONFolder;
-    protected string $PagesJSONControlsFolder;
+    protected ?string $CommonFolder= null;
+    protected ?string $CommonClassFolder= null;
+    protected ?string $CommonClassDBFolder= null;
+    protected ?string $CommonClassSPFolder= null;
+    protected ?string $CommonClassSPDBFolder= null;
+    protected ?string $PagesBaseJSONFolder= null;
+    protected ?string $PagesJSONFolder= null;
+    protected ?string $PagesJSONControlsFolder= null;
 
-    protected string $PagesBaseManageFolder;
-    protected string $PagesManageFolder;
-    protected string $PagesPHPUnitFolder;
+    protected ?string $PagesBaseManageFolder= null;
+    protected ?string $PagesManageFolder= null;
+    protected ?string $PagesPHPUnitFolder= null;
 
     public static ?bool $UseChangeLog = true;
 

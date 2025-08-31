@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Web;
 
@@ -63,7 +64,7 @@ class Server
      */
     public static function REQUEST_URI(): ?string
     {
-        return explode('?', $_SERVER['REQUEST_URI'] ?? ($_SERVER['HTTP_X_ORIGINAL_URL'] ?? null))[0];
+        return explode('?', $_SERVER['REQUEST_URI'] ?? ($_SERVER['HTTP_X_ORIGINAL_URL'] ?? ''))[0];
     }
 
 
@@ -99,6 +100,9 @@ class Server
         return $_SERVER['HTTP_HOST'] ?? null;
     }
 
+    /**
+     * @return string
+     */
     public static function getCurrentDomain(): string
     {
         // Determine if HTTPS is on

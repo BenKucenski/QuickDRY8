@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Web;
 
@@ -17,18 +18,21 @@ class Meta
      */
     public static function Title(?string $val = null): ?string
     {
+        if(defined('DEMO_MODE') && DEMO_MODE) {
+            self::$title .= ' - Demo -';
+        }
+
         if (is_null($val)) {
-            if(defined('DEMO_MODE') && DEMO_MODE) {
-                self::$title .= ' - Demo -';
-            }
 
             if(!self::$title) {
                 return '';
             }
-            return ': ' . str_replace('"', '\\"', self::$title);
+            return self::$title;
         }
-        self::$title = $val;
 
+        if(self::$title) {
+            return self::$title . ': ' . $val;
+        }
 
         return $val;
     }
@@ -55,6 +59,15 @@ class Meta
             return str_replace('"', '\\"', self::$keywords);
         self::$keywords = $val;
         return $val;
+    }
+
+    /**
+     * @param string $metaTitle
+     * @return void
+     */
+    public static function setTitle(string $metaTitle): void
+    {
+        self::$title = $metaTitle;
     }
 }
 

@@ -1,8 +1,7 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Utilities;
-
-use QuickDRY\API\Security;
 
 /**
  * Class Navigation
@@ -28,6 +27,10 @@ class Navigation
         }
     }
 
+    /**
+     * @param string|null $brand
+     * @return void
+     */
     public function SetBrand(?string $brand): void
     {
         $this->Brand = $brand;
@@ -126,7 +129,7 @@ class Navigation
         $end       = min($current + 10, $num_pages - 1);
 
         $buildUrl = function ($page) use ($_URL, $_SORT_BY, $_SORT_DIR, $_PER_PAGE, $params) {
-            return "{$_URL}?sort_by={$_SORT_BY}&dir={$_SORT_DIR}&page={$page}&per_page={$_PER_PAGE}&{$params}";
+            return "$_URL?sort_by=$_SORT_BY&dir=$_SORT_DIR&page=$page&per_page=$_PER_PAGE&$params";
         };
 
         $html = '<ul class="pagination mt-3">';

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Web;
 
@@ -46,6 +47,9 @@ class Session extends strongType
         return isset($_SESSION[$name]);
     }
 
+    /**
+     * @return void
+     */
     public static function Clear(): void
     {
         session_destroy();

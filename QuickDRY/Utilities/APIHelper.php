@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Utilities;
 
@@ -43,6 +44,9 @@ class APIHelper
      */
     public static function ApplyArray(string $var, array $data, string &$sql, array &$params): void
     {
+        if(!sizeof($data)) {
+            return; // leave the placeholder so the query doesn't break on null
+        }
         $placeholders = Strings::GetPlaceholders(sizeof($data), '@' . $var, true);
         $sql = str_replace('\'--' . $var . '--\'', $placeholders, $sql);
         foreach($data as $i => $k) {

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Web;
 
@@ -66,6 +67,7 @@ class Web extends strongType
     public ?string $MetaTitle = null;
     public ?string $MetaDescription = null;
     public ?string $MetaKeywords = null;
+    public ?bool $NoCache = null;
 
     /**
      * @param string[] $MasterPages
@@ -196,6 +198,12 @@ class Web extends strongType
 
         $this->CurrentPage = $full_path;
         $this->CurrentPageName = $cur_page;
+
+        if(file_exists('pages' . $this->CurrentPage)) {
+            if(str_ends_with($this->CurrentPage, '.html')) {
+                exit(file_get_contents('pages' . $this->CurrentPage));
+            }
+        }
 
         $page_alt = 'pages' . $this->CurrentPage . '/' . $this->CurrentPageName . '.html.php';
         $code_alt = 'pages' . $this->CurrentPage . '/' . $this->CurrentPageName . '.php';
@@ -329,6 +337,12 @@ class Web extends strongType
                 $this->HTML = ob_get_clean();
             }
             $this->MetaTitle = $class::getMetaTitle();
+
+            if($this->NoCache) {
+                header('Cache-Control: no-cache, must-revalidate');
+                header('Pragma: no-cache');
+                header('Expires: 0');
+            }
 
             if ($class::getMasterPage()) {
                 if (($_REQUEST['export'] ?? null) == 'pdf') {

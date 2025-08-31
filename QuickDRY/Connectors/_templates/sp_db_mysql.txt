@@ -1,9 +1,12 @@
 <?php
+declare(strict_types=1);
+
 namespace common\[[namespace]]\sp_db;
 
 use common\[[namespace]]\sp\[[sp_class]];
 use QuickDRY\Connectors\QueryExecuteResult;
 use QuickDRY\Utilities\strongType;
+
 
 /**
  * Class db_[[sp_class]]

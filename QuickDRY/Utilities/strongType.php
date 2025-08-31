@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Utilities;
 
@@ -127,6 +128,7 @@ class strongType
 
     /**
      * @param array $data
+     * @param bool $strict
      * @return $this
      */
     public function fromData(array $data, bool $strict = true): strongType

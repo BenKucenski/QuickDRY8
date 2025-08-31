@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Web;
 
@@ -7,14 +8,14 @@ namespace QuickDRY\Web;
  */
 class BrowserOS
 {
-    public static string $os = '';
-    public static string $browser = '';
-    private static string $is_mobile = '';
+    public static ?string $os = null;
+    public static ?string $browser = null;
+    private static ?bool $is_mobile = null;
 
     /**
-     * @return string
+     * @return bool
      */
-    public static function IsMobile(): string
+    public static function IsMobile(): bool
     {
         return static::$is_mobile;
     }

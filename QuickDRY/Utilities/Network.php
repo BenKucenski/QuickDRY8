@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Utilities;
 
@@ -94,7 +95,7 @@ class Network
         $netmask = explode('.', $netmask);
 
         foreach ($netmask as $octect) {
-            $bits += strlen(str_replace('0', '', decbin($octect)));
+            $bits += strlen(str_replace('0', '', decbin((int)$octect)));
         }
 
         return $bits;

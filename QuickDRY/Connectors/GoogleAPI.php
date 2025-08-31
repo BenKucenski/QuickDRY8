@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Connectors;
 
@@ -65,7 +66,7 @@ class GoogleAPI extends strongType
 
         if (strlen($this->gKey) > 1) {
             $q = str_replace(' ', '_', str_replace(' ', '+', urlencode(Strings::KeyboardOnly($this->address))) . ',+' . str_replace(' ', '+', $this->city) . ',+' . str_replace(' ', '+', $this->country) . ',+' . $this->zip);
-            if ($d = fopen("https://maps.googleapis.com/maps/api/geocode/json?address=$q&sensor=false&key=" . $this->gKey, 'r', null, $context)) {
+            if ($d = fopen("https://maps.googleapis.com/maps/api/geocode/json?address=$q&sensor=false&key=" . $this->gKey, 'r', false, $context)) {
                 $gcsv = '';
                 while ($r = fread($d, 2048)) {
                     $gcsv .= $r;

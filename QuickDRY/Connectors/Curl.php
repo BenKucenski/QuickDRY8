@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Connectors;
 
@@ -95,7 +96,6 @@ class Curl
             return self::getResFromGuzzle($response, $path, $params, $additional_headers);
         } catch (GuzzleException $e) {
             Exception($e->getMessage());
-            return new self();
         }
     }
 
@@ -126,7 +126,6 @@ class Curl
             return self::getResFromGuzzle($response, $path, $params, $additional_headers);
         } catch (GuzzleException $e) {
             Exception($e->getMessage());
-            return new self();
         }
     }
 
@@ -158,7 +157,6 @@ class Curl
             return self::getResFromGuzzle($response, $path, ['xml' => $xml], $additional_headers);
         } catch (GuzzleException $e) {
             Exception($e->getMessage());
-            return new self();
         }
     }
 
@@ -185,7 +183,6 @@ class Curl
             return self::getResFromGuzzle($response, $path, $params, $additional_headers);
         } catch (GuzzleException $e) {
             Exception($e->getMessage());
-            return new self();
         }
     }
 
@@ -216,7 +213,6 @@ class Curl
             return self::getResFromGuzzle($response, $path, $params, $additional_headers);
         } catch (GuzzleException $e) {
             Exception($e->getMessage());
-            return new self();
         }
     }
 

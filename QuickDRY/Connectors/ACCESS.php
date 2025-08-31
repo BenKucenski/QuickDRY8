@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace QuickDRY\Connectors;
 
 use Exception;
@@ -36,7 +38,7 @@ class ACCESS
         if ($params) {
             foreach ($params as $k => $v) {
                 $v = str_replace('\'', '\'\'', $v);
-                if(is_numeric($v) && strcasecmp($v, $v * 1) === 0) {
+                if(is_numeric($v) && strcasecmp($v, intval($v) . '') === 0) {
                     $sql = str_replace('@' . $k, $v, $sql);
                 } else {
                     $sql = str_replace('@' . $k, '\'' . trim($v) . '\'', $sql);

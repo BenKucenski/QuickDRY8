@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Web;
 
@@ -47,7 +48,7 @@ class WebKit
         $FileName = $html_file . '.pdf';
 
         if (defined('PDF_API')) {
-            $res = Curl::Post(PDF_API, ['html' => urlencode($Web->HTML)]);
+            $res = Curl::Post(PDF_API ?? '', ['html' => urlencode($Web->HTML)]);
             $fp = fopen($FileName, 'w');
             fwrite($fp, $res->Body);
             fclose($fp);

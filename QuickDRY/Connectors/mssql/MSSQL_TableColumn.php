@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Connectors\mssql;
 
@@ -10,7 +11,7 @@ class MSSQL_TableColumn
     public ?string $field;
     public ?string $field_alias;
     public ?string $type;
-    public ?string $null;
+    public ?bool $null;
     public ?string $default;
     public ?int $length = null;
 

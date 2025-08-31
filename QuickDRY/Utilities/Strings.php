@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Utilities;
 
@@ -431,8 +432,8 @@ class Strings extends strongType
         $second = intval($second + $influence);
 
         // Convert to HEX, format and return
-        $firstHex = str_pad(dechex($first), 2, 0, STR_PAD_LEFT);
-        $secondHex = str_pad(dechex($second), 2, 0, STR_PAD_LEFT);
+        $firstHex = str_pad(dechex($first), 2, '0', STR_PAD_LEFT);
+        $secondHex = str_pad(dechex($second), 2, '0', STR_PAD_LEFT);
 
         return $firstHex . $secondHex . $thirdColorHex;
 
@@ -542,31 +543,87 @@ class Strings extends strongType
     }
 
     /**
-     * @param $val
+     * @param mixed $val
      * @return float|int|string
      */
     public static function Numeric($val): float|int|string
     {
-        if (!$val) {
+        // Treat only null/empty-string as empty; don't special-case "0"
+        if ($val === null || trim((string)$val) === '') {
             return 0;
         }
-        // handle scientific notation, force into decimal format
-        if (stristr($val, 'E')) {
-            $temp = explode('E', $val);
-            if (sizeof($temp) == 2) {
-                // https://stackoverflow.com/questions/1471674/why-is-php-printing-my-number-in-scientific-notation-when-i-specified-it-as-00
-                return rtrim(rtrim(sprintf('%.8F', $temp[0] * pow(10, $temp[1])), '0'), '.');
+
+        $s = trim((string)$val);
+
+        // Handle scientific notation (both 'e' and 'E') without losing precision unnecessarily
+        if (stripos($s, 'e') !== false) {
+            // normalize to upper E and split
+            [$coef, $exp] = array_pad(preg_split('/e/i', $s, 2), 2, null);
+            if ($coef !== null && $exp !== null && is_numeric($coef) && preg_match('/^[+-]?\d+$/', $exp)) {
+                // Expand scientific notation using string math to avoid float rounding
+                $sign = ($coef[0] === '-') ? '-' : '';
+                if ($coef[0] === '+' || $coef[0] === '-') {
+                    $coef = substr($coef, 1);
+                }
+                $exp  = (int)$exp;
+
+                // split coefficient into integer+fractional digits
+                $parts  = explode('.', $coef, 2);
+                $digits = $parts[0] . ($parts[1] ?? '');
+                // remove leading zeros from digits but keep at least one
+                $digits = ltrim($digits, '0');
+                if ($digits === '') $digits = '0';
+
+                $dotPos = strlen($parts[0]) + $exp;
+
+                if ($dotPos <= 0) {
+                    // 0.xxx form
+                    $res = $sign . '0.' . str_repeat('0', -$dotPos) . $digits;
+                } elseif ($dotPos >= strlen($digits)) {
+                    // xxx000 form
+                    $res = $sign . $digits . str_repeat('0', $dotPos - strlen($digits));
+                } else {
+                    // xxx.yyy form
+                    $res = $sign . substr($digits, 0, $dotPos) . '.' . substr($digits, $dotPos);
+                }
+
+                // trim trailing zeros and lone dot
+                $res = rtrim(rtrim($res, '0'), '.');
+                return $res === '' || $res === '-0' ? 0 : $res;
             }
         }
-        // handle basic numbers
-        $val = preg_replace('/[^0-9\.-]/i', '', $val);
-        if (is_numeric($val)) {
-            $res = trim($val * 1.0);
-            if ($res) {
-                return $res;
-            }
+
+        // Normalize thousands/locale-ish separators:
+        // - if both ',' and '.' appear, assume ',' is thousands -> drop commas
+        // - if only ',' appears, assume it's the decimal separator -> convert to dot
+        if (str_contains($s, ',') && str_contains($s, '.')) {
+            $s = str_replace(',', '', $s);
+        } elseif (str_contains($s, ',') && !str_contains($s, '.')) {
+            $s = str_replace(',', '.', $s);
         }
-        return $val;
+
+        // Strip everything except digits, dot, leading minus/plus
+        $s = preg_replace('/(?!^)[+\-]/', '', $s);      // disallow extra signs
+        $s = preg_replace('/[^0-9.\-+]/', '', $s);
+
+        // Collapse multiple dots to a single dot (keep first)
+        if (substr_count($s, '.') > 1) {
+            $first = strpos($s, '.');
+            $s = substr($s, 0, $first + 1) . str_replace('.', '', substr($s, $first + 1));
+        }
+
+        if (is_numeric($s)) {
+            // Return a normalized string without scientific notation
+            if (str_contains($s, '.')) {
+                $out = rtrim(rtrim(sprintf('%.14F', (float)$s), '0'), '.'); // up to 14 dp by default
+                return $out === '' ? '0' : $out;
+            }
+            // integer-ish
+            return (string)(int)$s;
+        }
+
+        // Fallback: return the sanitized string as last resort
+        return $s;
     }
 
     /**
@@ -589,7 +646,7 @@ class Strings extends strongType
      */
     public static function NumericPhone($val): string
     {
-        $res = trim(preg_replace('/[^0-9]/i', '', $val) * 1.0);
+        $res = trim(preg_replace('/[^0-9]/i', '', $val));
         if (!$res) {
             return $val;
         }
@@ -796,7 +853,7 @@ class Strings extends strongType
                 $json[$i] = null;
             } elseif (is_array($row)) {
                 $json[$i] = Strings::FixJSON($row);
-            } elseif (mb_detect_encoding($row)) {
+            } elseif (mb_detect_encoding((string)$row)) {
                 $json[$i] = is_bool($row) ? $row : (is_numeric($row) ? $row : mb_convert_encoding($row, 'UTF-8', 'UTF-8'));
             } else {
                 $json[$i] = Strings::KeyboardOnly($row);
@@ -1047,7 +1104,7 @@ class Strings extends strongType
             return $null;
         }
 
-        return number_format($num, $dec);
+        return number_format((float)$num, $dec);
     }
 
     /**

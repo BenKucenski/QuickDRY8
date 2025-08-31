@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Math;
 
@@ -88,6 +89,14 @@ class MathClass
         return $principal * pow(1 + $rate, $periods) - $principal;
     }
 
+    /**
+     * @param $rate
+     * @param $principal
+     * @param $payment
+     * @param $start_date
+     * @param $maturity_date
+     * @return PrincipalInterest|null
+     */
     public static function MonthsToRepay(
         $rate,
         $principal,

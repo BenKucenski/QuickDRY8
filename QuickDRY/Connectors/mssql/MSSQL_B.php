@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Connectors\mssql;
 
@@ -26,7 +27,7 @@ class MSSQL_B extends MSSQL_Core
 
         if (is_null(static::$connection)) {
             static::$DB_HOST = MSSQLB_HOST;
-            static::$connection = new MSSQL_Connection(MSSQLB_HOST, MSSQLB_USER, MSSQLB_PASS);
+            static::$connection = new MSSQL_Connection(MSSQLB_HOST ?? '', MSSQLB_USER ?? '', MSSQLB_PASS ?? '');
         }
     }
 

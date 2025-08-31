@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Utilities;
 
@@ -17,7 +18,7 @@ class ExceptionHandler
         if (defined('SHOW_ERRORS') && SHOW_ERRORS) {
             Exception($err);
         }
-        self::LogError(-1, $err, '', '');
+        self::LogError('-1', $err, '', '');
     }
 
     /**

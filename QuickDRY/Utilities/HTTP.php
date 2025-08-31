@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Utilities;
 
@@ -159,10 +160,10 @@ class HTTP extends strongType
     }
 
     /**
-     * @param $err
-     * @param string $url
+     * @param string $err
+     * @param string|null $url
      */
-    public static function RedirectError($err, ?string $url = null): void
+    public static function RedirectError(string $err, ?string $url = null): void
     {
         if (!isset($_SERVER['HTTP_HOST'])) {
             Log::Insert($err);

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 // don't include this, it's for PHP Storm
 
 const CONST_HALT_ON_MISSING_PARAMS = null;

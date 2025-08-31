@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Utilities;
 
@@ -54,7 +55,7 @@ class BarcodeClass extends strongType
 
         // Reference for the imagettftext() function
         // imagettftext($img, $fontsize, $angle, $xpos, $ypos, $color, $fontfile, $text);
-        imagettftext($img, $font_size, 0, 0, $font_size, $black, $barcode_font, $number);
+        imagettftext($img, $font_size, 0, 0, (int)$font_size, $black, $barcode_font, $number);
 
         imagepng($img, $filename);
         return $img;

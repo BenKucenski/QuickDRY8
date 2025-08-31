@@ -1,30 +1,115 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Connectors\mysql;
 
+use DateTime;
 use Exception;
 use JetBrains\PhpStorm\ArrayShape;
 use models\ChangeLog;
 use QuickDRY\Connectors\QueryExecuteResult;
 use QuickDRY\Connectors\SQL_Base;
 use QuickDRY\Connectors\SQL_Query;
+use QuickDRY\Interfaces\ICurrentUser;
 use QuickDRY\Utilities\Dates;
 use QuickDRY\Utilities\Strings;
+use QuickDRY\Web\ElementID;
 
 /**
  * Class MySQL_Core
  */
 class MySQL_Core extends SQL_Base
 {
-    protected static string $DB_HOST;
-    protected static string $DatabasePrefix;
-    protected static int $LowerCaseTable;
-    protected static string $DatabaseTypePrefix;
-    protected static array $_primary;
-    protected static array $_unique;
-    protected static array $prop_definitions;
+    protected static ?string $DB_HOST = null;
+    protected static ?string $DatabasePrefix = null;
+    protected static ?int $LowerCaseTable = null;
+    protected static ?string $DatabaseTypePrefix = null;
+    protected static ?array $_primary = null;
+    protected static ?array $_unique = null;
+    protected static ?array $prop_definitions = null;
 
     protected bool $PRESERVE_NULL_STRINGS = false;  // when true, if a property is set to the string 'null' it will be inserted as 'null' rather than null
+
+    /**
+     * @param string|null $selected
+     * @param ElementID|null $id
+     * @return string
+     */
+    public static function Select(?string $selected = null, ?ElementID $id = null): string
+    {
+        return print_r(['Select Not Implemented', $selected, $id], true);
+    }
+
+    /**
+     * @param string $column_name
+     * @return string
+     */
+    public static function ColumnNameToNiceName(string $column_name): string
+    {
+        return isset(static::$prop_definitions[$column_name]) ? static::$prop_definitions[$column_name]['display'] : '<i>unknown</i>';
+    }
+
+    /**
+     * @param string $column_name
+     * @param null $value
+     * @param false $force_value
+     * @return mixed
+     */
+    public function ValueToNiceValue(string $column_name, $value = null, bool $force_value = false): mixed
+    {
+        if($value instanceof DateTime) {
+            $value = Dates::Timestamp($value, '');
+        }
+
+        if($value || $force_value) {
+            return $value;
+        }
+
+        if($this->$column_name instanceof DateTime) {
+            return Dates::Timestamp($this->$column_name, '');
+        }
+
+        return $this->$column_name;
+    }
+
+    /**
+     * @param string $column_name
+     * @return bool
+     */
+    public static function IgnoreColumn(string $column_name): bool
+    {
+        return in_array($column_name, ['id', 'created_at', 'created_by_id', 'edited_at', 'edited_by_id']);
+    }
+
+    /**
+     * @param bool $return_query
+     * @return array|SQL_Query
+     * @throws Exception
+     */
+    public function Insert(bool $return_query = false): SQL_Query|array
+    {
+        return $this->_Insert($return_query);
+    }
+
+    /**
+     * @param bool $return_query
+     * @return array|SQL_Query
+     * @throws Exception
+     */
+    public function Update(bool $return_query = false): SQL_Query|array
+    {
+        return $this->_Update($return_query);
+    }
+
+    /**
+     * @param $search
+     * @param ICurrentUser $user
+     * @return array
+     */
+    public static function Suggest($search, ICurrentUser $user): array
+    {
+        Exception(['error' => 'Suggest not implemented', 'search' => $search, 'user' => $user]);
+    }
 
     /**
      * @return array

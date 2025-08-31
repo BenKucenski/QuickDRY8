@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace QuickDRY\JSON;
 
 use QuickDRY\Utilities\HTTP;
@@ -24,7 +26,7 @@ class JsonStatusResult extends strongType
 
     public ?string $type = null;
     public ?string $title = null;
-    public ?string $status = null;
+    public ?int $status = null;
     public ?string $traceId = null;
     public ?string $detail = null;
     public ?string $errors = null;

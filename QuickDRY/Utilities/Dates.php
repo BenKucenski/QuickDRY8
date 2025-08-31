@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Utilities;
 
@@ -34,13 +35,13 @@ class Dates extends strongType
     /**
      * @param $start_date
      * @param $end_date
-     * @return float
+     * @return int
      */
-    public static function DaysDiff($start_date, $end_date): float
+    public static function DaysDiff($start_date, $end_date): int
     {
         $start_date = strtotime(self::Datestamp($start_date));
         $end_date = strtotime(self::Datestamp($end_date));
-        return floor(($end_date - $start_date) / 3600.0 / 24.0);
+        return (int)floor(($end_date - $start_date) / 3600.0 / 24.0);
     }
 
     /**
@@ -565,7 +566,14 @@ class Dates extends strongType
         $datePartArr = explode('-', $dateArr[0]);
         $timePartArr = explode(':', $dateArr[1]);
 
-        return mktime($timePartArr[0], $timePartArr[1], $timePartArr[2], $datePartArr[1], $datePartArr[2], $datePartArr[0]);
+        return mktime(
+            (int)$timePartArr[0],
+            (int)$timePartArr[1],
+            (int)$timePartArr[2],
+            (int)$datePartArr[1],
+            (int)$datePartArr[2],
+            (int)$datePartArr[0]
+        );
     }
 
     /**

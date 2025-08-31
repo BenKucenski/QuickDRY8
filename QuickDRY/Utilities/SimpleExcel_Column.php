@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Utilities;
 
@@ -51,12 +52,12 @@ class SimpleExcel_Column extends strongType
     /**
      * @param string $className
      * @param string $propertyName
-     * @return string|null
+     * @return int|null
      */
     public static function getPropertyType(
         string $className,
         string $propertyName
-    ): ?string {
+    ): ?int {
 
         $type_name = null;
 
@@ -70,7 +71,7 @@ class SimpleExcel_Column extends strongType
                 $type_name = implode('|', array_map(fn($t) => $t->getName(), $type->getTypes()));
             }
         } catch (ReflectionException $e) {
-
+            Exception($e->getMessage());
         }
 
         switch($type_name) {
@@ -87,7 +88,5 @@ class SimpleExcel_Column extends strongType
             default:
                 Exception($type_name);
         }
-
-        return self::SIMPLE_EXCEL_PROPERTY_TYPE_CALCULATED;
     }
 }

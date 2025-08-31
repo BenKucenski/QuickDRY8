@@ -1,5 +1,7 @@
 <?php
+declare(strict_types=1);
 
+use JetBrains\PhpStorm\NoReturn;
 use QuickDRY\Utilities\Mailer;
 use QuickDRY\Utilities\Metrics;
 use QuickDRY\Web\BrowserOS;
@@ -9,11 +11,17 @@ use QuickDRY\Web\BrowserOS;
  * @param ...$args
  * @return void
  */
+#[NoReturn]
 function Exception(...$args): void
 {
     Debug('Exception', $args);
 }
 
+/**
+ * @param ...$args
+ * @return void
+ */
+#[NoReturn]
 function Testing(...$args): void
 {
     Debug('Testing', $args);
@@ -22,6 +30,7 @@ function Testing(...$args): void
 /**
  * @param ...$args
  */
+#[NoReturn]
 function Debug(...$args): void
 {
     if (!is_dir(DATA_FOLDER . '/logs')) {
@@ -176,6 +185,49 @@ const SELECT_YES = 2;
 Metrics::StartGlobal();
 BrowserOS::Configure();
 
+
+/**
+ * Return arrays with only different values, side by side.
+ *
+ * Ignores superficial numeric differences (like 4871.87 vs 4871.8700).
+ *
+ * @param array $a
+ * @param array $b
+ * @param float $tolerance Precision tolerance for numeric comparison
+ * @return array
+ */
+function arrays_diff_side_by_side(array $a, array $b, float $tolerance = 0.000001): array
+{
+    $result = [];
+
+    foreach (array_keys(array_merge($a, $b)) as $key) {
+        $valueA = $a[$key] ?? null;
+        $valueB = $b[$key] ?? null;
+
+        if (is_array($valueA) && is_array($valueB)) {
+            // Recursively diff sub-arrays
+            $diff = arrays_diff_side_by_side($valueA, $valueB, $tolerance);
+            if (!empty($diff)) {
+                $result[$key] = $diff;
+            }
+        } elseif ($valueA !== $valueB) {
+            $bothNumeric = is_numeric($valueA) && is_numeric($valueB);
+
+            // If both are numeric, compare with tolerance
+            if ($bothNumeric && abs((float)$valueA - (float)$valueB) <= $tolerance) {
+                continue; // difference is superficial, ignore it
+            }
+
+            // Keep only if they really differ
+            $result[$key] = [
+                'a' => $valueA,
+                'b' => $valueB,
+            ];
+        }
+    }
+
+    return $result;
+}
 
 /**
  * Deep compare two arrays: same keys and same values.

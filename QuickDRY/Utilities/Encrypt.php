@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 // https://stackoverflow.com/questions/10916284/how-to-encrypt-decrypt-data-in-php
 namespace QuickDRY\Utilities;
 

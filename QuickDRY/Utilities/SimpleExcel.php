@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Utilities;
 
@@ -229,7 +230,7 @@ class SimpleExcel extends strongType
             if ($exit_on_error) {
                 Exception($ex->getMessage());
             }
-            throw new Exception($ex);
+            throw new Exception($ex->getMessage());
         }
 
     }

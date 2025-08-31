@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace [[namespace]];
 
 [[use]]
@@ -74,26 +76,6 @@ class db_[[c_name]] extends [[DatabaseClassName]]
     }
 
     /**
-     * @param bool $return_query
-     * @return array|SQL_Query
-     * @throws Exception
-     */
-    public function Insert(bool $return_query = false): SQL_Query|array
-    {
-        return $this->_Insert($return_query);
-    }
-
-    /**
-     * @param bool $return_query
-     * @return array|SQL_Query
-     * @throws Exception
-     */
-    public function Update(bool $return_query = false): SQL_Query|array
-    {
-        return $this->_Update($return_query);
-    }
-
-    /**
      * @param array $req
      * @param bool $save
      * @param bool $keep_existing_values
@@ -106,16 +88,6 @@ class db_[[c_name]] extends [[DatabaseClassName]]
     ): QueryExecuteResult
     {
         return parent::FromRequest($req, $save, $keep_existing_values);
-    }
-
-    /**
-     * @param $search
-     * @return array
-     */
-    public static function Suggest($search): array
-    {
-        Exception(['error' => 'Suggest not implemented', 'search' => $search, 'user' => $user]);
-        return [];
     }
 
     /**
@@ -163,54 +135,13 @@ class db_[[c_name]] extends [[DatabaseClassName]]
     }
 
     /**
-     * @param string $column_name
-     * @return string
-     */
-    public static function ColumnNameToNiceName(string $column_name): string
-    {
-        return isset(static::$prop_definitions[$column_name]) ? static::$prop_definitions[$column_name]['display'] : '<i>unknown</i>';
-    }
-
-    /**
-     * @param string $column_name
-     * @param null $value
-     * @param false $force_value
-     * @return mixed
-     */
-    public function ValueToNiceValue(string $column_name, $value = null, bool $force_value = false): mixed
-    {
-        if($value instanceof DateTime) {
-            $value = Dates::Timestamp($value, '');
-        }
-
-        if($value || $force_value) {
-            return $value;
-        }
-
-        if($this->$column_name instanceof DateTime) {
-            return Dates::Timestamp($this->$column_name, '');
-        }
-
-        return $this->$column_name;
-    }
-
-    /**
-     * @param string $column_name
-     * @return bool
-     */
-    public static function IgnoreColumn(string $column_name): bool
-    {
-        return in_array($column_name, ['id', 'created_at', 'created_by_id', 'edited_at', 'edited_by_id']);
-    }
-
-    /**
      * @param array|null $where
      *
      * @return static|null
      */
     public static function Get(?array $where = null): ?static
     {
-      return parent::Get($where);
+        return parent::Get($where);
     }
 
     /**
@@ -224,15 +155,4 @@ class db_[[c_name]] extends [[DatabaseClassName]]
     {
 		  return parent::GetAll($where, $order_by, $limit);
     }
-
-
-  /**
-   * @param string|null $selected
-   * @param ElementID|null $id
-   * @return string
-   */
-  public static function Select(?string $selected = null, ?ElementID $id = null): string
-  {
-    return print_r(['Select Not Implemented', $selected, $id], true);
-  }
 }

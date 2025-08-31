@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Connectors;
 
@@ -10,6 +11,7 @@ use QuickDRY\Utilities\Dates;
 use QuickDRY\Web\ElementID;
 use ReflectionException;
 use ReflectionObject;
+use ReflectionProperty;
 
 /**
  * Class SQL_Base
@@ -26,7 +28,7 @@ class SQL_Base
 
     protected array $_change_log = [];
     protected ?ChangeLogHistory $_history = null;
-    protected ?int $_from_db = null;
+    protected ?bool $_from_db = null;
 
     public ?bool $HasChanges = false;
 
@@ -417,7 +419,6 @@ class SQL_Base
             return static::StrongType($name, $this->props[$name]);
         }
         Exception($name . ' is not a property of ' . get_class($this) . "\r\n");
-        return null;
     }
 
     /**
@@ -491,7 +492,7 @@ class SQL_Base
             }
         }
 
-        if ($value && strcasecmp($value, 'null') == 0) {
+        if ($value && strcasecmp((string)$value, 'null') == 0) {
             $value = null;
         }
 
@@ -514,9 +515,9 @@ class SQL_Base
         } elseif (!is_null($old_val) && is_null($new_val)) {
             $changed = true;
             $change_reason = 'old not null, new null';
-        } elseif (!is_null($old_val) && !is_null($new_val) && strlen($old_val) != strlen($new_val)) {
+        } elseif (!is_null($old_val) && !is_null($new_val) && strlen((string)$old_val) != strlen((string)$new_val)) {
             $changed = true;
-            $change_reason = '"' . $new_val . '" "' . $old_val . '" ' . strlen($new_val) . ' ' . strlen($old_val) . ': strcmp = ' . strcmp($new_val, $old_val);
+            $change_reason = '"' . $new_val . '" "' . $old_val . '" ' . strlen((string)$new_val) . ' ' . strlen((string)$old_val) . ': strcmp = ' . strcmp((string)$new_val, (string)$old_val);
         } elseif (is_numeric($old_val) && is_numeric($new_val)) {
 
             if (abs($new_val - $old_val) > 0.000000001) {
@@ -846,6 +847,42 @@ class SQL_Base
 
         foreach ($row as $name => $value) {
             if (property_exists(static::class, $name)) {
+                $reflection = new ReflectionProperty(static::class, $name);
+
+                // check if the property has a type declaration
+                $type = $reflection->getType();
+                if ($type !== null) {
+                    $typeName = $type->getName();
+
+                    switch ($typeName) {
+                        case 'int':
+                            $value = (int) $value;
+                            break;
+                        case 'float':
+                            $value = (float) $value;
+                            break;
+                        case 'bool':
+                            $value = (bool) $value;
+                            break;
+                        case 'string':
+                            $value = (string) $value;
+                            break;
+                        case 'array':
+                            $value = (array) $value;
+                            break;
+                        default:
+                            // if it's a class/interface type, you may need to handle
+                            // conversion (e.g., json_decode to object, or construct new instance)
+                            if ($value instanceof $typeName) {
+                                // already the right type
+                            } elseif (is_array($value) && class_exists($typeName)) {
+                                // optionally: hydrate object from array
+                                $value = new $typeName(...$value);
+                            }
+                            break;
+                    }
+                }
+
                 $this->$name = $value;
                 continue;
             }
@@ -1042,7 +1079,7 @@ class SQL_Base
         $select = '';
 
         if (is_array($selected)) {
-            $select .= '<select class="form-control" onchange="' . $onchange . '" multiple size="' . (sizeof($items) + 1 <= 10 ? sizeof($items) + 1 : 10) . '" id="' . $id . '" name="' . $name . '[]">';
+            $select .= '<select class="form-control" onchange="' . $onchange . '" multiple size="' . (min(sizeof($items) + 1, 10)) . '" id="' . $id . '" name="' . $name . '[]">';
         } else {
             $select .= '<select class="form-control" onchange="' . $onchange . '"  id="' . $id . '"name="' . $name . '">';
         }

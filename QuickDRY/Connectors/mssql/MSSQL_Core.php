@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace QuickDRY\Connectors\mssql;
 
@@ -11,8 +12,10 @@ use QuickDRY\Connectors\QueryExecuteResult;
 use QuickDRY\Connectors\SQL_Base;
 use QuickDRY\Connectors\SQL_Log;
 use QuickDRY\Connectors\SQL_Query;
+use QuickDRY\Interfaces\ICurrentUser;
 use QuickDRY\Utilities\Dates;
 use QuickDRY\Utilities\Strings;
+use QuickDRY\Web\ElementID;
 
 /**
  *
@@ -28,8 +31,89 @@ class MSSQL_Core extends SQL_Base
     protected static string $DatabaseTypePrefix = 'ms';
     protected static string $DatabasePrefix = '';
     protected static int $LowerCaseTable = 0;
-    protected static string $DB_HOST;
+    protected static ?string $DB_HOST = null;
     protected bool $PRESERVE_NULL_STRINGS = false;  // when true, if a property is set to the string 'null' it will be inserted as 'null' rather than null
+
+    /**
+     * @param string|null $selected
+     * @param ElementID|null $id
+     * @return string
+     */
+    public static function Select(?string $selected = null, ?ElementID $id = null): string
+    {
+        return print_r(['Select Not Implemented', $selected, $id], true);
+    }
+
+    /**
+     * @param string $column_name
+     * @return string
+     */
+    public static function ColumnNameToNiceName(string $column_name): string
+    {
+        return isset(static::$prop_definitions[$column_name]) ? static::$prop_definitions[$column_name]['display'] : '<i>unknown</i>';
+    }
+
+    /**
+     * @param string $column_name
+     * @param null $value
+     * @param false $force_value
+     * @return mixed
+     */
+    public function ValueToNiceValue(string $column_name, $value = null, bool $force_value = false): mixed
+    {
+        if($value instanceof DateTime) {
+            $value = Dates::Timestamp($value, '');
+        }
+
+        if($value || $force_value) {
+            return $value;
+        }
+
+        if($this->$column_name instanceof DateTime) {
+            return Dates::Timestamp($this->$column_name, '');
+        }
+
+        return $this->$column_name;
+    }
+
+    /**
+     * @param string $column_name
+     * @return bool
+     */
+    public static function IgnoreColumn(string $column_name): bool
+    {
+        return in_array($column_name, ['id', 'created_at', 'created_by_id', 'edited_at', 'edited_by_id']);
+    }
+
+    /**
+     * @param bool $return_query
+     * @return array|SQL_Query
+     * @throws Exception
+     */
+    public function Insert(bool $return_query = false): SQL_Query|array
+    {
+        return $this->_Insert($return_query);
+    }
+
+    /**
+     * @param bool $return_query
+     * @return array|SQL_Query
+     * @throws Exception
+     */
+    public function Update(bool $return_query = false): SQL_Query|array
+    {
+        return $this->_Update($return_query);
+    }
+
+    /**
+     * @param $search
+     * @param ICurrentUser $user
+     * @return array
+     */
+    public static function Suggest($search, ICurrentUser $user): array
+    {
+        Exception(['error' => 'Suggest not implemented', 'search' => $search, 'user' => $user]);
+    }
 
     /**
      * @param $database
@@ -267,7 +351,7 @@ class MSSQL_Core extends SQL_Base
      * @param bool $large
      * @return QueryExecuteResult|null
      */
-    public static function Execute(string &$sql, ?array $params = null, bool $large = false): ?QueryExecuteResult
+    public static function Execute(string $sql, ?array $params = null, bool $large = false): ?QueryExecuteResult
     {
         static::_connect();
 
@@ -280,7 +364,6 @@ class MSSQL_Core extends SQL_Base
         } catch (Exception $ex) {
             Exception($ex);
         }
-        return null;
     }
 
     /**
@@ -436,6 +519,8 @@ class MSSQL_Core extends SQL_Base
                 Exception(['QuickDRY Error' => '$val is object', $val]);
             }
         }
+
+        $val = (string)$val;
 
         if (str_starts_with($val, '{BETWEEN} ')) {
             $val = trim(Strings::RemoveFromStart('{BETWEEN}', $val));
@@ -884,7 +969,7 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
             }
         }
 
-        if ($value && strcasecmp($value, 'null') == 0) {
+        if ($value && strcasecmp((string)$value, 'null') == 0) {
             if (!$just_checking) {
                 if (!static::$prop_definitions[$name]['is_nullable']) {
                     Exception($name . ' cannot be null');
@@ -893,7 +978,9 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
             return null;
         }
 
-        switch (static::$prop_definitions[$name]['type']) {
+        $_type = static::$prop_definitions[$name]['type'];
+
+        switch ($_type) {
             case 'date':
             case 'timestamp':
             case 'datetime':
@@ -907,6 +994,7 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
             case 'float':
             case 'decimal':
             case 'numeric':
+            case 'money':
                 if (is_null($value) && static::$prop_definitions[$name]['is_nullable']) {
                     return null;
                 }
@@ -919,13 +1007,20 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
                             Exception([
                                 'name'  => $name,
                                 'value' => $value,
-                                'type'  => static::$prop_definitions[$name]['type'],
-                                'error' => 'value must be ' . static::$prop_definitions[$name]['type'],
+                                'type'  => $_type,
+                                'error' => 'value must be ' . $_type,
                             ]);
                         }
                     }
                 }
-                return $value;
+
+                switch($_type) {
+                    case 'int':
+                        return !is_null($value) ? (int) $value : null;
+                    default:
+                        return !is_null($value) ? (float) $value : null;
+
+                }
 
             case 'tinyint(1)':
                 $value = Strings::Numeric($value);
@@ -935,6 +1030,9 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
             case 'int(10)':
                 $value = Strings::Numeric($value);
                 return $value * 1.0;
+
+            case 'bool':
+                return (bool) $value;
         }
         return $value;
     }
@@ -1047,7 +1145,7 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
                 $st_value = static::StrongType($name, $value);
 
 
-                if (!is_object($value) && (is_null($st_value) || strtolower(trim($value)) === 'null') && (self::IsNumeric($name) || (!self::IsNumeric($name) && !$this->PRESERVE_NULL_STRINGS))) {
+                if (!is_object($value) && (is_null($st_value) || strtolower(trim((string)$value)) === 'null') && (self::IsNumeric($name) || (!self::IsNumeric($name) && !$this->PRESERVE_NULL_STRINGS))) {
                     $qs[] = 'NULL --' . $name . ' / ' . static::$prop_definitions[$name]['type'] . PHP_EOL;
                 } else {
                     $qs[] = '@ --' . $name . ' / ' . static::$prop_definitions[$name]['type'] . PHP_EOL;
@@ -1100,7 +1198,17 @@ SET
 
                 $st_value = static::StrongType($name, $value);
 
-                if (!is_object($value) && (is_null($st_value) || strtolower(trim($value)) === 'null') && (self::IsNumeric($name) || (!self::IsNumeric($name) && !$this->PRESERVE_NULL_STRINGS))) {
+                if (!is_object($value) && (
+                    is_null($st_value)
+                        || strtolower(trim((string)$value)) === 'null'
+                    ) && (
+                        self::IsNumeric($name)
+                        || (
+                            !self::IsNumeric($name)
+                            && !$this->PRESERVE_NULL_STRINGS
+                        )
+                    )
+                ) {
                     $props[] = '[' . $name . '] = NULL -- ' . $name . ' / ' . static::$prop_definitions[$name]['type'] . PHP_EOL;
                 } else {
                     $props[] = '[' . $name . '] = @ --' . $name . ' / ' . static::$prop_definitions[$name]['type'] . PHP_EOL;
@@ -1276,6 +1384,9 @@ WHERE
         return static::Execute($sql, $params);
     }
 
+    /**
+     * @return bool
+     */
     public function CanDelete(): bool
     {
         return false;
