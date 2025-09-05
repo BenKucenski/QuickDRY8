@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 
 use QuickDRY\Connectors\mssql\MSSQL_CodeGen;
@@ -46,7 +47,7 @@ $CodeGen->Init(
     $_LOWERCASE_TABLE,
     $_USE_FK_COLUMN_NAME,
     $_DATABASE_CLASS,
-    $_GENERATE_JSON,
+    (bool)$_GENERATE_JSON,
     __DIR__ . '/..'
 );
 if($_SCHEMA_ONLY) {
