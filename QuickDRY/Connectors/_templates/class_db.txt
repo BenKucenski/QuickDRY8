@@ -5,13 +5,9 @@ namespace [[namespace]];
 
 [[use]]
 
-use QuickDRY\Connectors\SQL_Query;
-use QuickDRY\Utilities\Dates;
-use QuickDRY\Web\ElementID;
 use models\CurrentUser;
 use QuickDRY\Connectors\QueryExecuteResult;
 use DateTime;
-use Exception;
 
 /**
  *

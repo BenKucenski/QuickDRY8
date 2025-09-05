@@ -368,7 +368,7 @@ class Dates extends strongType
      */
     public static function StandardDate($date = null, $null = null): ?string
     {
-        return self::Datestamp($date, $null, 'n/j/Y');
+        return self::Datestamp($date, $null, 'n/j/Y') ?: null;
     }
 
     /**
@@ -543,7 +543,7 @@ class Dates extends strongType
         if ($offset) {
             $date += $offset * 3600;
         }
-        return date($format, (int)$date);
+        return date($format, (int)$date) ?: null;
     }
 
     /**

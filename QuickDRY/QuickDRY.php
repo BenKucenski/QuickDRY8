@@ -260,3 +260,11 @@ function arrays_are_equal(array $a, array $b): bool
 
     return true;
 }
+
+function mem(string $label, bool $real = true): void
+{
+    $cur = memory_get_usage($real);
+    $peak = memory_get_peak_usage($real);
+    echo sprintf("[%s] cur=%0.2fMB peak=%0.2fMB (real=%s)\n",
+        $label, $cur / 1048576, $peak / 1048576, $real ? 'true' : 'false');
+}

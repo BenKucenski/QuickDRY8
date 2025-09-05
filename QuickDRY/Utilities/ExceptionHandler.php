@@ -62,7 +62,7 @@ class ExceptionHandler
         if (isset($error['type'])) {
             if ($error['type'] == E_ERROR) {
                 try {
-                    self::Error($error['type'], $error['message'], $error['file'], $error['line']);
+                    self::Error((string)$error['type'], (string)$error['message'], (string)$error['file'], (string)$error['line']);
                 } catch (Exception $e) {
                     Exception($e);
                 }
