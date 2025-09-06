@@ -18,17 +18,17 @@ class ExceptionHandler
         if (defined('SHOW_ERRORS') && SHOW_ERRORS) {
             Exception($err);
         }
-        self::LogError('-1', $err, '', '');
+        self::LogError(-1, $err, '', 0);
     }
 
     /**
-     * @param string $errno
+     * @param int $errno
      * @param string $errstr
      * @param string $errfile
-     * @param string $errline
+     * @param int $errline
      * @return void
      */
-    public static function LogError(string $errno, string $errstr, string $errfile, string $errline): void
+    public static function LogError(int $errno, string $errstr, string $errfile, int $errline): void
     {
         Log::Insert([$errno, $errstr, $errfile, $errline]);
     }
@@ -41,7 +41,7 @@ class ExceptionHandler
      * @return bool
      * @throws Exception
      */
-    public static function Error(string $errno, string $errstr, string $errfile, string $errline): bool
+    public static function Error(int $errno, string $errstr, string $errfile, int $errline): bool
     {
         if (defined('SHOW_ERRORS') && SHOW_ERRORS) {
             if ($errno != 8 || (defined('SHOW_NOTICES') && SHOW_NOTICES)) { // don't show notice errors on the page unless explicitly told to
@@ -62,7 +62,7 @@ class ExceptionHandler
         if (isset($error['type'])) {
             if ($error['type'] == E_ERROR) {
                 try {
-                    self::Error((string)$error['type'], (string)$error['message'], (string)$error['file'], (string)$error['line']);
+                    self::Error((int)$error['type'], (string)$error['message'], (string)$error['file'], (int)$error['line']);
                 } catch (Exception $e) {
                     Exception($e);
                 }

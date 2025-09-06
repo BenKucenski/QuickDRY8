@@ -142,6 +142,10 @@ class Helpers extends strongType
      */
     public static function GetFolderFilesRecursive(string $path, bool $realpath = true): array
     {
+        if(!is_dir($path)) {
+            return [];
+        }
+
         $directory = new RecursiveDirectoryIterator($path, FilesystemIterator::FOLLOW_SYMLINKS);
         $filter = new MyRecursiveFilterIterator($directory);
         $iterator = new RecursiveIteratorIterator($filter);

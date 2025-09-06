@@ -7,6 +7,7 @@ use DateTime;
 use Exception;
 use QuickDRY\Connectors\Curl;
 use QuickDRY\Connectors\SQL_Base;
+use SimpleXMLElement;
 use stdClass;
 
 /**
@@ -216,101 +217,90 @@ class Strings extends strongType
     }
 
     /**
-     * @param $xml
-     * @return mixed
-     */
-    public static function SimpleXMLToArray($xml): mixed
-    {
-        $xml = simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA);
-        $json = json_encode($xml);
-        return json_decode($json, TRUE);
-    }
-
-    /**
-     * @param $XML
-     * @return array|string
+     * Convert an XML string to a PHP array without using eval.
+     * - Returns array on success, or a string with an error message on failure.
+     * - Attributes go under '@attributes'
+     * - Text content goes under '_text' (if the element also has children/attributes)
+     * - Repeated child elements with the same name become a numerically indexed array
      */
     public static function XMLtoArray($XML): array|string
     {
-        // https://stackoverflow.com/questions/3630866/php-parse-xml-string
-
-        $xml_array = '';
-        $multi_key = [];
-        $multi_key2 = [];
-        $level = [];
-        $xml_parser = xml_parser_create();
-        xml_parse_into_struct($xml_parser, $XML, $vals);
-        xml_parser_free($xml_parser);
-        $_tmp = '';
-        foreach ($vals as $xml_elem) {
-            $x_tag = $xml_elem['tag'];
-            $x_level = $xml_elem['level'];
-            $x_type = $xml_elem['type'];
-            if ($x_level != 1 && $x_type == 'close') {
-                if (isset($multi_key[$x_tag][$x_level]))
-                    $multi_key[$x_tag][$x_level] = 1;
-                else
-                    $multi_key[$x_tag][$x_level] = 0;
-            }
-            if ($x_level != 1 && $x_type == 'complete') {
-                if ($_tmp == $x_tag)
-                    $multi_key[$x_tag][$x_level] = 1;
-                $_tmp = $x_tag;
-            }
+        if (!is_string($XML) || trim($XML) === '') {
+            // Keep behavior simple and exception-free for "missing things"
+            return [];
         }
 
-        foreach ($vals as $xml_elem) {
-            $x_tag = $xml_elem['tag'];
-            $x_level = $xml_elem['level'];
-            $x_type = $xml_elem['type'];
-            if ($x_type == 'open')
-                $level[$x_level] = $x_tag;
-            $start_level = 1;
-            $php_stmt = '$xml_array';
-            if ($x_type == 'close' && $x_level != 1)
-                $multi_key[$x_tag][$x_level]++;
-            while ($start_level < $x_level) {
-                $php_stmt .= '[$level[' . $start_level . ']]';
-                if (isset($multi_key[$level[$start_level]][$start_level]) && $multi_key[$level[$start_level]][$start_level])
-                    $php_stmt .= '[' . ($multi_key[$level[$start_level]][$start_level] - 1) . ']';
-                $start_level++;
-            }
-            $add = '';
-            if (isset($multi_key[$x_tag][$x_level]) && $multi_key[$x_tag][$x_level] && ($x_type == 'open' || $x_type == 'complete')) {
-                if (!isset($multi_key2[$x_tag][$x_level]))
-                    $multi_key2[$x_tag][$x_level] = 0;
-                else
-                    $multi_key2[$x_tag][$x_level]++;
-                $add = '[' . $multi_key2[$x_tag][$x_level] . ']';
-            }
-            if (isset($xml_elem['value']) && trim($xml_elem['value']) != '' && !array_key_exists('attributes', $xml_elem)) {
-                if ($x_type == 'open')
-                    $php_stmt_main = $php_stmt . '[$x_type]' . $add . '[\'content\'] = $xml_elem[\'value\'];';
-                else
-                    $php_stmt_main = $php_stmt . '[$x_tag]' . $add . ' = $xml_elem[\'value\'];';
-                eval($php_stmt_main);
-            }
-            if (array_key_exists('attributes', $xml_elem)) {
-                if (isset($xml_elem['value'])) {
-                    $php_stmt_main = $php_stmt . '[$x_tag]' . $add . '[\'content\'] = $xml_elem[\'value\'];';
-                    eval($php_stmt_main);
-                }
-                foreach ($xml_elem['attributes'] as $value) {
-                    try {
-                        if (!is_array($xml_array)) {
-                            $xml_array = [];
-                        }
+        // Collect XML errors instead of throwing warnings/notices
+        $prevUseInternal = libxml_use_internal_errors(true);
 
-                        $php_stmt_att = $php_stmt . '[$x_tag]' . $add . '[$key] = $value;';
-                        eval($php_stmt_att);
-                    } catch (Exception $ex) {
-                        Exception([$xml_array, $ex]);
-                    }
-                }
-            }
+        // Security: block external entity loading; parse CDATA as text
+        $options = LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING | LIBXML_NOCDATA;
+        $sxml = simplexml_load_string($XML, 'SimpleXMLElement', $options);
+
+        if ($sxml === false) {
+            $errs = array_map(
+                static fn($e) => trim($e->message),
+                libxml_get_errors() ?: []
+            );
+            libxml_clear_errors();
+            libxml_use_internal_errors($prevUseInternal);
+            return 'Invalid XML' . (count($errs) ? ': ' . implode(' | ', $errs) : '');
         }
-        return $xml_array;
+
+        $result = self::simplexmlToArray($sxml);
+
+        libxml_clear_errors();
+        libxml_use_internal_errors($prevUseInternal);
+
+        return $result;
     }
+
+    /**
+     * Recursively convert a SimpleXMLElement to array.
+     * - Scalars returned as strings when no attributes/children exist.
+     * - If both children/attributes and text exist, text stored as '_text'.
+     */
+    public static function simplexmlToArray(SimpleXMLElement $elem)
+    {
+        $out = [];
+
+        // Attributes
+        foreach ($elem->attributes() as $k => $v) {
+            if (!isset($out['@attributes'])) {
+                $out['@attributes'] = [];
+            }
+            $out['@attributes'][(string)$k] = (string)$v;
+        }
+
+        // Children
+        foreach ($elem->children() as $childName => $child) {
+            $value = self::simplexmlToArray($child);
+
+            if (array_key_exists($childName, $out)) {
+                // Ensure we have a list for repeated children
+                if (!is_array($out[$childName]) || !is_int(array_key_first($out[$childName]))) {
+                    $out[$childName] = [$out[$childName]];
+                }
+                $out[$childName][] = $value;
+            } else {
+                $out[$childName] = $value;
+            }
+        }
+
+        // Text content (trimmed)
+        $text = trim((string)$elem);
+        if ($text !== '') {
+            if ($out === []) {
+                // No attributes/children: just return the text scalar
+                return $text;
+            }
+            // Preserve text alongside attributes/children
+            $out['_text'] = $text;
+        }
+
+        return $out;
+    }
+
 
 
     /**

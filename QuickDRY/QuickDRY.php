@@ -268,3 +268,106 @@ function mem(string $label, bool $real = true): void
     echo sprintf("[%s] cur=%0.2fMB peak=%0.2fMB (real=%s)\n",
         $label, $cur / 1048576, $peak / 1048576, $real ? 'true' : 'false');
 }
+
+/**
+ * Coerce a raw value into the given ReflectionType.
+ *
+ * Supports:
+ * - Builtins: int, float, bool, string, array
+ * - DateTimeInterface (DateTime/DateTimeImmutable)
+ * - Enums (PHP 8.1+), backed or pure
+ * - Objects (left as-is unless DateTime/Enum)
+ * - Union types and nullables
+ */
+function coerce_to_reflection_type($value, ?ReflectionType $type) {
+    if (!$type) {
+        return $value; // untyped property
+    }
+
+    // Union type: try each until one works
+    if ($type instanceof ReflectionUnionType) {
+        foreach ($type->getTypes() as $t) {
+            try {
+                return coerce_to_reflection_type($value, $t);
+            } catch (Throwable $e) {
+                // try next
+            }
+        }
+        // If none worked, return as-is
+        return $value;
+    }
+
+    // Named (possibly nullable)
+    /** @var ReflectionNamedType $type */
+    $allowsNull = $type->allowsNull();
+    if ($value === null || $value === '' && $allowsNull) {
+        return null;
+    }
+
+    $name = $type->getName();
+
+    // Built-in scalars/array
+    if ($type->isBuiltin()) {
+        switch ($name) {
+            case 'int':
+                return (int)$value;
+            case 'float':
+                return (float)$value;
+            case 'bool':
+                // Handles "true", "false", "1", "0", "yes", "no"
+                $b = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+                return $b ?? false;
+            case 'string':
+                return (string)$value;
+            case 'array':
+                // Try JSON first if string
+                if (is_string($value)) {
+                    $decoded = json_decode($value, true);
+                    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                        return $decoded;
+                    }
+                }
+                return is_array($value) ? $value : [$value];
+            case 'object':
+                return is_object($value) ? $value : (object)$value;
+            case 'mixed':
+            default:
+                return $value;
+        }
+    }
+
+    // Class types
+    // DateTime / DateTimeImmutable / DateTimeInterface
+    if (is_a($name, DateTimeInterface::class, true)) {
+        if ($value === '' || $value === null) {
+            return $allowsNull ? null : null; // keep null if allowed
+        }
+        // Choose an immutable default
+        try {
+            return new DateTimeImmutable((string)$value);
+        } catch (Throwable $e) {
+            return $allowsNull ? null : null;
+        }
+    }
+
+    // Enums (PHP 8.1+)
+    if (function_exists('enum_exists') && enum_exists($name)) {
+        // Backed enums: tryFrom on string/int; Pure enums: match by case name
+        if (is_subclass_of($name, BackedEnum::class)) {
+            $res = $name::tryFrom($value);
+            if ($res !== null) return $res;
+        } else {
+            // Pure enum: accept exact case name
+            foreach ($name::cases() as $case) {
+                if ((string)$value === $case->name) {
+                    return $case;
+                }
+            }
+        }
+        // Fallback if invalid; return null if allowed
+        return $allowsNull ? null : null;
+    }
+
+    // Other objects: leave as-is; caller can hydrate later if needed
+    return $value;
+}

@@ -22,6 +22,7 @@ class Mailer extends strongType
     public ?string $headers = null;
     public ?string $from_email = null;
     public ?string $from_name = null;
+    public ?array $embedded_images = null;
 
     public PHPMailer $mail;
 
@@ -34,6 +35,7 @@ class Mailer extends strongType
      * @param array|null $attachments
      * @param string|null $from_email
      * @param string|null $from_name
+     * @param array|null $embedded_images
      * @return Mailer
      */
     public static function Queue(
@@ -43,7 +45,9 @@ class Mailer extends strongType
         string  $message,
         ?array  $attachments = null,
         ?string $from_email = null,
-        ?string $from_name = null): Mailer
+        ?string $from_name = null,
+        ?array  $embedded_images = null
+    ): Mailer
     {
         $t = new self();
         $t->to_email = $to_email;
@@ -54,6 +58,7 @@ class Mailer extends strongType
         $t->message = $message;
         $t->log = null;
         $t->headers = serialize($attachments);
+        $t->embedded_images = $embedded_images;
 
         return $t;
     }
@@ -138,6 +143,16 @@ class Mailer extends strongType
                 $mail->msgHTML($this->message);
             } catch (Exception $e) {
                 Exception('Mailer MsgHTML', $e->getMessage());
+            }
+
+            if(is_array($this->embedded_images)) {
+                foreach($this->embedded_images as $id => $file) {
+                    try {
+                        $mail->addEmbeddedImage($file, $id, basename($file));
+                    } catch (\PHPMailer\PHPMailer\Exception $e) {
+                        Exception($e->getMessage());
+                    }
+                }
             }
 
             $attachments = unserialize($this->headers);

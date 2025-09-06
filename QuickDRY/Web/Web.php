@@ -47,7 +47,7 @@ class Web extends strongType
 
     public ?string $PDFHash = null;
     public ?string $PDFRootDir = null;
-    public ?string $PDFShrinkToFit = null;
+    public ?bool $PDFShrinkToFit = null;
 
     public ?string $HTML = null;
     public ?string $js = null;
@@ -302,17 +302,15 @@ class Web extends strongType
 
             switch ($this->Verb) {
                 case 'GET':
+                    $class::Get();
                     if ($_REQUEST['export'] ?? null) {
                         $this->Export($this->PageClass, $_REQUEST['export']);
-                    } else {
-                        $class::Get();
                     }
                     break;
                 case 'POST':
+                    $class::Post();
                     if ($_REQUEST['export'] ?? null) {
                         $this->Export($this->PageClass, $_REQUEST['export']);
-                    } else {
-                        $class::Post();
                     }
                     break;
                 case 'PUT':

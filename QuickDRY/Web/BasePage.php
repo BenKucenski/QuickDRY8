@@ -23,7 +23,7 @@ class BasePage extends strongType
     public static ?string $PDFPostRedirect = null;
     public static ?bool $IncludeMenu = null;
     public static ?array $PostData = null;
-    protected static array $Errors = [];
+    protected static ?array $Errors = [];
     public static ?string $MasterPage = null;
     private static ?string $MetaTitle = null;
     public static ?string $CurrentPage = null;

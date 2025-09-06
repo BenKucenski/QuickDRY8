@@ -275,8 +275,8 @@ class Metrics
         }
 
         if ($show_total) {
-            $res .= "grand total: " . self::formatBytes($grandTotal, $unit) . "\r\n";
-            $res .= "process peak: " . self::formatBytes(memory_get_peak_usage(true), $unit) . "\r\n\r\n";
+            $res .= 'grand total: ' . self::formatBytes($grandTotal, $unit) . "\r\n";
+            $res .= 'process peak: ' . self::formatBytes(memory_get_peak_usage(true), $unit) . "\r\n\r\n";
         }
 
         return $res;

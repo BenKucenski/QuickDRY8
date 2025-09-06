@@ -565,12 +565,13 @@ class SQL_Base
     public static function GetHeader(
         ?string $sort_by = '',
         ?string $dir = '',
-        bool    $modify = false,
-        array   $add = [],
-        array   $ignore = [],
-        string  $add_params = '',
-        bool    $sortable = true,
-        array   $column_order = []): string
+        ?bool    $modify = false,
+        ?array   $add = [],
+        ?array   $ignore = [],
+        ?string  $add_params = '',
+        ?bool    $sortable = true,
+        ?array   $column_order = []
+    ): string
     {
         return static::_GetHeader(static::$prop_definitions, $sort_by, $dir, $modify, $add, $ignore, $add_params, $sortable, $column_order);
     }
@@ -611,12 +612,13 @@ class SQL_Base
         array   $props,
         ?string $sort_by,
         ?string $dir,
-        bool    $modify = false,
-        array   $add = [],
-        array   $ignore = [],
-        string  $add_params = '',
-        bool    $sortable = true,
-        array   $column_order = []): string
+        ?bool    $modify = false,
+        ?array   $add = [],
+        ?array   $ignore = [],
+        ?string  $add_params = '',
+        ?bool    $sortable = true,
+        ?array   $column_order = []
+    ): string
     {
         $not_dir = $dir == 'asc' ? 'desc' : 'asc';
         $arrow = $dir == 'asc' ? '&uarr;' : '&darr;';
