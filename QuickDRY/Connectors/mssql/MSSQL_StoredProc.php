@@ -57,20 +57,11 @@ class MSSQL_StoredProc extends strongType
     public ?string $IS_NULL_CALL;
     public ?string $SQL_PATH;
     public ?string $SCHEMA_LEVEL_ROUTINE;
-    public ?string $MAX_DYNAMIC_RESULT_SETS;
+    public ?int $MAX_DYNAMIC_RESULT_SETS;
     public ?string $IS_USER_DEFINED_CAST;
     public ?string $IS_IMPLICITLY_INVOCABLE;
     public ?DateTime $CREATED;
     public ?DateTime $LAST_ALTERED;
     public ?string $SOURCE_CODE;
 
-    /**
-     * @param $row
-     */
-    public function __construct($row = null)
-    {
-        if ($row) {
-            $this->fromData($row);
-        }
-    }
 }

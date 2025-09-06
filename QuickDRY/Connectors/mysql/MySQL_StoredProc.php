@@ -10,68 +10,59 @@ use QuickDRY\Utilities\strongType;
  */
 class MySQL_StoredProc extends strongType
 {
-    public ?string $SPECIFIC_CATALOG;
-    public ?string $SPECIFIC_SCHEMA;
-    public ?string $SPECIFIC_NAME;
-    public ?string $ROUTINE_CATALOG;
-    public ?string $ROUTINE_SCHEMA;
-    public ?string $ROUTINE_NAME;
-    public ?string $ROUTINE_TYPE;
-    public ?string $MODULE_CATALOG;
-    public ?string $MODULE_SCHEMA;
-    public ?string $MODULE_NAME;
-    public ?string $UDT_CATALOG;
-    public ?string $UDT_SCHEMA;
-    public ?string $UDT_NAME;
-    public ?string $DATA_TYPE;
-    public ?string $CHARACTER_MAXIMUM_LENGTH;
-    public ?string $CHARACTER_OCTET_LENGTH;
-    public ?string $COLLATION_CATALOG;
-    public ?string $COLLATION_SCHEMA;
-    public ?string $COLLATION_NAME;
-    public ?string $CHARACTER_SET_CATALOG;
-    public ?string $CHARACTER_SET_SCHEMA;
-    public ?string $CHARACTER_SET_NAME;
-    public ?string $NUMERIC_PRECISION;
-    public ?string $NUMERIC_PRECISION_RADIX;
-    public ?string $NUMERIC_SCALE;
-    public ?string $DATETIME_PRECISION;
-    public ?string $INTERVAL_TYPE;
-    public ?string $INTERVAL_PRECISION;
-    public ?string $TYPE_UDT_CATALOG;
-    public ?string $TYPE_UDT_SCHEMA;
-    public ?string $TYPE_UDT_NAME;
-    public ?string $SCOPE_CATALOG;
-    public ?string $SCOPE_SCHEMA;
-    public ?string $SCOPE_NAME;
-    public ?string $MAXIMUM_CARDINALITY;
-    public ?string $DTD_IDENTIFIER;
-    public ?string $ROUTINE_BODY;
-    public ?string $ROUTINE_DEFINITION;
-    public ?string $EXTERNAL_NAME;
-    public ?string $EXTERNAL_LANGUAGE;
-    public ?string $PARAMETER_STYLE;
-    public ?string $IS_DETERMINISTIC;
-    public ?string $SQL_DATA_ACCESS;
-    public ?string $IS_NULL_CALL;
-    public ?string $SQL_PATH;
-    public ?string $SCHEMA_LEVEL_ROUTINE;
-    public ?string $MAX_DYNAMIC_RESULT_SETS;
-    public ?string $IS_USER_DEFINED_CAST;
-    public ?string $IS_IMPLICITLY_INVOCABLE;
-    public ?string $CREATED;
-    public ?string $LAST_ALTERED;
+    public ?string $SPECIFIC_CATALOG = null;
+    public ?string $SPECIFIC_SCHEMA = null;
+    public ?string $SPECIFIC_NAME = null;
+    public ?string $ROUTINE_CATALOG = null;
+    public ?string $ROUTINE_SCHEMA = null;
+    public ?string $ROUTINE_NAME = null;
+    public ?string $ROUTINE_TYPE = null;
+    public ?string $MODULE_CATALOG = null;
+    public ?string $MODULE_SCHEMA = null;
+    public ?string $MODULE_NAME = null;
+    public ?string $UDT_CATALOG = null;
+    public ?string $UDT_SCHEMA = null;
+    public ?string $UDT_NAME = null;
+    public ?string $DATA_TYPE = null;
+    public ?string $CHARACTER_MAXIMUM_LENGTH = null;
+    public ?string $CHARACTER_OCTET_LENGTH = null;
+    public ?string $COLLATION_CATALOG = null;
+    public ?string $COLLATION_SCHEMA = null;
+    public ?string $COLLATION_NAME = null;
+    public ?string $CHARACTER_SET_CATALOG = null;
+    public ?string $CHARACTER_SET_SCHEMA = null;
+    public ?string $CHARACTER_SET_NAME = null;
+    public ?string $NUMERIC_PRECISION = null;
+    public ?string $NUMERIC_PRECISION_RADIX = null;
+    public ?string $NUMERIC_SCALE = null;
+    public ?string $DATETIME_PRECISION = null;
+    public ?string $INTERVAL_TYPE = null;
+    public ?string $INTERVAL_PRECISION = null;
+    public ?string $TYPE_UDT_CATALOG = null;
+    public ?string $TYPE_UDT_SCHEMA = null;
+    public ?string $TYPE_UDT_NAME = null;
+    public ?string $SCOPE_CATALOG = null;
+    public ?string $SCOPE_SCHEMA = null;
+    public ?string $SCOPE_NAME = null;
+    public ?string $MAXIMUM_CARDINALITY = null;
+    public ?string $DTD_IDENTIFIER = null;
+    public ?string $ROUTINE_BODY = null;
+    public ?string $ROUTINE_DEFINITION = null;
+    public ?string $EXTERNAL_NAME = null;
+    public ?string $EXTERNAL_LANGUAGE = null;
+    public ?string $PARAMETER_STYLE = null;
+    public ?string $IS_DETERMINISTIC = null;
+    public ?string $SQL_DATA_ACCESS = null;
+    public ?string $IS_NULL_CALL = null;
+    public ?string $SQL_PATH = null;
+    public ?string $SCHEMA_LEVEL_ROUTINE = null;
+    public ?int $MAX_DYNAMIC_RESULT_SETS = null;
+    public ?string $IS_USER_DEFINED_CAST = null;
+    public ?string $IS_IMPLICITLY_INVOCABLE = null;
+    public ?string $CREATED = null;
+    public ?string $LAST_ALTERED = null;
 
     // extra
-    public ?string $PARAMETERS;
+    public ?string $PARAMETERS = null;
 
-    /**
-     * @param $row
-     */
-    public function __construct($row = null)
-    {
-        if ($row) {
-            $this->fromData($row);
-        }
-    }
 }

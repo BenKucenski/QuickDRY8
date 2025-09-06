@@ -17,7 +17,7 @@ class BrowserOS
      */
     public static function IsMobile(): bool
     {
-        return static::$is_mobile;
+        return static::$is_mobile ?: false;
     }
 
     /**
