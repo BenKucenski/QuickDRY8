@@ -139,6 +139,7 @@ class SQLCodeGen extends strongType
 
             case 'smalldatetime':
             case 'datetime':
+            case 'datetime2':
             case 'date':
                 if ($DatabaseType === 'mysql') {
                     return 'string';
@@ -804,6 +805,7 @@ class SQLCodeGen extends strongType
                             break;
 
                         case 'datetime':
+                        case 'datetime2':
                         case 'timestamp':
                             $form .= '<tr><td class="name" id="' . $c_name . '_' . $col->field . '_td">' . SQLCodeGen::FieldToDisplay($col->field) . '</td><td class="field"><input class="time-picker form-control" type="text" name="' . $col->field . '" id="' . $c_name . '_' . $col->field . '" /></td></tr>' . "\r\n";
                             break;

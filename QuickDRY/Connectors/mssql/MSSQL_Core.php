@@ -984,6 +984,7 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
             case 'date':
             case 'timestamp':
             case 'datetime':
+            case 'datetime2':
                 try {
                     return $value ? new DateTime($value) : null;
                 } catch (Exception $e) {

@@ -41,8 +41,8 @@ function Debug(...$args): void
     $file = DATA_FOLDER . '/logs/' . $code . '.txt';
     $data = json_encode([
         'data'      => $args,
-        'server'    => $_SERVER,
-        'session'   => $_SESSION,
+        'server'    => $_SERVER ?? null,
+        'session'   => $_SESSION ?? null,
         'backtrace' => debug_backtrace(),
     ], JSON_PRETTY_PRINT);
     file_put_contents($file, $data);
