@@ -286,6 +286,9 @@ class strongType
         if (!sizeof($items)) {
             return null;
         }
+
+        $items = array_values($items); // remove non-numeric indexes
+
         $cols = self::getHeaders($items[0]);
 
         $se = new SimpleExcel();

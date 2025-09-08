@@ -82,7 +82,9 @@ class SimpleExcel_Column extends strongType
                 return self::SIMPLE_EXCEL_PROPERTY_TYPE_DATE;
 
             case 'int':
+            case 'bool':
             case 'float':
+            case 'array':
                 return self::SIMPLE_EXCEL_PROPERTY_TYPE_CALCULATED;
 
             default:
