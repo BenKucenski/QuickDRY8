@@ -1149,15 +1149,19 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
                 if (!is_object($value) && (is_null($st_value) || strtolower(trim((string)$value)) === 'null') && (self::IsNumeric($name) || (!self::IsNumeric($name) && !$this->PRESERVE_NULL_STRINGS))) {
                     $qs[] = 'NULL --' . $name . ' / ' . static::$prop_definitions[$name]['type'] . PHP_EOL;
                 } else {
-                    $qs[] = '@ --' . $name . ' / ' . static::$prop_definitions[$name]['type'] . PHP_EOL;
+                    $qs[] = '@' . $name . ' --' . $name . ' / ' . static::$prop_definitions[$name]['type'] . PHP_EOL;
                     if ($st_value instanceof DateTime) {
                         $st_value = $st_value->format('Y-m-d H:i:s');
                     }
-                    $params[] = '{{{' . $st_value . '}}}'; // necessary to get past the null check in EscapeString
+                    $params[$name] = '{{{' . $st_value . '}}}'; // necessary to get past the null check in EscapeString
                 }
 
             }
-            $sql .= '([' . implode('],[', $props) . ']) VALUES (' . implode(',', $qs) . ')';
+            $sql .= '(
+            [' . implode('],[', $props) . ']
+            ) VALUES (
+            ' . implode(',', $qs) . '
+            )';
 
             if ($primary_set && !$force_insert) {
                 $sql .= '
@@ -1170,6 +1174,7 @@ WHERE
                 return new SQL_Query($sql, $params);
             }
             $res = static::Execute($sql, $params);
+            $res->params = $params;
 
             if ($res->error) {
                 Exception($res);
@@ -1212,19 +1217,19 @@ SET
                 ) {
                     $props[] = '[' . $name . '] = NULL -- ' . $name . ' / ' . static::$prop_definitions[$name]['type'] . PHP_EOL;
                 } else {
-                    $props[] = '[' . $name . '] = @ --' . $name . ' / ' . static::$prop_definitions[$name]['type'] . PHP_EOL;
+                    $props[] = '[' . $name . '] = @' . $name . ' --' . $name . ' / ' . static::$prop_definitions[$name]['type'] . PHP_EOL;
 
                     if ($st_value instanceof DateTime) {
                         $st_value = $st_value->format('Y-m-d H:i:s');
                     }
-                    $params[] = '{{{' . $st_value . '}}}'; // necessary to get past the null check in EscapeString
+                    $params[$name] = '{{{' . $st_value . '}}}'; // necessary to get past the null check in EscapeString
                 }
             }
             if (!sizeof($props)) {
                 return new QueryExecuteResult();
             }
 
-            $sql .= implode(',', $props);
+            $sql .= implode(' , ', $props);
 
             $sql .= '
 WHERE

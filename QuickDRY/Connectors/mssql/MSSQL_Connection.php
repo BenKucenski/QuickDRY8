@@ -501,7 +501,7 @@ class MSSQL_Connection extends strongType
             'error'   => 'command not executed',
             'numrows' => 0,
             'data'    => [],
-            'query'   => $query
+            'query'   => $query,
         ];
 
         $this->_connect();

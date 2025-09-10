@@ -63,7 +63,7 @@ class MSSQL extends strongType
      */
     public static function EscapeQuery($sql, $params, bool $test = false): string
     {
-        $pattern = '/(?<!:):([\w\d_]+)/';
+        $pattern = '/(?<![:@])[:@]([\w\d_]+)/';
         if ($test) {
             $matches = [];
             preg_match_all($pattern, $sql, $matches);

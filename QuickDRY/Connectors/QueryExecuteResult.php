@@ -17,6 +17,7 @@ class QueryExecuteResult extends strongType
     public ?int $last_id = null;
     public ?int $affected_rows = null;
     public ?array $log = null;
+    public ?array $params = null;
 
     public ?int $numrows = null; // 1\r\n
     public ?array $data = null; // []\r\n
