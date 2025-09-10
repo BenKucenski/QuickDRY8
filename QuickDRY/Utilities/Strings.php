@@ -143,7 +143,8 @@ class Strings extends strongType
         // https://stackoverflow.com/questions/28690855/str-getcsv-on-a-tab-separated-file
         /* Map Rows and Loop Through Them */
         $rows = array_map(function ($v) {
-            return str_getcsv($v, self::$_SEPARATOR);
+            $escape = '\\';
+            return str_getcsv($v, self::$_SEPARATOR ?? ',', '"', $escape);
         }, explode("\n", $tsv));
         $header = array_shift($rows);
         $n = sizeof($header);

@@ -191,19 +191,32 @@ let QuickDRY = {
      * @constructor
      */
     DialogIsOpen: function (dialog_id) {
+        const elem = $("#" + dialog_id);
 
-        let elem = $("#" + dialog_id);
-        if (elem.hasClass('in') || elem.hasClass('show')) {
+        // Bootstrap 5: modal is open if it has `.show` and is visible
+        if (elem.hasClass('show') && elem.is(':visible')) {
             return true;
         }
 
-        return elem.hasClass("ui-dialog-content") && elem.dialog("isOpen") === true;
+        // jQuery UI dialog support (if you still use it somewhere else)
+        if (elem.hasClass("ui-dialog-content") && typeof elem.dialog === "function") {
+            return elem.dialog("isOpen") === true;
+        }
+
+        return false;
     },
+
     ShowModal: function (elem_id, title) {
+        // Update the modal title
         $('#' + elem_id + '_title').html(title);
 
-        $('#' + elem_id).modal('show');
-        //$('#' + elem_id).disableSelection();
+        // Get the raw DOM element from jQuery
+        const modalEl = $('#' + elem_id)[0];
+        if (!modalEl) return;
+
+        // Use Bootstrap 5's native API
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
     },
 
     AutoComplete: function (elem_id, form_id, source_url, select_function) {

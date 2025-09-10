@@ -34,12 +34,12 @@ class strongType
     {
         return match (gettype($value)) {
             'integer' => 'int',
-            'double'  => 'float',
+            'double' => 'float',
             'boolean' => 'bool',
-            'string'  => 'string',
-            'array'   => 'array',
-            'object'  => 'object',
-            default   => 'mixed',
+            'string' => 'string',
+            'array' => 'array',
+            'object' => '\\' . get_class($value),
+            default => 'mixed',
         };
     }
 
@@ -64,7 +64,7 @@ class strongType
             } elseif (is_object($val) && get_class($val) === DateTime::class) {
                 $code[] = 'public ?DateTime $' . $key . ' = null; // ' . Dates::Timestamp($val);
             } else {
-                $code[] = 'public ?' . self::inferType($val) . ' $' . $key . ' = null; // ' . $val;
+                $code[] = 'public ?' . self::inferType($val) . ' $' . $key . ' = null; // ' . json_encode($val);
             }
         }
         Exception([
@@ -189,7 +189,7 @@ class strongType
             }
         }
 
-        if($strict) {
+        if ($strict) {
             self::checkMissingProperties($this->_missing_properties, static::class);
         }
 
@@ -286,9 +286,6 @@ class strongType
         if (!sizeof($items)) {
             return null;
         }
-
-        $items = array_values($items); // remove non-numeric indexes
-
         $cols = self::getHeaders($items[0]);
 
         $se = new SimpleExcel();

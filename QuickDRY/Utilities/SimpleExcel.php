@@ -276,7 +276,7 @@ class SimpleExcel extends strongType
             $writer->setDelimiter($delimiter);
             if (isset($_SERVER['HTTP_HOST'])) {
                 header('Content-Type: text/csv');
-                header('Content-Disposition: attachment;filename="' . $se->Filename . '"');
+                header('Content-Disposition: download;filename="' . $se->Filename . '"');
                 header('Cache-Control: max-age=0');
                 $writer->save('php://output');
                 exit;
