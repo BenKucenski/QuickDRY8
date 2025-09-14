@@ -748,10 +748,10 @@ class MySQL_Core extends SQL_Base
      * @param string $name
      * @param $value
      *
-     * @return float|int|string|null
+     * @return mixed
      * @throws Exception
      */
-    protected static function StrongType(string $name, $value): float|int|string|null
+    protected static function StrongType(string $name, $value): mixed
     {
         if (is_object($value) || is_array($value))
             return null;
@@ -879,7 +879,10 @@ class MySQL_Core extends SQL_Base
                 continue;
             }
 
-            if (is_null($st_value) || strtolower(trim($st_value)) === 'null')
+            if(is_bool($value)) {
+                $sql .= '`' . $name . '` = {{}},';
+                $params[] = $st_value;
+            } elseif (is_null($st_value) || strtolower(trim($st_value)) === 'null')
                 $sql .= '`' . $name . '` = NULL,';
             else {
                 $sql .= '`' . $name . '` = {{}},';

@@ -46,6 +46,9 @@ class MySQL extends strongType
                         if($params[$count - 1] === 'null') {
                             return mysqli_escape_string($conn, $params[$count - 1]);
                         }
+                        if(is_bool($params[$count - 1])) {
+                            return $params[$count - 1];
+                        }
                         return '\'' . mysqli_escape_string($conn, $params[$count - 1]) . '\'';
                     } else {
                         return $params[$count - 1]; // don't use mysqli_escape_string here because it will escape quotes which breaks things
