@@ -13,28 +13,28 @@ use QuickDRY\Utilities\Log;
 class MySQL_CodeGen extends SQLCodeGen
 {
     /**
-     * @param $database
-     * @param $database_constant
-     * @param $user_class
-     * @param $user_var
-     * @param $user_id_column
-     * @param $master_page
-     * @param $lowercase_tables
-     * @param $use_fk_column_name
+     * @param string|null $database
+     * @param string|null $database_constant
+     * @param string|null $user_class
+     * @param string|null $user_var
+     * @param string|null $user_id_column
+     * @param string|null $master_page
+     * @param int|null $lowercase_tables
+     * @param int|null $use_fk_column_name
      * @param string|null $DatabaseClass
      * @param bool $GenerateJSON
      * @param string $DestinationFolder
      * @return void
      */
     public function Init(
-        $database,
-        $database_constant,
-        $user_class,
-        $user_var,
-        $user_id_column,
-        $master_page,
-        $lowercase_tables,
-        $use_fk_column_name,
+        ?string $database,
+        ?string $database_constant,
+        ?string $user_class,
+        ?string $user_var,
+        ?string $user_id_column,
+        ?string $master_page,
+        ?int $lowercase_tables,
+        ?int $use_fk_column_name,
         ?string $DatabaseClass = null,
         bool $GenerateJSON = true,
         string $DestinationFolder = '../httpdocs'

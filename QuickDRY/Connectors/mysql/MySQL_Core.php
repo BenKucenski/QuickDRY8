@@ -21,12 +21,12 @@ use QuickDRY\Web\ElementID;
 class MySQL_Core extends SQL_Base
 {
     protected static ?string $DB_HOST = null;
-    protected static ?string $DatabasePrefix = null;
-    protected static ?int $LowerCaseTable = null;
-    protected static ?string $DatabaseTypePrefix = null;
-    protected static ?array $_primary = null;
-    protected static ?array $_unique = null;
-    protected static ?array $prop_definitions = null;
+    protected static string $DatabasePrefix = '';
+    protected static int $LowerCaseTable = 0;
+    protected static string $DatabaseTypePrefix = '';
+    protected static array $_primary = [];
+    protected static array $_unique = [];
+    protected static array $prop_definitions = [];
 
     protected bool $PRESERVE_NULL_STRINGS = false;  // when true, if a property is set to the string 'null' it will be inserted as 'null' rather than null
 
@@ -756,7 +756,7 @@ class MySQL_Core extends SQL_Base
         if (is_object($value) || is_array($value))
             return null;
 
-        if ($value && strcasecmp($value, 'null') == 0) {
+        if ($value && strcasecmp((string)$value, 'null') == 0) {
             if (!static::$prop_definitions[$name]['is_nullable']) {
                 throw new Exception($name . ' cannot be null');
             }
