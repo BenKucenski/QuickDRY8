@@ -1117,11 +1117,16 @@ class Strings extends strongType
      * @param string $separator
      * @return string
      */
-    public static function StringRepeatCS(string $pattern, int $multiplier, string $separator = ','): string
+    public static function StringRepeatCS(
+        string $pattern,
+        int $multiplier,
+        string $separator = ',',
+        ?bool $iterator = false
+    ): string
     {
         $t = [];
         for ($j = 0; $j < $multiplier; $j++) {
-            $t[] = $pattern;
+            $t[] = $pattern . ($iterator ? $j : '');
         }
         return implode($separator, $t);
     }

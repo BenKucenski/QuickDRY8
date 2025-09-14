@@ -352,7 +352,7 @@ class Web extends strongType
                     require_once __DIR__ . '/../../masterpages/' . $class::getMasterPage();
                 }
             } else {
-                exit ($this->HTML);
+                exit ($this->HTML ?? '');
             }
 
         }

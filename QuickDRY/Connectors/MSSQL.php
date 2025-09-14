@@ -139,7 +139,7 @@ class MSSQL extends strongType
                 return '@' . $name;
             }
 
-            // 3) Bare @ → consume next positional value
+            // 3) Bare @ ? consume next positional value
             if (array_key_exists($posIndex, $posValues)) {
                 $val = $posValues[$posIndex++];
                 // Bare @ doesn't have special name-based modes; just escape/null as needed
