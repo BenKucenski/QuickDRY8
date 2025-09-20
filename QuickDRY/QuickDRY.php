@@ -340,13 +340,13 @@ function coerce_to_reflection_type($value, ?ReflectionType $type) {
     // DateTime / DateTimeImmutable / DateTimeInterface
     if (is_a($name, DateTimeInterface::class, true)) {
         if ($value === '' || $value === null) {
-            return $allowsNull ? null : null; // keep null if allowed
+            return null; // keep null if allowed
         }
         // Choose an immutable default
         try {
             return new DateTimeImmutable((string)$value);
         } catch (Throwable $e) {
-            return $allowsNull ? null : null;
+            return null;
         }
     }
 

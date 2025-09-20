@@ -261,7 +261,7 @@ class Strings extends strongType
      * - Scalars returned as strings when no attributes/children exist.
      * - If both children/attributes and text exist, text stored as '_text'.
      */
-    public static function simplexmlToArray(SimpleXMLElement $elem)
+    public static function simplexmlToArray(SimpleXMLElement $elem): array|string
     {
         $out = [];
 
@@ -801,7 +801,7 @@ class Strings extends strongType
      * @param $val
      * @return array|mixed|string|true
      */
-    public static function fixBOOLs(&$val)
+    public static function fixBOOLs(&$val): mixed
     {
         if (is_string($val)) {
             if ($val === 'true') {

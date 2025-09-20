@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace QuickDRY\Connectors\mssql;
 
-use QuickDRY\Utilities\SimpleReport;
+ use QuickDRY\Utilities\strongType;
 
 /**
  * Class MSSQL_Definition
  */
-class MSSQL_Definition extends SimpleReport
+class MSSQL_Definition extends strongType
 {
     public string $object_name;
     public string $type_desc;
