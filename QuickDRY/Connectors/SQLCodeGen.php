@@ -119,6 +119,7 @@ class SQLCodeGen extends strongType
             case 'longtext':
             case 'longblob':
             case 'binary':
+            case 'ntext':
                 return 'string';
 
             case 'tinyint unsigned':

@@ -41,8 +41,8 @@ class FormClass
         array     $options,
         ?string   $selected,
         ElementID $elementID,
-        ?string    $class = null,
-        ?string    $onchange = null,
+        ?string   $class = null,
+        ?string   $onchange = null,
         bool      $add_none = false
     ): string
     {
