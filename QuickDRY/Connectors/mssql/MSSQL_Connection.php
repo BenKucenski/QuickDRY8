@@ -668,7 +668,7 @@ class MSSQL_Connection extends strongType
         $sql = 'SELECT * FROM sys.databases ORDER BY name';
         $res = $this->Query($sql);
         $list = [];
-        if ($res->error) {
+        if ($res['error']) {
             Exception($res);
         }
         foreach ($res['data'] as $row) {

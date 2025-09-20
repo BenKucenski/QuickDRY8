@@ -1195,7 +1195,7 @@ class Strings extends strongType
     {
         foreach ($array as $k => $v) {
 
-            $k = preg_replace('/[^a-z0-9]/i', '', $k);
+            $k = preg_replace('/[^a-z0-9]/i', '', (string)$k);
 
             if (!is_array($v)) {
                 $dest[$parents . $k] = $v;

@@ -1366,11 +1366,18 @@ SET
             $st_value = static::StrongType($name, $value);
 
 
-            if (!is_object($value) && (is_null($st_value) || strtolower(trim($value)) === 'null') && (self::IsNumeric($name) || (!self::IsNumeric($name) && !$this->PRESERVE_NULL_STRINGS))) {
+            if (!is_object($value)
+                && (is_null($st_value) || strtolower(trim((string)$value)) === 'null')
+                && (self::IsNumeric($name) || (!self::IsNumeric($name) && !$this->PRESERVE_NULL_STRINGS))
+            ) {
                 $props[] = '[' . $name . '] = NULL -- ' . $name . PHP_EOL;
             } else {
                 $props[] = '[' . $name . '] = @ --' . $name . PHP_EOL;
-                $params[] = '{{{' . $st_value . '}}}'; // necessary to get past the null check in EscapeString
+                if(is_object($st_value) && get_class($st_value) == 'DateTime') {
+                    $params[] = '{{{' . $st_value->format('Y-m-d H:i:s') . '}}}'; // necessary to get past the null check in EscapeString
+                } else {
+                    $params[] = '{{{' . $st_value . '}}}'; // necessary to get past the null check in EscapeString
+                }
             }
         }
         $sql .= implode(',', $props);

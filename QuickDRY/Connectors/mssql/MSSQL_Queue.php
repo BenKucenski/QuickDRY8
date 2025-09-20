@@ -6,6 +6,7 @@ namespace QuickDRY\Connectors\mssql;
 use QuickDRY\Connectors\MSSQL;
 use QuickDRY\Connectors\QueryExecuteResult;
 use QuickDRY\Connectors\SQL_Query;
+use QuickDRY\Utilities\Log;
 use QuickDRY\Utilities\Metrics;
 use QuickDRY\Utilities\strongType;
 
@@ -17,7 +18,7 @@ class MSSQL_Queue extends strongType
     private array $_sql = [];
     private int $strlen = 0;
     private string $MSSQL_CLASS;
-    public string $LogClass = 'Log';
+    public string $LogClass = Log::class;
     public bool $HaltOnError;
     public bool $IgnoreDuplicateError = false;
     private int $QueueLimit;
@@ -64,15 +65,15 @@ SET QUOTED_IDENTIFIER ON
         $res = $class::Execute($sql, null, true);
 
         Metrics::Toggle('MSSQL_Queue::Flush');
-        if (isset($res['error']) && $res['error'] && $this->HaltOnError) {
+        if ($res->error && $this->HaltOnError) {
             $LogClass = $this->LogClass;
 
             if (!method_exists($LogClass, 'Insert')) {
-                exit("$LogClass::Insert");
+                Exception("$LogClass::Insert");
             }
 
-            $LogClass::Insert(['MSSQL_Queue Error' => $res['error'], 'SQL' => $sql], true);
-            exit(1);
+            $LogClass::Insert(['MSSQL_Queue Error' => $res]);
+            Exception($res);
         }
 
         $this->_sql = [];
