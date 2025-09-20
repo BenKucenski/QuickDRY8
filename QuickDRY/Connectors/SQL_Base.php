@@ -554,11 +554,11 @@ class SQL_Base
      * @param string|null $sort_by
      * @param string|null $dir
      * @param bool $modify
-     * @param array $add
-     * @param array $ignore
-     * @param string $add_params
+     * @param array|null $add
+     * @param array|null $ignore
+     * @param string|null $add_params
      * @param bool $sortable
-     * @param array $column_order
+     * @param array|null $column_order
      *
      * @return string
      */
@@ -600,11 +600,11 @@ class SQL_Base
      * @param string|null $sort_by
      * @param string|null $dir
      * @param bool $modify
-     * @param array $add
-     * @param array $ignore
-     * @param string $add_params
+     * @param array|null $add
+     * @param array|null $ignore
+     * @param string|null $add_params
      * @param bool $sortable
-     * @param array $column_order
+     * @param array|null $column_order
      *
      * @return string
      */

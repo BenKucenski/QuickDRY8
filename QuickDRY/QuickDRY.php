@@ -365,7 +365,7 @@ function coerce_to_reflection_type($value, ?ReflectionType $type) {
             }
         }
         // Fallback if invalid; return null if allowed
-        return $allowsNull ? null : null;
+        return null;
     }
 
     // Other objects: leave as-is; caller can hydrate later if needed

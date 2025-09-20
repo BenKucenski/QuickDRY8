@@ -788,7 +788,7 @@ class Strings extends strongType
             return $row->Body;
         }
 
-        dd([
+        Exception([
             'error'      => 'fix_json unknown object',
             'class'      => get_class($row),
             'strongType' => $row instanceof strongType,
@@ -1115,6 +1115,7 @@ class Strings extends strongType
      * @param string $pattern
      * @param int $multiplier
      * @param string $separator
+     * @param bool|null $iterator
      * @return string
      */
     public static function StringRepeatCS(

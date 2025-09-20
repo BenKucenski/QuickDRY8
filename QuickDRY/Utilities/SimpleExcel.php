@@ -18,7 +18,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
  *
  * @property string Filename
  * @property string Title
- * @property SimpleReport[] Report
+ * @property strongType[] Report
  * @property SimpleExcel_Column[] Columns
  */
 class SimpleExcel extends strongType

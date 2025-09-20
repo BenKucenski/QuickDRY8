@@ -62,7 +62,7 @@ class ACCESS
     )
     {
         if(!file_exists($file)) {
-            dd('could not find database: ' . $file);
+            Exception('could not find database: ' . $file);
         }
 
 
