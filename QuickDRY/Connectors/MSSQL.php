@@ -6,6 +6,7 @@ namespace QuickDRY\Connectors;
 /** DO NOT USE THIS CLASS DIRECTLY **/
 
 use DateTime;
+use InvalidArgumentException;
 use QuickDRY\Utilities\Dates;
 use QuickDRY\Utilities\strongType;
 use QuickDRY\Utilities\Strings;
@@ -67,15 +68,33 @@ class MSSQL extends strongType
      */
     public static function EscapeQuery($sql, $params, bool $test = false): string
     {
+        // Require associative array: ['name' => value]
+        if ($params === null) {
+            $params = [];
+        }
+        if (!is_array($params)) {
+            throw new InvalidArgumentException('EscapeQuery expects $params as associative array of [name => value].');
+        }
+        foreach ($params as $k => $_) {
+            if (!is_string($k)) {
+                throw new InvalidArgumentException('EscapeQuery parameter keys must be strings like "TabName".');
+            }
+            if ($k === '' || $k[0] === '@' || $k[0] === ':') {
+                throw new InvalidArgumentException('Invalid parameter key "' . $k . '". Use keys without leading @ or : (e.g., ["TabName" => "Foreclosure"]).');
+            }
+            if (!preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $k)) {
+                throw new InvalidArgumentException('Invalid parameter key "' . $k . '". Allowed: letters, digits, underscore; must not start with a digit.');
+            }
+        }
+
         /**
          * Pattern behavior:
          *  - Eats quoted strings first (single or double) so we don't replace inside them.
-         *  - Then matches either:
-         *      a) :name or @name  (captures name in group 1)
-         *      b) a single bare @  (no capture; ensured by @(?!@))
-         *  - Guards against :: and @@ via (?<![:@]) and (?!@)
+         *  - Then matches only @name placeholders (captures name in group 1).
+         *  - Guards against @@ (e.g., @@ROWCOUNT) via (?<!@).
+         *  - Also avoids matching when @ is part of an identifier by requiring it not be preceded by [A-Za-z0-9_].
          */
-        $pattern = '/\'(?:\'\'|[^\'])*\'|"(?:""|[^"])*"|(?<![:@])(?:[:@]([A-Za-z_][A-Za-z0-9_]*)|@(?!@))/';
+        $pattern = '/\'(?:\'\'|[^\'])*\'|"(?:""|[^"])*"|(?<![@A-Za-z0-9_])@([A-Za-z_][A-Za-z0-9_]*)/';
 
         if ($test) {
             $matches = [];
@@ -83,74 +102,37 @@ class MSSQL extends strongType
             Testing($matches);
         }
 
-        $posValues = array_values($params ?? []);
-        $posIndex  = 0;
-
-        return preg_replace_callback($pattern, function ($m) use (&$posIndex, $posValues, $params) {
+        return preg_replace_callback($pattern, function ($m) use ($params) {
             $tok = $m[0];
 
-            // 1) Quoted string? Return as-is.
+            // Quoted literal? return unchanged
             $c0 = $tok[0];
             if ($c0 === "'" || $c0 === '"') {
                 return $tok;
             }
 
-            // 2) Named placeholder (@name or :name)
-            if (isset($m[1]) && $m[1] !== '') {
-                $name = $m[1];
+            // @name placeholder
+            $name = $m[1];
 
-                // Prefer named binding if provided
-                if (array_key_exists($name, $params ?? [])) {
-                    if (Strings::EndsWith($name, '_NQ')) {
-                        return $params[$name];
-                    }
-                    $val = $params[$name];
-                    if ($val === null) {
-                        return 'null';
-                    }
-                    return MSSQL::EscapeString($val);
+            // Bind only if $params has a key exactly matching $name (no @ or :)
+            if (array_key_exists($name, $params)) {
+                $val = $params[$name];
+
+                // Allow "_NQ" suffix to mean "no quotes" if you use that convention
+                if (\QuickDRY\Utilities\Strings::EndsWith($name, '_NQ')) {
+                    return (string)$val;
                 }
 
-                // Fallback to positional consumption if available
-                if (array_key_exists($posIndex, $posValues)) {
-                    $val = $posValues[$posIndex++];
-                    switch ($name) {
-                        case 'nullstring':
-                            if ($val === null || $val === 'null' || $val === '') {
-                                return 'null';
-                            }
-                            return MSSQL::EscapeString($val);
-
-                        case 'nullnumeric':
-                            if ($val === null || $val === 'null' || $val === '') {
-                                return 'null';
-                            }
-                            return $val * 1.0;
-
-                        case 'nq':
-                            return $val;
-
-                        default:
-                            return MSSQL::EscapeString($val);
-                    }
-                }
-
-                // Allow declared SQL variables to pass through if no binding
-                return '@' . $name;
-            }
-
-            // 3) Bare @ ? consume next positional value
-            if (array_key_exists($posIndex, $posValues)) {
-                $val = $posValues[$posIndex++];
-                // Bare @ doesn't have special name-based modes; just escape/null as needed
                 if ($val === null) {
                     return 'null';
                 }
                 return MSSQL::EscapeString($val);
             }
 
-            // No positional value available; leave a single @ (likely a SQL var)
-            return '@';
+            // Not provided -> leave as a T-SQL variable
+            return $tok;
         }, $sql);
     }
+
+
 }
