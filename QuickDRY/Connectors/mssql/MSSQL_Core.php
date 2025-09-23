@@ -646,7 +646,7 @@ class MSSQL_Core extends SQL_Base
                     $params[str_replace('@', '', $pk)] = $pv;
                 }
 
-                if ($v && !is_array($v) && strtolower($v) === 'null') {
+                if ($v && !is_array($v) && strtolower((string)$v) === 'null') {
                     $t[] = $c . ' IS NULL';
                 } else {
                     $t[] = $cv['col'];
@@ -729,7 +729,7 @@ class MSSQL_Core extends SQL_Base
                     $params[str_replace('@', '', $pk)] = $pv;
                 }
 
-                if ($v && !is_array($v) && strtolower($v) === 'null') {
+                if ($v && !is_array($v) && strtolower((string)$v) === 'null') {
                     $t[] = $c . ' IS NULL';
                 } else {
                     $t[] = $cv['col'];
