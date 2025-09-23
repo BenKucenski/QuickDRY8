@@ -502,14 +502,24 @@ class MSSQL_Core extends SQL_Base
      *
      * @return array
      */
-    #[ArrayShape(['col' => 'string', 'val' => 'mixed'])] protected static function _parse_col_val($col, $val): array
+    #[ArrayShape(['col' => 'string', 'params' => 'array'])]
+    protected static function _parse_col_val($col, $val): array
     {
         // extra + symbols allow us to do AND on the same column
         $col = str_replace('+', '', $col);
 
+        // helper to mint a new named parameter and collect into $params
+        static $paramCounter = 0;
+        $params = [];
+        $newParam = function($value) use (&$params, &$paramCounter): string {
+            $name = '@param' . (++$paramCounter);
+            $params[$name] = $value;
+            return $name;
+        };
+
         if (is_null($val)) {
             $col = $col . ' IS NULL ';
-            return ['col' => $col, 'val' => $val];
+            return ['col' => $col, 'params' => $params];
         }
 
         if (is_object($val)) {
@@ -524,64 +534,101 @@ class MSSQL_Core extends SQL_Base
 
         if (str_starts_with($val, '{BETWEEN} ')) {
             $val = trim(Strings::RemoveFromStart('{BETWEEN}', $val));
-            $val = explode(',', $val);
-            $col = $col . ' BETWEEN @ AND @';
+            $parts = array_map('trim', explode(',', $val, 2));
+            $p1 = $newParam($parts[0] ?? null);
+            $p2 = $newParam($parts[1] ?? null);
+            $col = $col . " BETWEEN $p1 AND $p2";
+
         } elseif (str_starts_with($val, '{IN} ')) {
             $val = trim(Strings::RemoveFromStart('{IN}', $val));
-            $val = explode(',', $val);
-            $col = $col . ' IN (' . Strings::StringRepeatCS('@', sizeof($val)) . ')';
+            $list = array_map('trim', explode(',', $val));
+            $ph  = [];
+            foreach ($list as $v) { $ph[] = $newParam($v); }
+            $col = $col . ' IN (' . implode(', ', $ph) . ')';
+
         } elseif (str_starts_with($val, '{DATE} ')) {
-            $col = 'CONVERT(date, ' . $col . ') = @';
-            $val = trim(Strings::RemoveFromStart('{DATE}', $val));
+            $v = trim(Strings::RemoveFromStart('{DATE}', $val));
+            $p = $newParam($v);
+            $col = 'CONVERT(date, ' . $col . ") = $p";
+
         } elseif (str_starts_with($val, '{YEAR} ')) {
-            $col = 'DATEPART(yyyy, ' . $col . ') = @';
-            $val = trim(Strings::RemoveFromStart('{YEAR}', $val));
+            $v = trim(Strings::RemoveFromStart('{YEAR}', $val));
+            $p = $newParam($v);
+            $col = 'DATEPART(yyyy, ' . $col . ") = $p";
+
         } elseif (str_starts_with($val, '{NLIKE} ')) {
-            $col = $col . ' NOT LIKE @';
-            $val = trim(Strings::RemoveFromStart('{NLIKE}', $val));
+            $v = trim(Strings::RemoveFromStart('{NLIKE}', $val));
+            $p = $newParam($v);
+            $col = $col . " NOT LIKE $p";
+
         } elseif (str_starts_with($val, '{NILIKE} ')) {
-            $col = 'LOWER(' . $col . ')' . ' NOT LIKE LOWER(@) ';
-            $val = trim(Strings::RemoveFromStart('{NILIKE}', $val));
+            $v = trim(Strings::RemoveFromStart('{NILIKE}', $val));
+            $p = $newParam($v);
+            $col = 'LOWER(' . $col . ") NOT LIKE LOWER($p) ";
+
         } elseif (str_starts_with($val, '{ILIKE} ')) {
-            $col = 'LOWER(' . $col . ')' . ' ILIKE LOWER(@) ';
-            $val = trim(Strings::RemoveFromStart('{ILIKE}', $val));
+            // Note: SQL Server doesn’t support ILIKE; this keeps your original intention.
+            $v = trim(Strings::RemoveFromStart('{ILIKE}', $val));
+            $p = $newParam($v);
+            $col = 'LOWER(' . $col . ") LIKE LOWER($p) ";
+
         } elseif (str_starts_with($val, '{NOT IN} ')) {
-            $val = explode(',', trim(Strings::RemoveFromStart('{NOT IN} ', $val)));
-            if (($key = array_search('null', $val)) !== false) {
-                $col = '(' . $col . ' IS NOT NULL OR ' . $col . ' NOT IN (' . Strings::StringRepeatCS('@', sizeof($val) - 1) . '))';
-                unset($val[$key]);
-            } else {
-                $col = $col . ' NOT IN (' . Strings::StringRepeatCS('@', sizeof($val)) . ')';
+            $list = array_map('trim', explode(',', trim(Strings::RemoveFromStart('{NOT IN} ', $val))));
+            $hasNull = false;
+            $ph = [];
+            foreach ($list as $v) {
+                if (strtolower($v) === 'null') { $hasNull = true; continue; }
+                $ph[] = $newParam($v);
             }
+            if ($hasNull) {
+                // (col IS NOT NULL OR col NOT IN (...))
+                $col = '(' . $col . ' IS NOT NULL' . (count($ph) ? ' OR ' . $col . ' NOT IN (' . implode(', ', $ph) . ')' : '') . ')';
+            } else {
+                $col = $col . ' NOT IN (' . implode(', ', $ph) . ')';
+            }
+
         } elseif (str_starts_with($val, '{LIKE} ')) {
-            $col = $col . ' LIKE @';
-            $val = trim(Strings::RemoveFromStart('{LIKE}', $val));
+            $v = trim(Strings::RemoveFromStart('{LIKE}', $val));
+            $p = $newParam($v);
+            $col = $col . " LIKE $p";
+
         } elseif (str_starts_with($val, '<= ')) {
-            $col = $col . ' <= @ ';
-            $val = trim(Strings::RemoveFromStart('<=', $val));
+            $v = trim(Strings::RemoveFromStart('<=', $val));
+            $p = $newParam($v);
+            $col = $col . " <= $p ";
+
         } elseif (str_starts_with($val, '>= ')) {
-            $col = $col . ' >= @ ';
-            $val = trim(Strings::RemoveFromStart('>=', $val));
+            $v = trim(Strings::RemoveFromStart('>=', $val));
+            $p = $newParam($v);
+            $col = $col . " >= $p ";
+
         } elseif (str_starts_with($val, '<> ')) {
-            $val = trim(Strings::RemoveFromStart('<>', $val));
-            if (strtolower($val) !== 'null') {
-                $col = $col . ' <> @ ';
+            $v = trim(Strings::RemoveFromStart('<>', $val));
+            if (strtolower($v) !== 'null') {
+                $p = $newParam($v);
+                $col = $col . " <> $p ";
             } else {
                 $col = $col . ' IS NOT NULL';
-                $val = null;
             }
+
         } elseif (str_starts_with($val, '< ')) {
-            $col = $col . ' < @ ';
-            $val = trim(Strings::RemoveFromStart('<', $val));
+            $v = trim(Strings::RemoveFromStart('<', $val));
+            $p = $newParam($v);
+            $col = $col . " < $p ";
+
         } elseif (str_starts_with($val, '> ')) {
-            $col = $col . ' > @ ';
-            $val = trim(Strings::RemoveFromStart('>', $val));
+            $v = trim(Strings::RemoveFromStart('>', $val));
+            $p = $newParam($v);
+            $col = $col . " > $p ";
+
         } else {
-            $col = $col . ' = @ ';
+            $p = $newParam($val);
+            $col = $col . " = $p ";
         }
 
-        return ['col' => $col, 'val' => $val];
+        return ['col' => $col, 'params' => $params];
     }
+
 
     /**
      * @param array|null $where
@@ -590,26 +637,23 @@ class MSSQL_Core extends SQL_Base
     protected static function _Get(?array $where = null): mixed
     {
         $params = [];
-        $t = [];
-        foreach ($where as $c => $v) {
-            $cv = self::_parse_col_val($c, $v);
-            $v = $cv['val'];
-
-            if ($v && !is_array($v) && strtolower($v) === 'null') {
-                $t[] = $c . ' IS NULL';
-            } else {
-                $t[] = $cv['col'];
-                if (is_array($v)) {
-                    foreach ($v as $a) {
-                        $params[] = $a;
-                    }
-                } elseif (!is_null($v)) {
-                    $params[] = $v;
+        $where_sql = '1=1';
+        if(is_array($where)) {
+            $t = [];
+            foreach ($where as $c => $v) {
+                $cv = self::_parse_col_val($c, $v);
+                foreach ($cv['params'] as $pk => $pv) {
+                    $params[str_replace('@', '', $pk)] = $pv;
                 }
 
+                if ($v && !is_array($v) && strtolower($v) === 'null') {
+                    $t[] = $c . ' IS NULL';
+                } else {
+                    $t[] = $cv['col'];
+                }
             }
+            $where_sql = implode(' AND ', $t);
         }
-        $where_sql = implode(' AND ', $t);
 
         $type = get_called_class();
 
@@ -681,19 +725,14 @@ class MSSQL_Core extends SQL_Base
             $t = [];
             foreach ($where as $c => $v) {
                 $cv = self::_parse_col_val($c, $v);
-                $v = $cv['val'];
+                foreach ($cv['params'] as $pk => $pv) {
+                    $params[str_replace('@', '', $pk)] = $pv;
+                }
 
-                if (is_null($v) || (!is_array($v) && strtolower($v) === 'null')) {
+                if ($v && !is_array($v) && strtolower($v) === 'null') {
                     $t[] = $c . ' IS NULL';
                 } else {
                     $t[] = $cv['col'];
-                    if (is_array($v)) {
-                        foreach ($v as $a) {
-                            $params[] = $a;
-                        }
-                    } elseif (!is_null($v)) {
-                        $params[] = $v;
-                    }
                 }
             }
             $sql_where = implode(' AND ', $t);
@@ -740,25 +779,20 @@ class MSSQL_Core extends SQL_Base
      */
     protected static function _GetCount(?array $where = null): int
     {
-        $sql_where = '1=1';
         $params = [];
+        $sql_where = '1=1';
         if (is_array($where)) {
             $t = [];
             foreach ($where as $c => $v) {
                 $cv = self::_parse_col_val($c, $v);
-                $v = $cv['val'];
+                foreach ($cv['params'] as $pk => $pv) {
+                    $params[str_replace('@', '', $pk)] = $pv;
+                }
 
-                if (!is_array($v) && strtolower($v) === 'null') {
+                if ($v && !is_array($v) && strtolower($v) === 'null') {
                     $t[] = $c . ' IS NULL';
                 } else {
                     $t[] = $cv['col'];
-                    if (is_array($v)) {
-                        foreach ($v as $a) {
-                            $params[] = $a;
-                        }
-                    } elseif (!is_null($v)) {
-                        $params[] = $v;
-                    }
                 }
             }
             $sql_where = implode(' AND ', $t);
@@ -840,23 +874,18 @@ class MSSQL_Core extends SQL_Base
         }
 
         $sql_where = '1=1';
-        if (is_array($where) && sizeof($where)) {
+        if (is_array($where)) {
             $t = [];
             foreach ($where as $c => $v) {
                 $cv = self::_parse_col_val($c, $v);
-                $v = $cv['val'];
+                foreach ($cv['params'] as $pk => $pv) {
+                    $params[str_replace('@', '', $pk)] = $pv;
+                }
 
-                if (!is_array($v) && strtolower($v) === 'null') {
+                if ($v && !is_array($v) && strtolower($v) === 'null') {
                     $t[] = $c . ' IS NULL';
                 } else {
                     $t[] = $cv['col'];
-                    if (is_array($v)) {
-                        foreach ($v as $a) {
-                            $params[] = $a;
-                        }
-                    } elseif (!is_null($v)) {
-                        $params[] = $v;
-                    }
                 }
             }
             $sql_where = implode(' AND ', $t);

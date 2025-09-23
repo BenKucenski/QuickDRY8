@@ -9,6 +9,8 @@ namespace QuickDRY\Utilities;
  */
 class APIHelper
 {
+    public static ?string $default_placeholder = ':';
+
     // https://stackoverflow.com/questions/9690448/regular-expression-to-remove-comments-from-sql-statement
     /**
      * @param $sqlString
@@ -26,11 +28,14 @@ class APIHelper
 
     /**
      * @param string $filename
-     * @param string $placeholder
+     * @param string|null $placeholder
      * @return string
      */
-    public static function getSQL(string $filename, string $placeholder = ':'): string
+    public static function getSQL(string $filename, ?string $placeholder = null): string
     {
+        // MySQL SQL files expect @ when run in Workbench but PHP's mysqli expects :
+        // for SQL Server, set the default placeholder to @ at the start of your scripts
+        $placeholder = $placeholder ?: self::$default_placeholder;
         return self::removeSqlComment(str_replace('@', $placeholder, file_get_contents($filename)));
 
     }
