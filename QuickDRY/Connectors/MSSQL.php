@@ -100,7 +100,7 @@ class MSSQL extends strongType
                 $name = $m[1];
 
                 // Prefer named binding if provided
-                if (array_key_exists($name, $params)) {
+                if (array_key_exists($name, $params ?? [])) {
                     if (Strings::EndsWith($name, '_NQ')) {
                         return $params[$name];
                     }
