@@ -33,7 +33,7 @@ class MySQL_B extends MySQL_Core
 
         if (is_null(static::$connection)) {
             static::$DB_HOST = MYSQLB_HOST;
-            static::$connection = new MySQL_Connection(MYSQLB_HOST, MYSQLB_USER, MYSQLB_PASS, MYSQLB_PORT);
+            static::$connection = new MySQL_Connection((string)MYSQLB_HOST, (string)MYSQLB_USER, (string)MYSQLB_PASS, MYSQLB_PORT);
         }
     }
 }

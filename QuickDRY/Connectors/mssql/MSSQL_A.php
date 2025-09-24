@@ -26,7 +26,7 @@ class MSSQL_A extends MSSQL_Core
         }
         if (is_null(static::$connection)) {
             static::$DB_HOST = MSSQL_HOST;
-            static::$connection = new MSSQL_Connection(MSSQL_HOST, MSSQL_USER, MSSQL_PASS);
+            static::$connection = new MSSQL_Connection((string)MSSQL_HOST, (string)MSSQL_USER, (string)MSSQL_PASS);
             if(defined('MSSQL_BASE') && MSSQL_BASE) {
                 static::$connection->SetDatabase(MSSQL_BASE);
             }

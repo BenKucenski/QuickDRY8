@@ -63,10 +63,10 @@ class MySQL extends strongType
                     if($params[$result[1]] === 'null') {
                         return mysqli_escape_string($conn, $params[$result[1]]);
                     }
-                    return '\'' . mysqli_escape_string($conn, $params[$result[1]]) . '\'';
+                    return '\'' . mysqli_escape_string($conn, (string)$params[$result[1]]) . '\'';
                 }
 
-                if(is_null($params[$result[1]])) {
+                if(is_null($params[$result[1]] ?? null)) {
                     return 'null';
                 }
 

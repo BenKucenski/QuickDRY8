@@ -34,12 +34,12 @@ class MySQL_Connection
     protected int $DB_PORT;
 
     /**
-     * @param $host
-     * @param $user
-     * @param $pass
-     * @param $port
+     * @param string $host
+     * @param string $user
+     * @param string $pass
+     * @param int|null $port
      */
-    public function __construct($host, $user, $pass, $port = null)
+    public function __construct(string $host, string $user, string $pass, ?int $port = null)
     {
         $this->DB_HOST = $host;
         $this->DB_USER = $user;

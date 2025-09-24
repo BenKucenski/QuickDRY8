@@ -574,7 +574,7 @@ class SQLCodeGen extends strongType
                 exit("$DatabaseClass::TableToNiceName");
             }
 
-            $table_nice_name = $DatabaseClass::TableToNiceName($table_name, $this->LowerCaseTables);
+            $table_nice_name = $DatabaseClass::TableToNiceName($table_name, (bool)$this->LowerCaseTables);
 
             $this->PagesJSONFolder .= '/' . $table_nice_name;
             if (!is_dir($this->PagesJSONFolder)) {

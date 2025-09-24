@@ -481,7 +481,7 @@ class MySQL_Core extends SQL_Base
         $params = [];
         $t = [];
         foreach ($where as $c => $v) {
-            $cv = self::_parse_col_val($c, $v);
+            $cv = self::_parse_col_val($c, (string)$v);
             $v = $cv['val'];
 
             if (is_array($v)) {
@@ -542,7 +542,7 @@ class MySQL_Core extends SQL_Base
             $t = [];
             foreach ($where as $c => $v) {
                 $c = str_replace('+', '', $c);
-                $cv = self::_parse_col_val($c, $v);
+                $cv = self::_parse_col_val($c, (string)$v);
                 $v = $cv['val'];
 
                 if (is_array($v)) {
@@ -586,7 +586,7 @@ class MySQL_Core extends SQL_Base
         if (is_array($where)) {
             $t = [];
             foreach ($where as $c => $v) {
-                $cv = self::_parse_col_val($c, $v);
+                $cv = self::_parse_col_val($c, (string)$v);
                 $v = $cv['val'];
 
                 if (is_array($v)) {
@@ -663,11 +663,11 @@ class MySQL_Core extends SQL_Base
             foreach ($where as $c => $v) {
                 $c = str_replace('+', '', $c);
                 $c = str_replace('.', '`.`', $c);
-                $cv = self::_parse_col_val($c, $v);
+                $cv = self::_parse_col_val($c, (string)$v);
                 $v = $cv['val'];
 
                 if ($v && strtolower($v) !== 'null') {
-                    $params[] = $cv['val'];
+                    $params[$c] = $cv['val'];
                 }
                 $t[] = $cv['col'];
             }
@@ -763,6 +763,17 @@ class MySQL_Core extends SQL_Base
             return null;
         }
 
+        if (is_null($value) && static::$prop_definitions[$name]['is_nullable']) {
+            return null;
+        }
+
+        if(str_starts_with(static::$prop_definitions[$name]['type'], 'varchar')) {
+            return (string)$value;
+        }
+
+        if(str_starts_with(static::$prop_definitions[$name]['type'], 'int')) {
+            return (int)$value;
+        }
 
         switch (static::$prop_definitions[$name]['type']) {
             case 'date':
@@ -780,17 +791,17 @@ class MySQL_Core extends SQL_Base
             case 'unit':
             case 'decimal(18,2)':
             case 'double':
-            case 'int(10)':
                 if (is_null($value) && static::$prop_definitions[$name]['is_nullable']) {
                     return null;
                 }
-                return Strings::Numeric($value);
+                return (float)Strings::Numeric($value);
 
             case 'timestamp':
             case 'datetime':
                 return $value ? Dates::Timestamp($value) : null;
+            default:
+                Exception('Unknown type ' . static::$prop_definitions[$name]['type'] . ' for value ' . $value);
         }
-        return $value;
     }
 
     /**
