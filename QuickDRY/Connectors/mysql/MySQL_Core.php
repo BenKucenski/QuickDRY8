@@ -799,6 +799,10 @@ class MySQL_Core extends SQL_Base
             case 'timestamp':
             case 'datetime':
                 return $value ? Dates::Timestamp($value) : null;
+                
+            case 'text':
+                return (string)$value;
+
             default:
                 Exception('Unknown type ' . static::$prop_definitions[$name]['type'] . ' for value ' . $value);
         }
@@ -893,7 +897,7 @@ class MySQL_Core extends SQL_Base
             if(is_bool($value)) {
                 $sql .= '`' . $name . '` = {{}},';
                 $params[] = $st_value;
-            } elseif (is_null($st_value) || strtolower(trim($st_value)) === 'null')
+            } elseif (is_null($st_value) || strtolower(trim((string)$st_value)) === 'null')
                 $sql .= '`' . $name . '` = NULL,';
             else {
                 $sql .= '`' . $name . '` = {{}},';
