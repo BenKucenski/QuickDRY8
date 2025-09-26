@@ -5,6 +5,7 @@ namespace QuickDRY\Connectors\mysql;
 
 use DateTime;
 use Exception;
+use InvalidArgumentException;
 use JetBrains\PhpStorm\ArrayShape;
 use models\ChangeLog;
 use QuickDRY\Connectors\QueryExecuteResult;
@@ -385,88 +386,96 @@ class MySQL_Core extends SQL_Base
      *
      * @return array
      */
-    #[ArrayShape(['col' => 'string', 'val' => 'null|string|string[]'])] protected static function _parse_col_val(
+    #[ArrayShape(['col' => 'string', 'val' => 'null|string|string[]'])]
+    protected static function _parse_col_val(
         ?string $col,
         ?string $val = null
-    ): array
-    {
+    ): array {
         if (!$col) {
-            Exception($col);
+            throw new InvalidArgumentException('Column name cannot be empty');
         }
 
-        // extra + symbols allow us to do AND on the same column
+        // normalize column name
         $col = str_replace('+', '', $col);
         $col = '`' . $col . '`';
+        $paramName = str_replace('`', '', $col); // safe base name for parameter(s)
 
         if (is_null($val)) {
-            $col = $col . ' IS NULL ';
+            $col .= ' IS NULL ';
             return ['col' => $col, 'val' => $val];
         }
 
-        // adding a space to ensure that "in_" is not mistaken for an IN query
-        // and the parameter must START with the special SQL command
         if (str_starts_with($val, '{BETWEEN} ')) {
-            $val = trim(Strings::RemoveFromStart('{BETWEEN}', $val));
-            $val = explode(',', $val);
-            $col = $col . ' BETWEEN {{}} AND {{}}';
+            $vals = explode(',', trim(Strings::RemoveFromStart('{BETWEEN}', $val)));
+            $col .= " BETWEEN :{$paramName}_from AND :{$paramName}_to";
+            $val = [
+                "{$paramName}_from" => $vals[0] ?? null,
+                "{$paramName}_to"   => $vals[1] ?? null,
+            ];
         } elseif (str_starts_with($val, '{DATE} ')) {
-            $col = 'DATE(' . $col . ') = {{}}';
-            $val = trim(Strings::RemoveFromStart('{DATE}', $val));
+            $col = "DATE($col) = :{$paramName}_date";
+            $val = ["{$paramName}_date" => trim(Strings::RemoveFromStart('{DATE}', $val))];
         } elseif (str_starts_with($val, '{YEAR} ')) {
-            $col = 'YEAR(' . $col . ') = {{}}';
-            $val = trim(Strings::RemoveFromStart('{YEAR}', $val));
+            $col = "YEAR($col) = :{$paramName}_year";
+            $val = ["{$paramName}_year" => trim(Strings::RemoveFromStart('{YEAR}', $val))];
         } elseif (str_starts_with($val, '{IN} ')) {
-            $val = explode(',', trim(Strings::RemoveFromStart('{IN} ', $val)));
-            if (($key = array_search('null', $val)) !== false) {
-                $col = '(' . $col . ' IS NULL OR ' . $col . 'IN (' . Strings::StringRepeatCS('{{}}', sizeof($val) - 1) . '))';
-                unset($val[$key]);
-            } else {
-                $col = $col . 'IN (' . Strings::StringRepeatCS('{{}}', sizeof($val)) . ')';
+            $vals = explode(',', trim(Strings::RemoveFromStart('{IN} ', $val)));
+            $placeholders = [];
+            foreach ($vals as $i => $v) {
+                $placeholders[] = ":{$paramName}_in{$i}";
+                $vals[$i] = [$paramName . "_in{$i}" => $v];
             }
+            $col .= ' IN (' . implode(', ', $placeholders) . ')';
+            $val = array_merge(...$vals);
         } elseif (str_starts_with($val, '{NOT IN} ')) {
-            $val = explode(',', trim(Strings::RemoveFromStart('{NOT IN} ', $val)));
-            if (($key = array_search('null', $val)) !== false) {
-                $col = '(' . $col . ' IS NOT NULL OR ' . $col . ' NOT IN (' . Strings::StringRepeatCS('{{}}', sizeof($val) - 1) . '))';
-                unset($val[$key]);
-            } else {
-                $col = $col . ' NOT IN (' . Strings::StringRepeatCS('{{}}', sizeof($val)) . ')';
+            $vals = explode(',', trim(Strings::RemoveFromStart('{NOT IN} ', $val)));
+            $placeholders = [];
+            foreach ($vals as $i => $v) {
+                $placeholders[] = ":{$paramName}_nin{$i}";
+                $vals[$i] = [$paramName . "_nin{$i}" => $v];
             }
+            $col .= ' NOT IN (' . implode(', ', $placeholders) . ')';
+            $val = array_merge(...$vals);
         } elseif (str_starts_with($val, '{NLIKE} ')) {
-            $col = $col . ' NOT LIKE {{}} ';
-            $val = trim(Strings::RemoveFromStart('{NLIKE} ', $val));
+            $col .= ' NOT LIKE :' . $paramName . '_nlike';
+            $val = [$paramName . '_nlike' => trim(Strings::RemoveFromStart('{NLIKE} ', $val))];
         } elseif (str_starts_with($val, '{NILIKE} ')) {
-            $col = 'LOWER(' . $col . ')' . ' NOT ILIKE {{}} ';
-            $val = strtolower(trim(Strings::RemoveFromStart('{NILIKE} ', $val)));
+            $col = "LOWER($col) NOT ILIKE :{$paramName}_nilike";
+            $val = [$paramName . '_nilike' => strtolower(trim(Strings::RemoveFromStart('{NILIKE} ', $val)))];
         } elseif (str_starts_with($val, '{ILIKE} ')) {
-            $col = 'LOWER(' . $col . ')' . ' ILIKE {{}} ';
-            $val = strtolower(trim(Strings::RemoveFromStart('{ILIKE} ', $val)));
+            $col = "LOWER($col) ILIKE :{$paramName}_ilike";
+            $val = [$paramName . '_ilike' => strtolower(trim(Strings::RemoveFromStart('{ILIKE} ', $val)))];
         } elseif (str_starts_with($val, '{LIKE} ')) {
-            $col = 'LOWER(' . $col . ')' . ' LIKE LOWER({{}}) ';
-            $val = trim(Strings::RemoveFromStart('{LIKE} ', $val));
-        } elseif (stristr($val, '<=') !== false) {
-            $col = $col . ' <= {{}} ';
-            $val = trim(Strings::RemoveFromStart('<=', $val));
-        } elseif (stristr($val, '>=') !== false) {
-            $col = $col . ' >= {{}} ';
-            $val = trim(Strings::RemoveFromStart('>=', $val));
-        } elseif (stristr($val, '<>') !== false) {
-            $val = trim(Strings::RemoveFromStart('<>', $val));
-            if ($val !== 'null')
-                $col = $col . ' <> {{}} ';
-            else
-                $col = $col . ' IS NOT NULL';
-        } elseif (stristr($val, '<') !== false) {
-            $col = $col . ' < {{}} ';
-            $val = trim(Strings::RemoveFromStart('<', $val));
-        } elseif (stristr($val, '>') !== false) {
-            $col = $col . ' > {{}} ';
-            $val = trim(Strings::RemoveFromStart('>', $val));
+            $col = "LOWER($col) LIKE LOWER(:{$paramName}_like)";
+            $val = [$paramName . '_like' => trim(Strings::RemoveFromStart('{LIKE} ', $val))];
+        } elseif (str_starts_with($val, '<=')) {
+            $col .= " <= :{$paramName}_lte";
+            $val = [$paramName . '_lte' => trim(Strings::RemoveFromStart('<=', $val))];
+        } elseif (str_starts_with($val, '>=')) {
+            $col .= " >= :{$paramName}_gte";
+            $val = [$paramName . '_gte' => trim(Strings::RemoveFromStart('>=', $val))];
+        } elseif (str_starts_with($val, '<>')) {
+            $v = trim(Strings::RemoveFromStart('<>', $val));
+            if (strtolower($v) !== 'null') {
+                $col .= " <> :{$paramName}_neq";
+                $val = [$paramName . '_neq' => $v];
+            } else {
+                $col .= ' IS NOT NULL';
+                $val = null;
+            }
+        } elseif (str_starts_with($val, '<')) {
+            $col .= " < :{$paramName}_lt";
+            $val = [$paramName . '_lt' => trim(Strings::RemoveFromStart('<', $val))];
+        } elseif (str_starts_with($val, '>')) {
+            $col .= " > :{$paramName}_gt";
+            $val = [$paramName . '_gt' => trim(Strings::RemoveFromStart('>', $val))];
         } elseif (strtolower($val) !== 'null') {
-            $col = $col . ' = {{}} ';
+            $col .= " = :{$paramName}_eq";
+            $val = [$paramName . '_eq' => $val];
         } else {
-            $col = $col . ' IS NULL ';
+            $col .= ' IS NULL';
+            $val = null;
         }
-
 
         return ['col' => $col, 'val' => $val];
     }
@@ -481,17 +490,16 @@ class MySQL_Core extends SQL_Base
         $params = [];
         $t = [];
         foreach ($where as $c => $v) {
-            $cv = self::_parse_col_val($c, (string)$v);
+            $cv = self::_parse_col_val($c, is_null($v) ? null : (string)$v);
             $v = $cv['val'];
 
-            if (is_array($v)) {
-                foreach ($v as $vv) {
-                    $params[] = $vv;
+            if(is_array($v)) {
+                foreach($v as $kv => $vv) {
+                    $params[$kv] = $vv;
                 }
-            } elseif ($v !== 'null') {
-                $params[] = $v;
+            } elseif ($v && strtolower($v) !== 'null') {
+                $params[$c] = $cv['val'];
             }
-
             $t[] = $cv['col'];
         }
         $sql_where = implode(' AND ', $t);
@@ -542,17 +550,16 @@ class MySQL_Core extends SQL_Base
             $t = [];
             foreach ($where as $c => $v) {
                 $c = str_replace('+', '', $c);
-                $cv = self::_parse_col_val($c, (string)$v);
+                $cv = self::_parse_col_val($c, is_null($v) ? null : (string)$v);
                 $v = $cv['val'];
 
-                if (is_array($v)) {
-                    foreach ($v as $vv) {
-                        $params[] = $vv;
+                if(is_array($v)) {
+                    foreach($v as $kv => $vv) {
+                        $params[$kv] = $vv;
                     }
-                } elseif ($v !== 'null') {
-                    $params[] = $v;
+                } elseif ($v && strtolower($v) !== 'null') {
+                    $params[$c] = $cv['val'];
                 }
-
                 $t[] = $cv['col'];
             }
             $sql_where = implode(' AND ', $t);
@@ -571,6 +578,8 @@ class MySQL_Core extends SQL_Base
         if ($limit) {
             $sql .= ' LIMIT ' . ($limit * 1.0);
         }
+
+//        echo '<pre>' . print_r([$sql,  $params, self::EscapeQuery($sql, $params)], true) . '</pre>';
 
         return static::Query($sql, $params, true);
     }
@@ -629,7 +638,8 @@ class MySQL_Core extends SQL_Base
      *
      * @return array
      */
-    #[ArrayShape(['count' => 'int|mixed', 'items' => 'array', 'sql' => 'string', 'res' => 'array'])] protected static function _GetAllPaginated(
+    #[ArrayShape(['count' => 'int|mixed', 'items' => 'array', 'sql' => 'string', 'res' => 'array'])]
+    protected static function _GetAllPaginated(
         ?array $where = null,
         ?array $order_by = null,
         ?int   $page = null,
@@ -663,10 +673,14 @@ class MySQL_Core extends SQL_Base
             foreach ($where as $c => $v) {
                 $c = str_replace('+', '', $c);
                 $c = str_replace('.', '`.`', $c);
-                $cv = self::_parse_col_val($c, (string)$v);
+                $cv = self::_parse_col_val($c, is_null($v) ? null : (string)$v);
                 $v = $cv['val'];
 
-                if ($v && strtolower($v) !== 'null') {
+                if(is_array($v)) {
+                    foreach($v as $kv => $vv) {
+                        $params[$kv] = $vv;
+                    }
+                } elseif ($v && strtolower($v) !== 'null') {
                     $params[$c] = $cv['val'];
                 }
                 $t[] = $cv['col'];
@@ -706,7 +720,10 @@ class MySQL_Core extends SQL_Base
 			';
         }
 
+//        echo '<pre>' . print_r([$sql,  $params, self::EscapeQuery($sql, $params)], true) . '</pre>';
+
         $res = static::Query($sql, $params);
+
         $count = $res['data'][0]['num'] ?? 0;
         $list = [];
         if ($count > 0) {
@@ -799,7 +816,7 @@ class MySQL_Core extends SQL_Base
             case 'timestamp':
             case 'datetime':
                 return $value ? Dates::Timestamp($value) : null;
-                
+
             case 'text':
                 return (string)$value;
 
