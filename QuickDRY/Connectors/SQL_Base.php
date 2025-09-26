@@ -835,8 +835,6 @@ class SQL_Base
         bool  $trigger_change_log = false,
         bool  $strict = false): void
     {
-        global $User;
-
         if (is_null($trigger_change_log)) {
             $trigger_change_log = false;
         }
@@ -894,15 +892,6 @@ class SQL_Base
                     $missing[$name] = $value;
                 }
                 continue;
-            }
-            if (!is_null($User)) {
-                if (static::$prop_definitions[$name]['type'] === 'datetime') {
-                    if (!$value) {
-                        $value = null;
-                    } elseif (strtotime($value)) {
-                        $value = Dates::Timestamp($value);
-                    }
-                }
             }
 
             if ($trigger_change_log) {

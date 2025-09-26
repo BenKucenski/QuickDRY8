@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace QuickDRY\Utilities;
 
 use DateTime;
-use Exception;
 use QuickDRY\Connectors\Curl;
 use QuickDRY\Connectors\SQL_Base;
 use SimpleXMLElement;

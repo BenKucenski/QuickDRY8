@@ -343,7 +343,7 @@ class Web extends strongType
             }
 
             if ($class::getMasterPage()) {
-                if (($_REQUEST['export'] ?? null) == 'pdf') {
+                if (strtoupper(($_REQUEST['export'] ?? '')) === 'PDF') {
                     ob_start();
                     require_once __DIR__ . '/../../masterpages/' . $class::getMasterPage();
                     $this->HTML = ob_get_clean();

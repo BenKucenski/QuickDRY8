@@ -533,11 +533,11 @@ class Dates extends strongType
         }
         $date = self::DateToInt($date, $null);
         if ($date === $null) {
-            return $null;
+            return (string)$null;
         }
 
         if (!$date && $null) {
-            return $null;
+            return (string)$null;
         }
 
         if ($offset) {

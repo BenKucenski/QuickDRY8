@@ -92,7 +92,7 @@ class WebKit
             }
 
 
-            $cmd = WKHTMLTOPDF . ' ' . implode(' ', $params) . ' ' . $html_file . ' ' . $FileName;
+            $cmd = '"' . WKHTMLTOPDF . '" ' . implode(' ', $params) . ' ' . $html_file . ' ' . $FileName;
             Log::Insert($cmd);
 
             $output = [];

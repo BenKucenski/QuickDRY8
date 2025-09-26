@@ -315,18 +315,9 @@ class APIRequest
      */
     protected function _Log(string $Method = 'Get'): void
     {
-        global $Web;
-
         $this->_method = $Method;
 
         if (!self::$UseLog) {
-            return;
-        }
-
-        if (!$Web) {
-            $a = unserialize($_SESSION['api_log']);
-            $a[] = $this;
-            $_SESSION['api_log'] = serialize($a);
             return;
         }
 

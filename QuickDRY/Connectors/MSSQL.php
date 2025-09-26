@@ -9,7 +9,6 @@ use DateTime;
 use InvalidArgumentException;
 use QuickDRY\Utilities\Dates;
 use QuickDRY\Utilities\strongType;
-use QuickDRY\Utilities\Strings;
 
 const GUID_MSSQL = 'UPPER(SUBSTRING(master.dbo.fn_varbintohexstr(HASHBYTES(\'MD5\',cast(NEWID() as varchar(36)))), 3, 32)) ';
 

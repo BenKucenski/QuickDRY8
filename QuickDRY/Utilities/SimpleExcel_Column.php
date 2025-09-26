@@ -83,6 +83,7 @@ class SimpleExcel_Column extends strongType
 
             case 'int':
             case 'float':
+            case 'bool':
                 return self::SIMPLE_EXCEL_PROPERTY_TYPE_CALCULATED;
 
             default:
