@@ -722,9 +722,9 @@ ORDER BY "TABLE_NAME"
 			FROM
 				[' . $this->current_db . '].INFORMATION_SCHEMA.COLUMNS
 			WHERE
-				TABLE_NAME=@
+				TABLE_NAME= @table_name
 		';
-        $res = $this->Query($sql, [$table_name]);
+        $res = $this->Query($sql, ['table_name' => $table_name]);
         $list = [];
         foreach ($res['data'] as $row) {
             $t = new MSSQL_TableColumn();
@@ -1002,9 +1002,9 @@ ORDER BY obj.name, fkc.referenced_column_id
 				[' . $this->current_db . '].INFORMATION_SCHEMA.KEY_COLUMN_USAGE
 			WHERE
 				OBJECTPROPERTY(OBJECT_ID(constraint_name), \'IsPrimaryKey\') = 1
-				AND table_name = @
+				AND table_name = @table_name
 		';
-        $res = $this->Query($sql, [$table_name]);
+        $res = $this->Query($sql, ['table_name' => $table_name]);
         if ($res['error']) {
             Exception($res);
         }
