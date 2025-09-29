@@ -170,11 +170,11 @@ class Strings extends strongType
      * @return array
      */
     public static function TSVToArrayMap(
-        string   &$tsv,
+        string    &$tsv,
         ?callable $mapping_function = null,
-        ?string  $filename = null,
-        ?string  $class = null,
-        bool     $ignore_errors = false
+        ?string   $filename = null,
+        ?string   $class = null,
+        bool      $ignore_errors = false
     ): array
     {
         $tsv = trim($tsv); // remove trailing whitespace
@@ -300,7 +300,6 @@ class Strings extends strongType
 
         return $out;
     }
-
 
 
     /**
@@ -555,10 +554,10 @@ class Strings extends strongType
                 if ($coef[0] === '+' || $coef[0] === '-') {
                     $coef = substr($coef, 1);
                 }
-                $exp  = (int)$exp;
+                $exp = (int)$exp;
 
                 // split coefficient into integer+fractional digits
-                $parts  = explode('.', $coef, 2);
+                $parts = explode('.', $coef, 2);
                 $digits = $parts[0] . ($parts[1] ?? '');
                 // remove leading zeros from digits but keep at least one
                 $digits = ltrim($digits, '0');
@@ -583,15 +582,20 @@ class Strings extends strongType
             }
         }
 
-        // Normalize thousands/locale-ish separators:
-        // - if both ',' and '.' appear, assume ',' is thousands -> drop commas
-        // - if only ',' appears, assume it's the decimal separator -> convert to dot
+        // Normalize thousands/locale-ish separators
         if (str_contains($s, ',') && str_contains($s, '.')) {
+            // Both present → assume ',' is thousands separator → drop commas
             $s = str_replace(',', '', $s);
         } elseif (str_contains($s, ',') && !str_contains($s, '.')) {
-            $s = str_replace(',', '.', $s);
+            // Only commas present
+            if (preg_match('/,\d{3}(?!\d)/', $s)) {
+                // Pattern like 1,200 or 12,000 → treat commas as thousand separators
+                $s = str_replace(',', '', $s);
+            } else {
+                // Otherwise assume comma is decimal separator
+                $s = str_replace(',', '.', $s);
+            }
         }
-
         // Strip everything except digits, dot, leading minus/plus
         $s = preg_replace('/(?!^)[+\-]/', '', $s);      // disallow extra signs
         $s = preg_replace('/[^0-9.\-+]/', '', $s);
@@ -1119,9 +1123,9 @@ class Strings extends strongType
      */
     public static function StringRepeatCS(
         string $pattern,
-        int $multiplier,
+        int    $multiplier,
         string $separator = ',',
-        ?bool $iterator = false
+        ?bool  $iterator = false
     ): string
     {
         $t = [];

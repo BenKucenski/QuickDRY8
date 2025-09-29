@@ -770,8 +770,9 @@ class MySQL_Core extends SQL_Base
      */
     protected static function StrongType(string $name, $value): mixed
     {
-        if (is_object($value) || is_array($value))
+        if (is_object($value) || is_array($value)) {
             return null;
+        }
 
         if ($value && strcasecmp((string)$value, 'null') == 0) {
             if (!static::$prop_definitions[$name]['is_nullable']) {
@@ -789,19 +790,19 @@ class MySQL_Core extends SQL_Base
         }
 
         if(str_starts_with(static::$prop_definitions[$name]['type'], 'int')) {
-            return (int)$value;
+            return (int)Strings::Numeric($value);
         }
 
         if(str_starts_with(static::$prop_definitions[$name]['type'], 'tinyint')) {
-            return (int)$value;
+            return (int)Strings::Numeric($value);
         }
 
         if(str_starts_with(static::$prop_definitions[$name]['type'], 'decimal')) {
-            return (float)$value;
+            return (float)Strings::Numeric($value);
         }
 
         if(str_starts_with(static::$prop_definitions[$name]['type'], 'double')) {
-            return (float)$value;
+            return (float)Strings::Numeric($value);
         }
 
         switch (static::$prop_definitions[$name]['type']) {
