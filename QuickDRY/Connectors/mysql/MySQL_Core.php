@@ -792,7 +792,15 @@ class MySQL_Core extends SQL_Base
             return (int)$value;
         }
 
+        if(str_starts_with(static::$prop_definitions[$name]['type'], 'tinyint')) {
+            return (int)$value;
+        }
+
         if(str_starts_with(static::$prop_definitions[$name]['type'], 'decimal')) {
+            return (float)$value;
+        }
+
+        if(str_starts_with(static::$prop_definitions[$name]['type'], 'double')) {
             return (float)$value;
         }
 
@@ -808,6 +816,12 @@ class MySQL_Core extends SQL_Base
                     $value = 0;
                 }
                 return $value ? 1 : 0;
+
+            case 'bigint':
+                if (is_null($value) && static::$prop_definitions[$name]['is_nullable']) {
+                    return null;
+                }
+                return (int)Strings::Numeric($value);
 
             case 'unit':
             case 'float':
@@ -917,13 +931,13 @@ class MySQL_Core extends SQL_Base
             }
 
             if(is_bool($value)) {
-                $sql .= '`' . $name . '` = {{}},';
-                $params[] = $st_value;
+                $sql .= '`' . $name . '` = :' . $name . ',';
+                $params[$name] = $st_value;
             } elseif (is_null($st_value) || strtolower(trim((string)$st_value)) === 'null')
                 $sql .= '`' . $name . '` = NULL,';
             else {
-                $sql .= '`' . $name . '` = {{}},';
-                $params[] = $st_value;
+                $sql .= '`' . $name . '` = :' . $name . ',';
+                $params[$name] = $st_value;
             }
         }
 
@@ -932,9 +946,9 @@ class MySQL_Core extends SQL_Base
         if ($primary && $this->$primary && !$force_insert) {
             $sql .= '
 				WHERE
-					`' . $primary . '` = {{}}
+					`' . $primary . '` = :' . $primary . '
 				';
-            $params[] = $this->$primary;
+            $params[$primary] = $this->$primary;
         }
 
         $res = static::Execute($sql, $params);
@@ -983,8 +997,8 @@ INSERT INTO
             if (!is_object($value) && (is_null($st_value) || strtolower(trim($value)) === 'null') && (self::IsNumeric($name) || (!self::IsNumeric($name) && !$this->PRESERVE_NULL_STRINGS))) {
                 $qs[] = 'NULL #' . $name . PHP_EOL;
             } else {
-                $qs[] = '{{}} #' . $name . PHP_EOL;
-                $params[] = $st_value; // reverted because MySQL doesn't use EscapeString
+                $qs[] = ':' . $name . ' #' . $name . PHP_EOL;
+                $params[$name] = $st_value; // reverted because MySQL doesn't use EscapeString
             }
 
         }
