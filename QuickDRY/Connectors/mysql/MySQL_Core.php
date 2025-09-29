@@ -622,7 +622,7 @@ class MySQL_Core extends SQL_Base
 
         $res = static::Query($sql, $params);
         foreach ($res['data'] as $r) {
-            return $r['cnt'];
+            return (int)$r['cnt'];
         }
 
         return 0;
@@ -792,6 +792,10 @@ class MySQL_Core extends SQL_Base
             return (int)$value;
         }
 
+        if(str_starts_with(static::$prop_definitions[$name]['type'], 'decimal')) {
+            return (float)$value;
+        }
+
         switch (static::$prop_definitions[$name]['type']) {
             case 'date':
                 return $value ? Dates::Datestamp($value) : null;
@@ -806,7 +810,7 @@ class MySQL_Core extends SQL_Base
                 return $value ? 1 : 0;
 
             case 'unit':
-            case 'decimal(18,2)':
+            case 'float':
             case 'double':
                 if (is_null($value) && static::$prop_definitions[$name]['is_nullable']) {
                     return null;
@@ -818,6 +822,7 @@ class MySQL_Core extends SQL_Base
                 return $value ? Dates::Timestamp($value) : null;
 
             case 'text':
+            case 'longtext':
                 return (string)$value;
 
             default:

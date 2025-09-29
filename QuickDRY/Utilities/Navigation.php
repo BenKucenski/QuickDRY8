@@ -74,10 +74,11 @@ class Navigation
     public function RenderBootstrap(
         ?string $CurrentPage = null,
         ?array  $additional_params = null,
-        ?string $additional_html = null
+        ?string $additional_html = null,
+        ?string $style ='background-color: #fff; color: var(--bs-primary); border-color: #fff;',
     ): string
     {
-        return $this->renderMenu($CurrentPage, $additional_params, $additional_html);
+        return $this->renderMenu($CurrentPage, $additional_params, $additional_html, $style);
     }
 
     /**
@@ -171,7 +172,8 @@ class Navigation
     public function renderMenu(
         ?string $CurrentPage = null,
         ?array  $additional_params = null,
-        ?string $additional_html = null
+        ?string $additional_html = null,
+        ?string $style = 'background-color: #fff; color: var(--bs-primary); border-color: #fff;',
     ): string
     {
         $html = '<div class="btn-group me-auto" role="group">' . PHP_EOL;
@@ -182,7 +184,7 @@ class Navigation
             // Add a brand element first
             $html .= sprintf(
                     '<span class="btn btn-outline-secondary disabled fw-bold"  
-style="background-color: #fff; color: var(--bs-primary); border-color: #fff;"
+style="' . $style . '"
 >%s</span>',
                     htmlspecialchars($this->Brand)
                 ) . PHP_EOL;
