@@ -4,6 +4,7 @@ declare(strict_types=1);
 use JetBrains\PhpStorm\NoReturn;
 use QuickDRY\Utilities\Mailer;
 use QuickDRY\Utilities\Metrics;
+use QuickDRY\Utilities\Strings;
 use QuickDRY\Web\BrowserOS;
 
 
@@ -39,12 +40,12 @@ function Debug(...$args): void
 
     $code = time() . '.' . rand(0, 1000000);
     $file = DATA_FOLDER . '/logs/' . $code . '.txt';
-    $data = json_encode([
+    $data = json_encode(Strings::FixJSON([
         'data'      => $args,
         'server'    => $_SERVER ?? null,
         'session'   => $_SESSION ?? null,
         'backtrace' => debug_backtrace(),
-    ], JSON_PRETTY_PRINT);
+    ]), JSON_PRETTY_PRINT);
     file_put_contents($file, $data);
 
     if (defined('SEND_DEBUG_EMAILS') && SEND_DEBUG_EMAILS) {
@@ -52,7 +53,7 @@ function Debug(...$args): void
             SMTP_DEBUG_EMAIL,
             SMTP_DEBUG_EMAIL,
             'System Error',
-            $data
+            (string)$data
         );
         $email->Send();
 
