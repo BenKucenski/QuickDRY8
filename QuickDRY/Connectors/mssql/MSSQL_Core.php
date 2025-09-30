@@ -1025,6 +1025,7 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
             case 'decimal':
             case 'numeric':
             case 'money':
+            case 'bigint':
                 if (is_null($value) && static::$prop_definitions[$name]['is_nullable']) {
                     return null;
                 }
@@ -1046,6 +1047,7 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
 
                 switch($_type) {
                     case 'int':
+                    case 'bigint':
                         return !is_null($value) ? (int) $value : null;
                     default:
                         return !is_null($value) ? (float) $value : null;
@@ -1315,7 +1317,9 @@ INSERT INTO
             $st_value = static::StrongType($name, $value);
 
 
-            if (!is_object($value) && (is_null($st_value) || strtolower(trim($value)) === 'null') && (self::IsNumeric($name) || (!self::IsNumeric($name) && !$this->PRESERVE_NULL_STRINGS))) {
+            if (!is_object($value) && (is_null($st_value)
+                    || strtolower(trim((string)$value)) === 'null')
+                && (self::IsNumeric($name) || (!self::IsNumeric($name) && !$this->PRESERVE_NULL_STRINGS))) {
                 $qs[] = 'NULL --' . $name . PHP_EOL;
             } else {
                 $qs[] = '@ --' . $name . PHP_EOL;

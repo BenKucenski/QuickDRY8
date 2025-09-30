@@ -6,7 +6,9 @@ namespace QuickDRY\Utilities;
 use DateTime;
 use QuickDRY\Connectors\Curl;
 use QuickDRY\Connectors\SQL_Base;
+use ReflectionReference;
 use SimpleXMLElement;
+use SplObjectStorage;
 use stdClass;
 
 /**
@@ -170,11 +172,11 @@ class Strings extends strongType
      * @return array
      */
     public static function TSVToArrayMap(
-        string    &$tsv,
+        string   &$tsv,
         ?callable $mapping_function = null,
-        ?string   $filename = null,
-        ?string   $class = null,
-        bool      $ignore_errors = false
+        ?string  $filename = null,
+        ?string  $class = null,
+        bool     $ignore_errors = false
     ): array
     {
         $tsv = trim($tsv); // remove trailing whitespace
@@ -300,6 +302,7 @@ class Strings extends strongType
 
         return $out;
     }
+
 
 
     /**
@@ -554,10 +557,10 @@ class Strings extends strongType
                 if ($coef[0] === '+' || $coef[0] === '-') {
                     $coef = substr($coef, 1);
                 }
-                $exp = (int)$exp;
+                $exp  = (int)$exp;
 
                 // split coefficient into integer+fractional digits
-                $parts = explode('.', $coef, 2);
+                $parts  = explode('.', $coef, 2);
                 $digits = $parts[0] . ($parts[1] ?? '');
                 // remove leading zeros from digits but keep at least one
                 $digits = ltrim($digits, '0');
@@ -582,20 +585,15 @@ class Strings extends strongType
             }
         }
 
-        // Normalize thousands/locale-ish separators
+        // Normalize thousands/locale-ish separators:
+        // - if both ',' and '.' appear, assume ',' is thousands -> drop commas
+        // - if only ',' appears, assume it's the decimal separator -> convert to dot
         if (str_contains($s, ',') && str_contains($s, '.')) {
-            // Both present → assume ',' is thousands separator → drop commas
             $s = str_replace(',', '', $s);
         } elseif (str_contains($s, ',') && !str_contains($s, '.')) {
-            // Only commas present
-            if (preg_match('/,\d{3}(?!\d)/', $s)) {
-                // Pattern like 1,200 or 12,000 → treat commas as thousand separators
-                $s = str_replace(',', '', $s);
-            } else {
-                // Otherwise assume comma is decimal separator
-                $s = str_replace(',', '.', $s);
-            }
+            $s = str_replace(',', '.', $s);
         }
+
         // Strip everything except digits, dot, leading minus/plus
         $s = preg_replace('/(?!^)[+\-]/', '', $s);      // disallow extra signs
         $s = preg_replace('/[^0-9.\-+]/', '', $s);
@@ -774,13 +772,8 @@ class Strings extends strongType
         }
 
         if ($row instanceof strongType || $row instanceof SQL_Base) {
-            $json = $row->toArray(); // note: it's really annoying in testing to exclude empty values
-            foreach ($json as $k => $v) {
-                if ($k[0] == '_') {
-                    unset($json[$k]);
-                }
-            }
-            return $json;
+            // note: it's really annoying in testing to exclude empty values
+            return $row->toArray();
         }
 
         if ($row instanceof stdClass) {
@@ -825,38 +818,111 @@ class Strings extends strongType
     }
 
     /**
-     * @param $json
+     * Iterative, non-recursive JSON fixer with cycle guards for objects AND arrays.
+     * @param mixed $input
      * @return array|null
      */
-    public static function FixJSON($json): ?array
+    public static function FixJSON($input): ?array
     {
-        if (!is_array($json)) {
-            $json = self::RowToJSON($json);
+        // Normalize the root into an array first
+        if (!is_array($input)) {
+            $input = self::RowToJSON($input);
+        }
+        if (!is_array($input)) {
+            Exception('not an array', $input);
+            return null;
         }
 
-        if (!is_array($json)) {
-            exit(print_r($json, true));
+        $seenObjects = new \SplObjectStorage(); // object cycle detection
+        $seenArrays  = [];                       // array-reference cycle detection: [refId => true]
+
+        // mark root array as seen by reference
+        $rootRefId = self::arrayRefId($input);
+        if ($rootRefId !== null) {
+            $seenArrays[$rootRefId] = true;
         }
 
-        foreach ($json as $i => $row) {
-            if (is_object($row)) {
-                $row = Strings::FixJSON(self::RowToJSON($row));
+        $result = [];
+
+        // Each frame: [ 'in' => array, 'out' => &array ]
+        $stack = [[ 'in' => $input, 'out' => &$result ]];
+
+        while (!empty($stack)) {
+            // optional hard stop
+            if (memory_get_peak_usage(true) > 1 * 1024 * 1024 * 1024) {
+                echo '<pre>' . print_r($input, true) . '</pre>';
+                exit;
             }
 
-            if (is_null($row)) {
-                $json[$i] = null;
-            } elseif (is_array($row)) {
-                $json[$i] = Strings::FixJSON($row);
-            } elseif (mb_detect_encoding((string)$row)) {
-                $json[$i] = is_bool($row) ? $row : (is_numeric($row) ? $row : mb_convert_encoding($row, 'UTF-8', 'UTF-8'));
-            } else {
-                $json[$i] = Strings::KeyboardOnly($row);
-            }
+            $frame = array_pop($stack);
+            $in    = $frame['in'];
+            $out   = &$frame['out'];
 
+            // iterate by reference so we can get a stable array refId when needed
+            foreach ($in as $k => &$v) {
+
+                if (is_object($v)) {
+                    if ($seenObjects->contains($v)) {
+                        $out[$k] = null;            // break object cycle
+                        continue;
+                    }
+                    $seenObjects->attach($v);
+                    $v = self::RowToJSON($v);       // to array or scalar
+                }
+
+                if (is_array($v)) {
+                    // detect array-by-reference cycles
+                    $arrId = self::arrayRefId($v);  // same id for same referenced array
+                    if ($arrId !== null) {
+                        if (isset($seenArrays[$arrId])) {
+                            $out[$k] = null;        // break array cycle
+                            continue;
+                        }
+                        $seenArrays[$arrId] = true;
+                    }
+
+                    $out[$k] = [];
+                    // go deeper without recursion
+                    $stack[] = [ 'in' => $v, 'out' => &$out[$k] ];
+                    continue;
+                }
+
+                if ($v === null) {
+                    $out[$k] = null;
+                    continue;
+                }
+
+                if (is_string($v)) {
+                    if ($v === 'true')  { $out[$k] = true;  continue; }
+                    if ($v === 'false') { $out[$k] = false; continue; }
+                }
+
+                if (mb_detect_encoding((string)$v)) {
+                    $out[$k] = is_bool($v) ? $v
+                        : (is_numeric($v) ? $v
+                            : mb_convert_encoding($v, 'UTF-8', 'UTF-8'));
+                } else {
+                    $out[$k] = self::KeyboardOnly($v);
+                }
+            }
+            unset($v); // break the foreach reference
         }
-        return $json;
+
+        return $result;
     }
 
+    /**
+     * Get a stable ID for an array *reference* (not contents).
+     * Returns the same ID for the same referenced array; null if not detectable.
+     * Requires PHP 7.4+ (ReflectionReference).
+     */
+    private static function arrayRefId(array &$a): ?int
+    {
+        // put the array by reference into a temp holder and fetch its ref id
+        $tmp = [&$a];
+        $ref = ReflectionReference::fromArrayElement($tmp, 0);
+        return (int)$ref?->getId();
+    }
 
     /**
      * @param $txt
@@ -1123,9 +1189,9 @@ class Strings extends strongType
      */
     public static function StringRepeatCS(
         string $pattern,
-        int    $multiplier,
+        int $multiplier,
         string $separator = ',',
-        ?bool  $iterator = false
+        ?bool $iterator = false
     ): string
     {
         $t = [];

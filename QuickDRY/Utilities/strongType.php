@@ -7,6 +7,7 @@ namespace QuickDRY\Utilities;
 use DateTime;
 use Exception;
 use ReflectionException;
+use ReflectionObject;
 use ReflectionProperty;
 
 /**
@@ -109,23 +110,33 @@ class strongType
      */
     public function toArray(bool $exclude_empty = false): array
     {
-        $values = $exclude_empty ? array_filter(get_object_vars($this), static function ($var) {
-            return $var !== null;
-        }) : get_object_vars($this);
-        foreach ($values as $k => $v) {
-            if ($k[0] === '_') {
-                unset($values[$k]);
+        $values = [];
+        $ref = new ReflectionObject($this);
+
+        // Only grab public properties; change to getProperties() with flags if you want protected too
+        foreach ($ref->getProperties(ReflectionProperty::IS_PUBLIC) as $prop) {
+            $name = $prop->getName();
+            $val  = $this->$name;
+
+            if ($exclude_empty && $val === null) {
                 continue;
             }
-            if (is_object($v)) {
-                if (get_class($v) === DateTime::class) {
-                    $values[$k] = Dates::Timestamp($v);
-                }
+
+            // Skip internal/hidden keys like "_foo"
+            if ($name[0] === '_') {
+                continue;
             }
+
+            // Handle special types
+            if ($val instanceof DateTime) {
+                $val = Dates::Timestamp($val);
+            }
+
+            $values[$name] = $val;
         }
+
         return $values;
     }
-
     /**
      * @param array $data
      * @param bool $strict

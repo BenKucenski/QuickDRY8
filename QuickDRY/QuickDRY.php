@@ -280,7 +280,8 @@ function mem(string $label, bool $real = true): void
  * - Objects (left as-is unless DateTime/Enum)
  * - Union types and nullables
  */
-function coerce_to_reflection_type($value, ?ReflectionType $type) {
+function coerce_to_reflection_type($value, ?ReflectionType $type)
+{
     if (!$type) {
         return $value; // untyped property
     }
