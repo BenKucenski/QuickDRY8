@@ -268,7 +268,7 @@ class HTTP extends strongType
             }
         }
 
-        $json = json_encode(Strings::FixJSON($json), JSON_PRETTY_PRINT);
+        $json = json_encode($json, JSON_PRETTY_PRINT);
         $error = json_last_error_msg();
         if (json_last_error()) {
             exit($error);
@@ -306,7 +306,7 @@ class HTTP extends strongType
             }
         }
 
-        $json = json_encode(Strings::FixJSON($json), JSON_PRETTY_PRINT);
+        $json = json_encode($json, JSON_PRETTY_PRINT);
         $error = json_last_error_msg();
         if (json_last_error()) {
             if (self::$AJAXTestMode) {

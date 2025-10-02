@@ -6,7 +6,6 @@ namespace QuickDRY\Web;
 use QuickDRY\Connectors\mssql\MSSQL_Connection;
 use QuickDRY\Connectors\mysql\MySQL_Connection;
 use QuickDRY\Utilities\HTTP;
-use QuickDRY\Utilities\Navigation;
 use QuickDRY\Utilities\strongType;
 
 /**
@@ -20,14 +19,10 @@ class Web extends strongType
     public ?string $ViewFile = null;
     public ?string $PageClass = null;
     public ?bool $IsJSON = null;
-    public ?Navigation $Navigation = null;
-    public ?bool $AccessDenied = null;
     public ?string $MasterPage = null;
     public ?string $SettingsFile = null;
-    public int $PageMode;
     public string $CurrentPage;
     public string $CurrentPageName;
-    public ?string $DefaultURL = null;
     public ?string $IndexFile = null;
 
     private ?array $SecureMasterPages = null;
@@ -53,16 +48,13 @@ class Web extends strongType
     public ?string $js = null;
     public ?string $css = null;
 
-    public ?bool $RenderDOCX = null;
-    public ?string $DOCXPageOrientation = null;
-    public ?string $DOCXFileName = null;
 
-    public string $Verb;
-    public int $StartTime;
-    public int $InitTime;
+    public ?string $Verb = null;
+    public ?int $StartTime = null;
+    public ?int $InitTime = null;
 
     public ?string $DefaultPage = null;
-    public string $DefaultUserPage;
+    public ?string $DefaultUserPage = null;
 
     public ?string $MetaTitle = null;
     public ?string $MetaDescription = null;
@@ -375,6 +367,9 @@ class Web extends strongType
                 break;
             case 'XLS':
                 $class::ExportToXLS();
+                break;
+            case 'JSON':
+                $class::ExportToJSON();
                 break;
             case 'PDF':
                 $class::ExportToPDF();

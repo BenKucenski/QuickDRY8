@@ -172,11 +172,11 @@ class Strings extends strongType
      * @return array
      */
     public static function TSVToArrayMap(
-        string   &$tsv,
+        string    &$tsv,
         ?callable $mapping_function = null,
-        ?string  $filename = null,
-        ?string  $class = null,
-        bool     $ignore_errors = false
+        ?string   $filename = null,
+        ?string   $class = null,
+        bool      $ignore_errors = false
     ): array
     {
         $tsv = trim($tsv); // remove trailing whitespace
@@ -302,7 +302,6 @@ class Strings extends strongType
 
         return $out;
     }
-
 
 
     /**
@@ -768,33 +767,8 @@ class Strings extends strongType
      */
     private static function RowToJSON($row)
     {
-        if (!is_object($row)) {
-            return $row;
-        }
+        Exception('Deprecated');
 
-        if ($row instanceof DateTime) {
-            return Dates::SolrTime($row);
-        }
-
-        if ($row instanceof strongType || $row instanceof SQL_Base) {
-            // note: it's really annoying in testing to exclude empty values
-            return $row->toArray();
-        }
-
-        if ($row instanceof stdClass) {
-            return get_object_vars($row);
-        }
-
-        if ($row instanceof Curl) {
-            return $row->Body;
-        }
-
-        Exception([
-            'error'      => 'fix_json unknown object',
-            'class'      => get_class($row),
-            'strongType' => $row instanceof strongType,
-            'row'        => $row,
-        ]);
 
     }
 
@@ -804,117 +778,15 @@ class Strings extends strongType
      */
     public static function fixBOOLs(&$val): mixed
     {
-        if (is_string($val)) {
-            if ($val === 'true') {
-                $val = true;
-            }
-            if ($val === 'false') {
-                $val = false;
-            }
-        }
+        Exception('Deprecated');
 
-        if (is_array($val)) {
-            foreach ($val as $k => $v) {
-                $val[$k] = self::fixBOOLs($val[$k]);
-            }
-        }
-
-        return $val;
     }
 
-    /**
-     * Iterative, non-recursive JSON fixer with cycle guards for objects AND arrays.
-     * @param mixed $input
-     * @return array|null
-     */
     public static function FixJSON($input): ?array
     {
-        // Normalize the root into an array first
-        if (!is_array($input)) {
-            $input = self::RowToJSON($input);
-        }
-        if (!is_array($input)) {
-            Exception('not an array', $input);
-            return null;
-        }
-
-        $seenObjects = new \SplObjectStorage(); // object cycle detection
-        $seenArrays  = [];                       // array-reference cycle detection: [refId => true]
-
-        // mark root array as seen by reference
-        $rootRefId = self::arrayRefId($input);
-        if ($rootRefId !== null) {
-            $seenArrays[$rootRefId] = true;
-        }
-
-        $result = [];
-
-        // Each frame: [ 'in' => array, 'out' => &array ]
-        $stack = [[ 'in' => $input, 'out' => &$result ]];
-
-        while (!empty($stack)) {
-            // optional hard stop
-            if (memory_get_peak_usage(true) > 1 * 1024 * 1024 * 1024) {
-                echo '<pre>' . print_r($input, true) . '</pre>';
-                exit;
-            }
-
-            $frame = array_pop($stack);
-            $in    = $frame['in'];
-            $out   = &$frame['out'];
-
-            // iterate by reference so we can get a stable array refId when needed
-            foreach ($in as $k => &$v) {
-
-                if (is_object($v)) {
-                    if ($seenObjects->contains($v)) {
-                        $out[$k] = null;            // break object cycle
-                        continue;
-                    }
-                    $seenObjects->attach($v);
-                    $v = self::RowToJSON($v);       // to array or scalar
-                }
-
-                if (is_array($v)) {
-                    // detect array-by-reference cycles
-                    $arrId = self::arrayRefId($v);  // same id for same referenced array
-                    if ($arrId !== null) {
-                        if (isset($seenArrays[$arrId])) {
-                            $out[$k] = null;        // break array cycle
-                            continue;
-                        }
-                        $seenArrays[$arrId] = true;
-                    }
-
-                    $out[$k] = [];
-                    // go deeper without recursion
-                    $stack[] = [ 'in' => $v, 'out' => &$out[$k] ];
-                    continue;
-                }
-
-                if ($v === null) {
-                    $out[$k] = null;
-                    continue;
-                }
-
-                if (is_string($v)) {
-                    if ($v === 'true')  { $out[$k] = true;  continue; }
-                    if ($v === 'false') { $out[$k] = false; continue; }
-                }
-
-                if (mb_detect_encoding((string)$v)) {
-                    $out[$k] = is_bool($v) ? $v
-                        : (is_numeric($v) ? $v
-                            : mb_convert_encoding($v, 'UTF-8', 'UTF-8'));
-                } else {
-                    $out[$k] = self::KeyboardOnly($v);
-                }
-            }
-            unset($v); // break the foreach reference
-        }
-
-        return $result;
+        Exception('Deprecated');
     }
+
 
     /**
      * Get a stable ID for an array *reference* (not contents).
@@ -923,10 +795,8 @@ class Strings extends strongType
      */
     private static function arrayRefId(array &$a): ?int
     {
-        // put the array by reference into a temp holder and fetch its ref id
-        $tmp = [&$a];
-        $ref = ReflectionReference::fromArrayElement($tmp, 0);
-        return (int)$ref?->getId();
+        Exception('Deprecated');
+
     }
 
     /**

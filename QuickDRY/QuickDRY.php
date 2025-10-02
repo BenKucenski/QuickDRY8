@@ -40,12 +40,12 @@ function Debug(...$args): void
 
     $code = time() . '.' . rand(0, 1000000);
     $file = DATA_FOLDER . '/logs/' . $code . '.txt';
-    $data = json_encode(Strings::FixJSON([
+    $data = json_encode([
         'data'      => $args,
         'server'    => $_SERVER ?? null,
         'session'   => $_SESSION ?? null,
         'backtrace' => debug_backtrace(),
-    ]), JSON_PRETTY_PRINT);
+    ], JSON_PRETTY_PRINT);
     file_put_contents($file, $data);
 
     if (defined('SEND_DEBUG_EMAILS') && SEND_DEBUG_EMAILS) {
@@ -372,4 +372,37 @@ function coerce_to_reflection_type($value, ?ReflectionType $type)
 
     // Other objects: leave as-is; caller can hydrate later if needed
     return $value;
+}
+
+function safeBacktrace(int $limit = 20): array
+{
+    $bt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $limit);
+    $seen = new \SplObjectStorage();
+    $normalize = function ($v) use (&$normalize, $seen) {
+        if (is_object($v)) {
+            if ($seen->contains($v)) return '*RECURSION*';
+            $seen->attach($v);
+            return ['__class' => get_class($v)];
+        }
+        if (is_array($v)) {
+            // cap size and avoid deep recursion
+            $out = [];
+            $count = 0;
+            foreach ($v as $k => $vv) {
+                if ($count++ > 10) { $out['...'] = '*TRUNCATED*'; break; }
+                $out[$k] = is_scalar($vv) || $vv === null ? $vv : $normalize($vv);
+            }
+            return $out;
+        }
+        return is_resource($v) ? '*RESOURCE*' : $v;
+    };
+
+    foreach ($bt as &$frame) {
+        if (isset($frame['args'])) {
+            $frame['args'] = array_map($normalize, $frame['args']);
+        }
+        // Drop huge locals if present (Xdebug)
+        unset($frame['params'], $frame['locals']);
+    }
+    return $bt;
 }

@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace QuickDRY\Connectors;
 
+use JsonSerializable;
 use models\ChangeLogHistory;
+use QuickDRY\Connectors\mssql\MSSQL_Core;
 use QuickDRY\Utilities\SimpleExcel;
 use QuickDRY\Utilities\SimpleExcel_Column;
 use DateTime;
@@ -19,7 +21,7 @@ use ReflectionProperty;
  * @property array Changes
  * @property ChangeLogHistory history
  */
-class SQL_Base
+class SQL_Base implements JsonSerializable
 {
     protected static ?bool $_use_change_log = null;
     protected array $props = [];
@@ -444,6 +446,8 @@ class SQL_Base
         foreach ($arr as $k => $v) {
             if (is_object($v) && get_class($v) === 'DateTime') {
                 $arr[$k] = isset($prop_definitions[$k]['type']) && strcasecmp($prop_definitions[$k]['type'], 'date') == 0 ? Dates::Datestamp($v) : Dates::Timestamp($v);
+            } else {
+                $arr[$k] = static::StrongType($k, $v);
             }
             if ($null_string && is_null($v)) {
                 $arr[$k] = 'null';
@@ -1096,5 +1100,10 @@ class SQL_Base
         }
         $select .= '</select>';
         return $select;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 }

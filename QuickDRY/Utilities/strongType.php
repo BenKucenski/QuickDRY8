@@ -6,6 +6,7 @@ namespace QuickDRY\Utilities;
 
 use DateTime;
 use Exception;
+use JsonSerializable;
 use ReflectionException;
 use ReflectionObject;
 use ReflectionProperty;
@@ -13,7 +14,7 @@ use ReflectionProperty;
 /**
  *
  */
-class strongType
+class strongType implements JsonSerializable
 {
     private array $_missing_properties = [];
     protected static ?array $_alias = null;
@@ -115,6 +116,11 @@ class strongType
 
         // Only grab public properties; change to getProperties() with flags if you want protected too
         foreach ($ref->getProperties(ReflectionProperty::IS_PUBLIC) as $prop) {
+            // Skip static properties
+            if ($prop->isStatic()) {
+                continue;
+            }
+
             $name = $prop->getName();
             $val  = $this->$name;
 
@@ -374,5 +380,10 @@ class strongType
         }
 
         return $html . '</tbody></table>';
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 }
