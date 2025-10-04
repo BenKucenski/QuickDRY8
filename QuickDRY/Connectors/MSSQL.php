@@ -8,6 +8,7 @@ namespace QuickDRY\Connectors;
 use DateTime;
 use InvalidArgumentException;
 use QuickDRY\Utilities\Dates;
+use QuickDRY\Utilities\Strings;
 use QuickDRY\Utilities\strongType;
 
 const GUID_MSSQL = 'UPPER(SUBSTRING(master.dbo.fn_varbintohexstr(HASHBYTES(\'MD5\',cast(NEWID() as varchar(36)))), 3, 32)) ';
@@ -118,7 +119,7 @@ class MSSQL extends strongType
                 $val = $params[$name];
 
                 // Allow "_NQ" suffix to mean "no quotes" if you use that convention
-                if (\QuickDRY\Utilities\Strings::EndsWith($name, '_NQ')) {
+                if (Strings::EndsWith($name, '_NQ')) {
                     return (string)$val;
                 }
 

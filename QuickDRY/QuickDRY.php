@@ -4,7 +4,6 @@ declare(strict_types=1);
 use JetBrains\PhpStorm\NoReturn;
 use QuickDRY\Utilities\Mailer;
 use QuickDRY\Utilities\Metrics;
-use QuickDRY\Utilities\Strings;
 use QuickDRY\Web\BrowserOS;
 
 
@@ -377,7 +376,7 @@ function coerce_to_reflection_type($value, ?ReflectionType $type)
 function safeBacktrace(int $limit = 20): array
 {
     $bt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $limit);
-    $seen = new \SplObjectStorage();
+    $seen = new SplObjectStorage();
     $normalize = function ($v) use (&$normalize, $seen) {
         if (is_object($v)) {
             if ($seen->contains($v)) return '*RECURSION*';

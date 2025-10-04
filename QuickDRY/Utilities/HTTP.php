@@ -78,11 +78,11 @@ class HTTP extends strongType
     }
 
     /**
-     * @param $query_str
-     * @param $params
+     * @param string $query_str
+     * @param array $params
      * @return string
      */
-    public static function RemoveParameters($query_str, $params): string
+    public static function RemoveParameters(string $query_str, array $params): string
     {
         parse_str($query_str, $get);
         foreach ($params as $param) {
@@ -93,6 +93,26 @@ class HTTP extends strongType
         }
         return http_build_query($get);
     }
+
+    /**
+     * @param string $query_str
+     * @param array $params
+     * @return string
+     */
+    public static function AddParameters(string $query_str, array $params): string
+    {
+        // Parse existing query string into array
+        parse_str($query_str, $get);
+
+        // Merge with new params (overwrites if already exist)
+        foreach ($params as $key => $value) {
+            $get[$key] = $value;
+        }
+
+        // Build updated query string
+        return http_build_query($get);
+    }
+
 
     /**
      * @param JsonStatusResult $result

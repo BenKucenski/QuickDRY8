@@ -3,13 +3,8 @@ declare(strict_types=1);
 
 namespace QuickDRY\Utilities;
 
-use DateTime;
-use QuickDRY\Connectors\Curl;
-use QuickDRY\Connectors\SQL_Base;
-use ReflectionReference;
+use JetBrains\PhpStorm\NoReturn;
 use SimpleXMLElement;
-use SplObjectStorage;
-use stdClass;
 
 /**
  * Class Strings
@@ -763,9 +758,10 @@ class Strings extends strongType
 
     /**
      * @param $row
-     * @return array|string|void|null
+     * @return void
      */
-    private static function RowToJSON($row)
+    #[NoReturn]
+    private static function RowToJSON($row): void
     {
         Exception('Deprecated');
 
@@ -774,15 +770,17 @@ class Strings extends strongType
 
     /**
      * @param $val
-     * @return array|mixed|string|true
+     * @return void
      */
-    public static function fixBOOLs(&$val): mixed
+    #[NoReturn]
+    public static function fixBOOLs(&$val): void
     {
         Exception('Deprecated');
 
     }
 
-    public static function FixJSON($input): ?array
+    #[NoReturn]
+    public static function FixJSON($input): void
     {
         Exception('Deprecated');
     }

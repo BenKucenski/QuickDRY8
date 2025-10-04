@@ -5,7 +5,6 @@ namespace QuickDRY\Connectors;
 
 use JsonSerializable;
 use models\ChangeLogHistory;
-use QuickDRY\Connectors\mssql\MSSQL_Core;
 use QuickDRY\Utilities\SimpleExcel;
 use QuickDRY\Utilities\SimpleExcel_Column;
 use DateTime;
@@ -387,7 +386,7 @@ class SQL_Base implements JsonSerializable
      * @param array|null $left_join
      * @param int|null $limit
      *
-     * @return null
+     * @return string|null
      */
     public static function GetAllPaginated(
         ?array $where = null,
@@ -396,7 +395,7 @@ class SQL_Base implements JsonSerializable
         int    $per_page = 0,
         ?array $left_join = null,
         ?int   $limit = null
-    )
+    ): ?string
     {
         return static::_GetAllPaginated($where, $order_by, $page, $per_page, $left_join, $limit);
     }

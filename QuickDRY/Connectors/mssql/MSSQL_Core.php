@@ -87,10 +87,9 @@ class MSSQL_Core extends SQL_Base
 
     /**
      * @param bool $return_query
-     * @return array|SQL_Query
-     * @throws Exception
+     * @return SQL_Query|QueryExecuteResult|array
      */
-    public function Insert(bool $return_query = false): SQL_Query|array
+    public function Insert(bool $return_query = false): SQL_Query|QueryExecuteResult|array
     {
         return $this->_Insert($return_query);
     }
@@ -1328,8 +1327,13 @@ INSERT INTO
                 && (self::IsNumeric($name) || (!self::IsNumeric($name) && !$this->PRESERVE_NULL_STRINGS))) {
                 $qs[] = 'NULL --' . $name . PHP_EOL;
             } else {
-                $qs[] = '@ --' . $name . PHP_EOL;
-                $params[] = '{{{' . $st_value . '}}}'; // necessary to get past the null check in EscapeString
+
+                if ($st_value instanceof DateTime) {
+                    $st_value = Dates::Timestamp($value);
+                }
+
+                $qs[] = '@' . $name . ' --' . $name . PHP_EOL;
+                $params[$name] = '{{{' . $st_value . '}}}'; // necessary to get past the null check in EscapeString
             }
 
         }
