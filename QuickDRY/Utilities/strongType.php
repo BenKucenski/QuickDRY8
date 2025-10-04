@@ -298,9 +298,9 @@ class strongType implements JsonSerializable
      * @param strongType[] $items
      * @return SimpleExcel|null
      */
-    public static function toExcel(array $items): ?SimpleExcel
+    public static function toExcel(?array $items): ?SimpleExcel
     {
-        if (!sizeof($items)) {
+        if (!$items || !sizeof($items)) {
             return null;
         }
         $cols = self::getHeaders($items[0]);
