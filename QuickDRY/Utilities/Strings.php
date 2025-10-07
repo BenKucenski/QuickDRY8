@@ -759,6 +759,7 @@ class Strings extends strongType
     /**
      * @param $row
      * @return void
+     * @deprecated This method is deprecated and should not be used.
      */
     #[NoReturn]
     private static function RowToJSON($row): void
@@ -767,35 +768,41 @@ class Strings extends strongType
 
 
     }
-
     /**
      * @param $val
-     * @return void
+     * @return mixed
      */
-    #[NoReturn]
-    public static function fixBOOLs(&$val): void
+    public static function fixBOOLs(&$val): mixed
     {
-        Exception('Deprecated');
+        if (is_string($val)) {
+            if ($val === 'true') {
+                $val = true;
+            }
+            if ($val === 'false') {
+                $val = false;
+            }
+        }
 
+        if (is_array($val)) {
+            foreach ($val as $k => $v) {
+                $val[$k] = self::fixBOOLs($val[$k]);
+            }
+        }
+
+        return $val;
     }
 
+    /**
+     * @param $input
+     * @return void
+     * @deprecated This method is deprecated and should not be used.
+     */
     #[NoReturn]
     public static function FixJSON($input): void
     {
         Exception('Deprecated');
     }
 
-
-    /**
-     * Get a stable ID for an array *reference* (not contents).
-     * Returns the same ID for the same referenced array; null if not detectable.
-     * Requires PHP 7.4+ (ReflectionReference).
-     */
-    private static function arrayRefId(array &$a): ?int
-    {
-        Exception('Deprecated');
-
-    }
 
     /**
      * @param $txt
