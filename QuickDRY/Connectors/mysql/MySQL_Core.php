@@ -789,6 +789,10 @@ class MySQL_Core extends SQL_Base
             return (string)$value;
         }
 
+        if(str_starts_with(static::$prop_definitions[$name]['type'], 'enum(')) {
+            return (string)$value;
+        }
+
         if(str_starts_with(static::$prop_definitions[$name]['type'], 'int')) {
             return (int)Strings::Numeric($value);
         }

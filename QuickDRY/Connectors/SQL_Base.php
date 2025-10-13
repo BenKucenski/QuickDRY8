@@ -1103,6 +1103,6 @@ class SQL_Base implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return $this->toArray();
+        return $this->ToJSONArray();
     }
 }

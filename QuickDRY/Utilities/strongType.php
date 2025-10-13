@@ -177,6 +177,7 @@ class strongType implements JsonSerializable
                     break;
 
                 case 'array':
+                case 'enum':
                 case 'string':
                     $this->$k = $v;
                     break;
