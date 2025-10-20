@@ -171,19 +171,20 @@ class Mailer extends strongType
                         }
                     }
 
-
-                    if (!file_exists($path)) {
-                        $path = '../' . $path;
-                    }
-                    if (!file_exists($path)) {
-                        Log::Insert(['error' => 'attachment missing', $name => $path]);
-                        return 0;
-                    }
-                    try {
-                        $mail->addAttachment($path, $name);
-                    } catch (Exception $ex) {
-                        $this->log = $ex->getMessage();
-                        return 0;
+                    if (file_exists($path)) {
+                        try {
+                            $mail->addAttachment($path, $name);
+                        } catch (Exception $ex) {
+                            $this->log = $ex->getMessage();
+                            return 0;
+                        }
+                    } else {
+                        try {
+                            $mail->addStringAttachment(base64_decode($path), $name);
+                        } catch (Exception $ex) {
+                            $this->log = $ex->getMessage();
+                            return 0;
+                        }
                     }
                 }
             }

@@ -348,6 +348,9 @@ class strongType implements JsonSerializable
         $se->Title = $obj_class;
         $se->Columns = [];
         foreach ($cols as $col) {
+            if($col[0] == '_') {
+                continue;
+            }
             $se->Columns[$col] = new SimpleExcel_Column(null, $col);
         }
 
@@ -356,6 +359,9 @@ class strongType implements JsonSerializable
             $html .= '<th></th>';
         }
         foreach ($se->Columns as $col => $settings) {
+            if($col[0] == '_') {
+                continue;
+            }
             $html .= '<th>' . $col . '</th>';
         }
         $html .= '</tr></thead><tbody>';
@@ -368,6 +374,9 @@ class strongType implements JsonSerializable
                 $html .= '<td>' . ($i + 1) . '</td>';
             }
             foreach ($se->Columns as $col => $settings) {
+                if($col[0] == '_') {
+                    continue;
+                }
                 if (is_array($item->$col)) {
                     continue;
                 }
