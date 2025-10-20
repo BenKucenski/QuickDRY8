@@ -506,6 +506,7 @@ class MSSQL_Core extends SQL_Base
     {
         // extra + symbols allow us to do AND on the same column
         $col = str_replace('+', '', $col);
+        $col = '[' . $col . ']';
 
         // helper to mint a new named parameter and collect into $params
         static $paramCounter = 0;
@@ -735,7 +736,7 @@ class MSSQL_Core extends SQL_Base
                 }
 
                 if ($v && !is_array($v) && strtolower((string)$v) === 'null') {
-                    $t[] = $c . ' IS NULL';
+                    $t[] = '[' . $c . '] IS NULL';
                 } else {
                     $t[] = $cv['col'];
                 }

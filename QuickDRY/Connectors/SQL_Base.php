@@ -346,7 +346,6 @@ class SQL_Base implements JsonSerializable
             foreach ($order_by as $col => $dir) {
                 if (!self::check_props(trim($col))) {
                     Exception('QuickDRY Error: ' . $col . ' is not a valid order by column for ' . get_called_class());
-                    return null;
                 }
             }
         }
@@ -360,7 +359,6 @@ class SQL_Base implements JsonSerializable
                 $col = str_replace('+', '', $col);
                 if (!self::check_props(trim($col))) {
                     Exception('QuickDRY Error: ' . $col . ' is not a valid where column for ' . get_called_class());
-                    return null;
                 }
             }
         }
