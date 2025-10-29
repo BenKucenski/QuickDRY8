@@ -54,7 +54,6 @@ class Security extends strongType
         } catch (Exception $ex) {
             Exception($ex->getMessage());
         }
-        return '';
     }
 
     /**
@@ -378,6 +377,5 @@ class Security extends strongType
         } catch (RandomException $e) {
             Exception($e->getMessage());
         }
-        return '';
     }
 }

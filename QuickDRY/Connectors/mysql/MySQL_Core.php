@@ -260,7 +260,6 @@ class MySQL_Core extends SQL_Base
         } catch (Exception $ex) {
             Exception($ex);
         }
-        return new QueryExecuteResult();
     }
 
     /**

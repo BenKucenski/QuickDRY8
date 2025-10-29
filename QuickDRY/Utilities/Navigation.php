@@ -168,6 +168,7 @@ class Navigation
      * @param string|null $CurrentPage
      * @param array|null $additional_params
      * @param string|null $additional_html
+     * @param string|null $style
      * @return string
      */
     public function renderMenu(

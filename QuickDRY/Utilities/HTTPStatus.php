@@ -53,6 +53,5 @@ class HTTPStatus extends strongType
         }
 
         Exception('QuickDRY Error: Invalid status code: ' . $http_status_code);
-        return $http_status_code;
     }
 }

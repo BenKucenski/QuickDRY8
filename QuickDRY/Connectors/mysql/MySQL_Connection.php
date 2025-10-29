@@ -295,7 +295,6 @@ database = ' . $this->current_db . '
         } catch (Exception $e) {
             Exception($e->getMessage());
         }
-        return new QueryExecuteResult();
     }
 
     /**

@@ -55,6 +55,5 @@ class HTTPStatus
         }
 
         Exception('QuickDRY Error: Invalid status code: ' . $http_status_code);
-        return null;
     }
 }

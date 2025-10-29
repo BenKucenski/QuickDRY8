@@ -90,7 +90,7 @@ class strongType implements JsonSerializable
     /**
      * @param $name
      * @param $value
-     * @return void
+     * @return mixed
      */
     public function __set($name, $value)
     {
@@ -103,6 +103,8 @@ class strongType implements JsonSerializable
         } else {
             $this->$name = $value;
         }
+
+        return $this->$name;
     }
 
     /**

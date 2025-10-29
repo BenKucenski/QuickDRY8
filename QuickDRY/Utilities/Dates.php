@@ -62,7 +62,6 @@ class Dates extends strongType
             return $date->format('Y-m-d H:i:s');
         } catch (Exception $e) {
             Exception($e);
-            exit;
         }
     }
 
@@ -81,7 +80,6 @@ class Dates extends strongType
             return $date->format('Y-m-d H:i:s');
         } catch (Exception $e) {
             Exception($e);
-            exit;
         }
     }
 
@@ -644,7 +642,6 @@ class Dates extends strongType
         } catch (Exception $e) {
             Exception($e->getMessage());
         }
-        return '';
     }
 
     /**
