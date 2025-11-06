@@ -645,11 +645,25 @@ class MSSQL_Connection extends strongType
         return $this->ExecuteWindows($query, $large);
     }
 
+    private static ?int $_LastID = null;
+
     /**
+     * @param int|null $LastID
      * @return int|null
      */
-    public function LastID(): ?int
+    public function LastID(?int $LastID = null): ?int
     {
+        if($LastID) {
+            self::$_LastID = $LastID;
+            return $LastID;
+        }
+
+        if(self::$_LastID) {
+            $id = self::$_LastID;
+            self::$_LastID = null;
+            return $id;
+        }
+
         $sql = '
 					SELECT SCOPE_IDENTITY() AS lid
 				';

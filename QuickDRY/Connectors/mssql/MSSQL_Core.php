@@ -437,13 +437,14 @@ class MSSQL_Core extends SQL_Base
     }
 
     /**
+     * @param int|null $LastID
      * @return int|string|null
      */
-    public static function LastID(): int|string|null
+    public static function LastID(?int $LastID = null): int|string|null
     {
         static::_connect();
 
-        return static::$connection->LastID();
+        return static::$connection->LastID($LastID);
     }
 
 
