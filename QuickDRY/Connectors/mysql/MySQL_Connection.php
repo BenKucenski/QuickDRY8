@@ -447,11 +447,25 @@ database = ' . $this->current_db . '
         return $values;
     }
 
+    private static ?int $_LastID = null;
+
     /**
-     * @return int|string
+     * @param int|null $LastID
+     * @return int|null
      */
-    public function LastID(): int|string
+    public function LastID(?int $LastID = null): ?int
     {
+        if($LastID) {
+            self::$_LastID = $LastID;
+            return $LastID;
+        }
+
+        if(self::$_LastID) {
+            $id = self::$_LastID;
+            self::$_LastID = null;
+            return $id;
+        }
+        
         return mysqli_insert_id($this->db);
     }
 
