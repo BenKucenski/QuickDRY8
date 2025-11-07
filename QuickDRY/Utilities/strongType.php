@@ -104,7 +104,7 @@ class strongType implements JsonSerializable
             $this->$name = $value;
         }
 
-        return $this->$name;
+        return $value;
     }
 
     /**
