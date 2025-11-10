@@ -20,7 +20,9 @@ class Strings extends strongType
         $list = [];
         $temp = explode(';', str_replace(',', ';', $emails));
         foreach ($temp as $item) {
-            $list [] = trim($item);
+            if(trim($item)) {
+                $list [] = trim($item);
+            }
         }
         return $list;
     }

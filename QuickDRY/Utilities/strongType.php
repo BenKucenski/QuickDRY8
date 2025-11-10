@@ -239,12 +239,8 @@ class strongType implements JsonSerializable
     public static function getHeaders(strongType $item): array
     {
         $class = get_called_class();
-        $cols = array_keys(get_object_vars($item));
+        $cols = array_keys($item->toArray());
         foreach ($cols as $i => $col) {
-            if ($col[0] === '_') {
-                unset($cols[$i]);
-                continue;
-            }
             if (isset($class::$_alias)) {
                 if (array_key_exists($col, static::$_alias) && is_null(static::$_alias[$col])) {
                     unset($cols[$i]);
@@ -306,7 +302,7 @@ class strongType implements JsonSerializable
         if (!$items || !sizeof($items)) {
             return null;
         }
-        $cols = self::getHeaders($items[0]);
+        $cols = static::getHeaders($items[0]);
 
         $se = new SimpleExcel();
         $se->Report = $items;
