@@ -87,19 +87,18 @@ class MSSQL_Core extends SQL_Base
 
     /**
      * @param bool $return_query
-     * @return SQL_Query|QueryExecuteResult|array
+     * @return SQL_Query|QueryExecuteResult|null
      */
-    public function Insert(bool $return_query = false): SQL_Query|QueryExecuteResult|array
+    public function Insert(bool $return_query = false): SQL_Query|QueryExecuteResult|null
     {
         return $this->_Insert($return_query);
     }
 
     /**
      * @param bool $return_query
-     * @return array|SQL_Query
-     * @throws Exception
+     * @return SQL_Query|QueryExecuteResult|null
      */
-    public function Update(bool $return_query = false): SQL_Query|array
+    public function Update(bool $return_query = false): SQL_Query|QueryExecuteResult|null
     {
         return $this->_Update($return_query);
     }
