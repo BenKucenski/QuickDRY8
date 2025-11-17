@@ -997,6 +997,11 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
             return null;
         }
 
+        // we can always set primary keys to null
+        if(is_null($value) && in_array($name, static::$_primary)) {
+            return null;
+        }
+
         if (is_object($value)) {
             if ($value instanceof DateTime) {
                 $value = Dates::Timestamp($value);
@@ -1302,7 +1307,7 @@ WHERE
         $primary = static::$_primary ?? [];
         $primary_set = true;
         foreach ($primary as $col) {
-            if (is_null($this->$col)) {
+            if (!$this->$col) { // null, zero, or empty string
                 $primary_set = false;
             }
         }
@@ -1315,7 +1320,7 @@ INSERT INTO
         $params = [];
         $qs = [];
         foreach ($this->props as $name => $value) {
-            if (in_array($name, $primary) && is_null($this->$name)) {
+            if (in_array($name, $primary) && !$this->$name) { // null or zero or empty string
                 continue;
             }
 

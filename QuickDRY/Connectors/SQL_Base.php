@@ -248,7 +248,7 @@ class SQL_Base implements JsonSerializable
 
     /**
      * @param string $name
-     * @return array|mixed|ChangeLogHistory[]|null
+     * @return mixed
      */
     public function __get(string $name)
     {
