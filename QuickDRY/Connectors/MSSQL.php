@@ -77,7 +77,7 @@ class MSSQL extends strongType
         }
         foreach ($params as $k => $_) {
             if (!is_string($k)) {
-                throw new InvalidArgumentException('EscapeQuery parameter keys must be strings like "TabName".');
+                throw new InvalidArgumentException('EscapeQuery parameter keys must be strings like "TabName". ' . json_encode(['query' => $sql, 'params' => $params]) . '.');
             }
             if ($k === '' || $k[0] === '@' || $k[0] === ':') {
                 throw new InvalidArgumentException('Invalid parameter key "' . $k . '". Use keys without leading @ or : (e.g., ["TabName" => "Foreclosure"]).');

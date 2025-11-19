@@ -1421,12 +1421,13 @@ SET
             ) {
                 $props[] = '[' . $name . '] = NULL -- ' . $name . PHP_EOL;
             } else {
-                $props[] = '[' . $name . '] = @ --' . $name . PHP_EOL;
-                if(is_object($st_value) && get_class($st_value) == 'DateTime') {
-                    $params[] = '{{{' . $st_value->format('Y-m-d H:i:s') . '}}}'; // necessary to get past the null check in EscapeString
-                } else {
-                    $params[] = '{{{' . $st_value . '}}}'; // necessary to get past the null check in EscapeString
+                $props[] = '[' . $name . '] = @' . $name . ' --' . $name . PHP_EOL;
+
+                if ($st_value instanceof DateTime) {
+                    $st_value = Dates::Timestamp($value);
                 }
+
+                $params[$name] = '{{{' . $st_value . '}}}'; // necessary to get past the null check in EscapeString
             }
         }
         $sql .= implode(',', $props);
