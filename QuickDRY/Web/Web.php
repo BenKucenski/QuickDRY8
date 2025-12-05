@@ -375,6 +375,7 @@ class Web extends strongType
                 $class::ExportToPDF();
 
                 $this->RenderPDF = true;
+                $this->PDFMargins = $class::$PDFMargins;
                 $this->PDFPageSize = $class::$PDFPageSize;
                 $this->PDFFileName = $class::$PDFFileName;
                 $this->PDFPageOrientation = $class::$PDFPageOrientation;
