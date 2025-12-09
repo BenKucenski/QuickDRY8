@@ -720,7 +720,7 @@ class MSSQL_Core extends SQL_Base
         if (is_array($order_by)) {
             $sql_order = [];
             foreach ($order_by as $col => $dir) {
-                $sql_order[] .= trim($col) . ' ' . $dir;
+                $sql_order[] .= '[' . trim($col) . ']' . ' ' . $dir;
             }
             $sql_order = 'ORDER BY ' . implode(', ', $sql_order);
         }
