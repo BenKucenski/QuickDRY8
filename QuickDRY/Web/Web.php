@@ -163,6 +163,8 @@ class Web extends strongType
             $page = substr($page, 0, strlen($page) - 1);
         }
 
+        $page = str_replace('-', '_', $page);
+
         $full_path = $page != '/' ? $page : '/';
         $t = explode('/', $full_path);
         $cur_page = $t[sizeof($t) - 1];
