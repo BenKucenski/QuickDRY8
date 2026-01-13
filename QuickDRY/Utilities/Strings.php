@@ -1138,12 +1138,12 @@ class Strings extends strongType
     }
 
     /**
-     * @param $array
-     * @param $parents
-     * @param $dest
+     * @param array $array
+     * @param string|null $parents
+     * @param array|null $dest
      * @return void
      */
-    public static function FlattenArray($array, $parents = null, &$dest = null): void
+    public static function FlattenArray(array $array, ?string $parents = null, ?array &$dest = null): void
     {
         foreach ($array as $k => $v) {
 

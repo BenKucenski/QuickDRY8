@@ -93,16 +93,16 @@ class MathClass
      * @param $rate
      * @param $principal
      * @param $payment
-     * @param $start_date
-     * @param $maturity_date
+     * @param mixed $start_date
+     * @param mixed $maturity_date
      * @return PrincipalInterest|null
      */
     public static function MonthsToRepay(
         $rate,
         $principal,
         $payment,
-        $start_date = null,
-        $maturity_date = null
+        mixed $start_date = null,
+        mixed $maturity_date = null
     ): ?PrincipalInterest
     {
         if ($start_date) {

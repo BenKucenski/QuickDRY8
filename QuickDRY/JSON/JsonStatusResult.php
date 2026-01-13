@@ -34,29 +34,29 @@ class JsonStatusResult extends strongType
 
     /**
      * @param $value
-     * @param null $traceId
+     * @param string|null $traceId
      * @return JsonStatusResult
      */
-    public static function Success($value, $traceId = null): JsonStatusResult
+    public static function Success($value, ?string $traceId = null): JsonStatusResult
     {
         return JsonStatusResult::Create(HTTP::HTTP_STATUS_OK, $value, $traceId);
     }
 
     /**
      * @param $value
-     * @param null $traceId
+     * @param string|null $traceId
      */
-    public static function Added($value, $traceId = null)
+    public static function Added($value, ?string $traceId = null)
     {
     }
 
     /**
-     * @param $HTTP_RESPONSE_CODE
-     * @param $Detail
-     * @param null $traceId
+     * @param int $HTTP_RESPONSE_CODE
+     * @param string $Detail
+     * @param string|null $traceId
      * @return JsonStatusResult
      */
-    public static function Create($HTTP_RESPONSE_CODE, $Detail, $traceId = null): JsonStatusResult
+    public static function Create(int $HTTP_RESPONSE_CODE, string $Detail, ?string $traceId = null): JsonStatusResult
     {
         /********************************************************************************
          *
@@ -78,10 +78,10 @@ class JsonStatusResult extends strongType
     /**
      * @param $HTTP_RESPONSE_CODE
      * @param $Errors
-     * @param null $traceId
+     * @param string|null $traceId
      * @return JsonStatusResult
      */
-    public static function CreateError($HTTP_RESPONSE_CODE, $Errors, $traceId = null): JsonStatusResult
+    public static function CreateError($HTTP_RESPONSE_CODE, $Errors, ?string $traceId = null): JsonStatusResult
     {
         /********************************************************************************
          *

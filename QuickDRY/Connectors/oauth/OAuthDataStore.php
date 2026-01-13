@@ -46,10 +46,10 @@ class OAuthDataStore
 
     /**
      * @param $consumer
-     * @param $callback
+     * @param callable|null $callback
      * @return OAuthToken|null
      */
-    public function new_request_token($consumer, $callback = null): ?OAuthToken
+    public function new_request_token($consumer, ?callable $callback = null): ?OAuthToken
     {
         // return a new token attached to this consumer
         return null;

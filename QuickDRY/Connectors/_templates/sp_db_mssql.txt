@@ -25,7 +25,7 @@ class db_[[sp_class]] extends strongType
 
         ';
         /* @var [[sp_class]][] $rows */
-        $rows = [[DatabaseClass]]::QueryMap($sql, [[[params]]], function ($row) {
+        $rows = \[[DatabaseClass]]::QueryMap($sql, [[[params]]], function ($row) {
             return new [[sp_class]]($row);
         });
 
@@ -46,7 +46,7 @@ class db_[[sp_class]] extends strongType
         [[sql_params]]
 
         ';
-        $res = [[DatabaseClass]]::Execute($sql, [[[params]]]);
+        $res = \[[DatabaseClass]]::Execute($sql, [[[params]]]);
 
         if (self::$HaltSPOnError && $res['error']) {
             Debug($res);

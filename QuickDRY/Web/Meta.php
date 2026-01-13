@@ -38,25 +38,27 @@ class Meta
     }
 
     /**
-     * @param null $val
-     * @return mixed|null
+     * @param string|null $val
+     * @return string|null
      */
-    public static function Description($val = null): mixed
+    public static function Description(?string $val = null): ?string
     {
-        if (is_null($val))
+        if (is_null($val)) {
             return str_replace('"', '\\"', self::$description);
+        }
         self::$description = $val;
         return $val;
     }
 
     /**
-     * @param null $val
-     * @return mixed|null
+     * @param string|null $val
+     * @return string|null
      */
-    public static function Keywords($val = null): mixed
+    public static function Keywords(?string $val = null): ?string
     {
-        if (is_null($val))
+        if (is_null($val)) {
             return str_replace('"', '\\"', self::$keywords);
+        }
         self::$keywords = $val;
         return $val;
     }

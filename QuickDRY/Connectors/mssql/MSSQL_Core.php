@@ -13,6 +13,8 @@ use QuickDRY\Connectors\SQL_Base;
 use QuickDRY\Connectors\SQL_Log;
 use QuickDRY\Connectors\SQL_Query;
 use QuickDRY\Interfaces\ICurrentUser;
+use QuickDRY\Interfaces\ISQLConnection;
+use QuickDRY\Interfaces\ISQLCore;
 use QuickDRY\Utilities\Dates;
 use QuickDRY\Utilities\Strings;
 use QuickDRY\Web\ElementID;
@@ -20,7 +22,7 @@ use QuickDRY\Web\ElementID;
 /**
  *
  */
-class MSSQL_Core extends SQL_Base
+class MSSQL_Core extends SQL_Base implements ISQLCore
 {
     protected static ?MSSQL_Connection $connection = null;
 
@@ -166,10 +168,10 @@ class MSSQL_Core extends SQL_Base
     }
 
     /**
-     * @param $exclude
+     * @param array|null $exclude
      * @return array
      */
-    public static function _GetDatabases($exclude = null): array
+    public static function _GetDatabases(?array $exclude = null): array
     {
         $sql = '
           SELECT name FROM sys.databases
@@ -409,9 +411,9 @@ class MSSQL_Core extends SQL_Base
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public static function GUID(): mixed
+    public static function GUID(): string
     {
         $sql = 'SELECT UPPER(SUBSTRING(master.dbo.fn_varbintohexstr(HASHBYTES(\'MD5\',cast(NEWID() as varchar(36)))), 3, 32)) AS guid';
 
@@ -428,9 +430,9 @@ class MSSQL_Core extends SQL_Base
     }
 
     /**
-     * @return MSSQL_Connection|null
+     * @return ISQLConnection|null
      */
-    public static function getConnection(): ?MSSQL_Connection
+    public static function getConnection(): ?ISQLConnection
     {
         return static::$connection;
     }

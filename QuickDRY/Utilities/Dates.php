@@ -259,7 +259,7 @@ class Dates extends strongType
      * @param null $null
      * @return float|bool|int|string|null
      */
-    public static function DateToInt($date, $null = null): float|bool|int|string|null
+    public static function DateToInt($date, mixed $null = null): float|bool|int|string|null
     {
         if ($date instanceof DateTime) {
             $temp = $date->getTimestamp();
@@ -283,73 +283,73 @@ class Dates extends strongType
     }
 
     /**
-     * @param $date
+     * @param mixed $date
      * @param null $null
      * @return string|null
      */
-    public static function FancyDateTime($date, $null = null): ?string
+    public static function FancyDateTime(mixed $date, mixed $null = null): ?string
     {
         return self::Datestamp($date, $null, 'F jS, Y g:iA');
     }
 
     /**
-     * @param $date
+     * @param mixed $date
      * @param null $null
      * @return string|null
      */
-    public static function FancyDate($date, $null = null): ?string
+    public static function FancyDate(mixed $date, mixed $null = null): ?string
     {
         return self::Datestamp($date, $null, 'F jS, Y');
     }
 
     /**
-     * @param $date
+     * @param mixed $date
      * @param null $null
      * @return string|null
      */
-    public static function FancyDateB($date, $null = null): ?string
+    public static function FancyDateB(mixed $date, mixed $null = null): ?string
     {
         return self::Datestamp($date, $null, 'F j, Y');
     }
 
     /**
-     * @param $date
-     * @param null $null
+     * @param mixed $date
+     * @param mixed $null
      * @return string|null
      */
-    public static function ShortDate($date, $null = null): ?string
+    public static function ShortDate(mixed $date, mixed $null = null): ?string
     {
         return self::Datestamp($date, $null, 'n/j/y');
     }
 
 
     /**
-     * @param $date
-     * @param null $null
+     * @param mixed $date
+     * @param mixed $null
      * @return string|null
      */
-    public static function ShortDateYear($date, $null = null): ?string
+    public static function ShortDateYear(mixed $date, mixed $null = null): ?string
     {
         return self::Datestamp($date, $null, 'M Y');
     }
 
     /**
-     * @param $date
-     * @param null $null
+     * @param mixed $date
+     * @param mixed $null
      * @return string|null
      */
-    public static function LongDateYear($date, $null = null): ?string
+    public static function LongDateYear(mixed $date, mixed $null = null): ?string
     {
         return self::Datestamp($date, $null, 'F Y');
     }
 
     /**
-     * @param $start_at
-     * @param $end_at
+     * @param mixed $start_at
+     * @param mixed $end_at
      *
      * @return string
      */
-    public static function HourMinDiff($start_at, $end_at): string
+    public static function HourMinDiff(mixed $start_at, mixed $end_at): string
     {
         if (!is_numeric($start_at)) $start_at = strtotime($start_at);
         if (!is_numeric($end_at)) $end_at = strtotime($end_at);
@@ -360,43 +360,43 @@ class Dates extends strongType
     }
 
     /**
-     * @param null $date
-     * @param null $null
+     * @param mixed $date
+     * @param mixed $null
      * @return string|null
      */
-    public static function StandardDate($date = null, $null = null): ?string
+    public static function StandardDate(mixed $date = null, mixed $null = null): ?string
     {
         return self::Datestamp($date, $null, 'n/j/Y') ?: null;
     }
 
     /**
-     * @param null $date
-     * @param null $null
+     * @param mixed $date
+     * @param mixed $null
      *
      * @return string|null
      */
-    public static function DayMonthDate($date = null, $null = null): ?string
+    public static function DayMonthDate(mixed $date = null, mixed $null = null): ?string
     {
         return self::Datestamp($date, $null, 'n-j');
     }
 
     /**
-     * @param null $date
-     * @param null $null
-     * @param null $offset
+     * @param mixed $date
+     * @param mixed $null
+     * @param int|null $offset
      * @return string|null
      */
-    public static function StandardDateTime($date = null, $null = null, $offset = null): ?string
+    public static function StandardDateTime(mixed $date = null, mixed $null = null, ?int $offset = null): ?string
     {
         return self::Datestamp($date, $null, 'n/j/Y h:i A', $offset);
     }
 
     /**
-     * @param null $date
-     * @param null $null
+     * @param mixed $date
+     * @param mixed $null
      * @return string|null
      */
-    public static function StandardTime($date = null, $null = null): ?string
+    public static function StandardTime(mixed $date = null, mixed $null = null): ?string
     {
         return self::Datestamp($date, $null, 'h:iA');
     }
@@ -419,12 +419,12 @@ class Dates extends strongType
     }
 
     /**
-     * @param null $date
-     * @param null $null
+     * @param mixed $date
+     * @param mixed $null
      * @param string $format
      * @return string|null
      */
-    public static function Timestamp($date = null, $null = null, string $format = 'Y-m-d H:i:s'): ?string
+    public static function Timestamp(mixed $date = null, mixed $null = null, string $format = 'Y-m-d H:i:s'): ?string
     {
         if (!$format) {
             $format = 'Y-m-d H:i:s';
@@ -433,21 +433,21 @@ class Dates extends strongType
     }
 
     /**
-     * @param null $date
-     * @param null $null
+     * @param mixed $date
+     * @param mixed $null
      *
      * @return string|null
      */
-    public static function TimeOnlystamp($date = null, $null = null): ?string
+    public static function TimeOnlystamp(mixed $date = null, mixed $null = null): ?string
     {
         return self::Datestamp($date, $null, 'H:i');
     }
 
     /**
-     * @param $date
+     * @param mixed $date
      * @return string
      */
-    public static function TimeElapsedString($date): string
+    public static function TimeElapsedString(mixed $date): string
     {
         $date = self::DateToInt($date);
         $etime = time() - $date;
@@ -489,10 +489,10 @@ class Dates extends strongType
 
 
     /**
-     * @param $msg
+     * @param string $msg
      * @return string
      */
-    public static function TimeString($msg): string
+    public static function TimeString(string $msg): string
     {
         return time() . ': ' . self::Timestamp() . ': ' . $msg . PHP_EOL;
     }
@@ -514,13 +514,13 @@ class Dates extends strongType
     }
 
     /**
-     * @param null $date
-     * @param null $null
+     * @param mixed $date
+     * @param mixed $null
      * @param string $format
-     * @param null $offset
+     * @param int|null $offset
      * @return ?string
      */
-    public static function Datestamp($date = null, $null = null, string $format = 'Y-m-d', $offset = null): ?string
+    public static function Datestamp(mixed $date = null, mixed $null = null, string $format = 'Y-m-d', ?int $offset = null): ?string
     {
         if (!$format) {
             $format = 'Y-m-d';
@@ -545,20 +545,20 @@ class Dates extends strongType
     }
 
     /**
-     * @param $date
+     * @param mixed $date
      * @return string
      */
-    public static function SolrTime($date): string
+    public static function SolrTime(mixed $date): string
     {
         return self::Datestamp($date, null, 'Y-m-d\TH:i:s\Z');
     }
 
     /**
-     * @param $date
+     * @param mixed $date
      *
      * @return int
      */
-    public function GetTimeStampFromDBDate($date): int
+    public function GetTimeStampFromDBDate(mixed $date): int
     {
         $dateArr = explode(' ', $date);
         $datePartArr = explode('-', $dateArr[0]);
@@ -575,10 +575,10 @@ class Dates extends strongType
     }
 
     /**
-     * @param $time
+     * @param mixed $time
      * @return string
      */
-    public static function Age($time): string
+    public static function Age(mixed $time): string
     {
         if (!is_numeric($time)) {
             $time = strtotime($time);
@@ -604,11 +604,11 @@ class Dates extends strongType
     }
 
     /**
-     * @param $t
-     * @param $timezone
+     * @param mixed $t
+     * @param string $timezone
      * @return string
      */
-    public static function FromGMT($t, $timezone): string
+    public static function FromGMT(mixed $t, string $timezone): string
     {
         $t = Dates::Timestamp($t);
 
@@ -627,11 +627,11 @@ class Dates extends strongType
     }
 
     /**
-     * @param $t
-     * @param $timezone
+     * @param mixed $t
+     * @param string $timezone
      * @return string
      */
-    public static function ToGMT($t, $timezone): string
+    public static function ToGMT(mixed $t, string $timezone): string
     {
         $t = Dates::Timestamp($t);
 
@@ -645,10 +645,10 @@ class Dates extends strongType
     }
 
     /**
-     * @param $date
+     * @param mixed $date
      * @return bool
      */
-    public static function IsWeekend($date): bool
+    public static function IsWeekend(mixed $date): bool
     {
         if (!is_numeric($date)) {
             $date = strtotime($date);
@@ -657,11 +657,11 @@ class Dates extends strongType
     }
 
     /**
-     * @param $start
-     * @param $end
+     * @param mixed $start
+     * @param mixed $end
      * @return string|null
      */
-    public static function DateRange($start, $end): ?string
+    public static function DateRange(mixed $start, mixed $end): ?string
     {
         if (!$end) {
             return self::StandardDate($start, '');

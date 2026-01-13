@@ -76,16 +76,17 @@ class Chart
     }
 
     /**
-     * @param $x
-     * @param $y
-     * @param $width
-     * @param $height
+     * @param float $x
+     * @param float $y
+     * @param int $width
+     * @param int|null $height
      * @return void
      */
-    public function PlotPointRatio($x, $y, $width, $height = null): void
+    public function PlotPointRatio(float $x, float $y, int $width, ?int $height = null): void
     {
-        if (is_null($height))
+        if (is_null($height)) {
             $height = $width;
+        }
 
         $x = (int)floor($x * $this->width);
         $y = (int)floor((1.0 - $y) * $this->height);
@@ -93,13 +94,13 @@ class Chart
     }
 
     /**
-     * @param $x
-     * @param $y
-     * @param $width
-     * @param $height
+     * @param float $x
+     * @param float $y
+     * @param int $width
+     * @param int|null $height
      * @return void
      */
-    public function PlotChartPointRatio($x, $y, $width, $height = null): void
+    public function PlotChartPointRatio(float $x, float $y, int $width, ?int $height = null): void
     {
         if (is_null($height))
             $height = $width;

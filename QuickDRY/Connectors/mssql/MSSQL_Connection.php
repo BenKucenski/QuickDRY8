@@ -6,6 +6,7 @@ namespace QuickDRY\Connectors\mssql;
 use Exception;
 use QuickDRY\Connectors\MSSQL;
 use QuickDRY\Connectors\QueryExecuteResult;
+use QuickDRY\Interfaces\ISQLConnection;
 use QuickDRY\Utilities\Helpers;
 use QuickDRY\Utilities\Log;
 use QuickDRY\Utilities\Metrics;
@@ -15,7 +16,7 @@ use QuickDRY\Utilities\strongType;
 /**f
  * Class MSSQL_Connection
  */
-class MSSQL_Connection extends strongType
+class MSSQL_Connection extends strongType implements ISQLConnection
 {
     public static array $log = [];
     public static bool $use_log = false;
@@ -215,13 +216,13 @@ class MSSQL_Connection extends strongType
      * @param string $sql
      * @param array|null $params
      * @param float $time
-     * @param null $err
+     * @param string|null $err
      */
     private function Log(
         string $sql,
         ?array $params = null,
         float $time = 0,
-        $err = null
+        ?string $err = null
     ): void
     {
         if (!static::$use_log)
@@ -273,10 +274,10 @@ class MSSQL_Connection extends strongType
     /**
      * @param $sql
      * @param ?array $params
-     * @param null $map_function
+     * @param callable|null $map_function
      * @return array|mixed
      */
-    private function QueryWindows($sql, ?array $params = null, $map_function = null): mixed
+    private function QueryWindows($sql, ?array $params = null, ?callable $map_function = null): mixed
     {
         Metrics::Start('MSSQL');
 
@@ -368,6 +369,7 @@ class MSSQL_Connection extends strongType
         if (!$map_function) {
             return $returnval;
         }
+
         return $returnval['data'];
     }
 

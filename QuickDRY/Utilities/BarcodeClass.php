@@ -13,11 +13,11 @@ class BarcodeClass extends strongType
      * @param $width
      * @param $height
      * @param $code
-     * @param null $font_size
+     * @param int|null $font_size
      * @param bool $debug
      * @return resource
      */
-    public static function Generate($root, $width, $height, $code, $font_size = null, bool $debug = false)
+    public static function Generate($root, $width, $height, $code, ?int $font_size = null, bool $debug = false)
     {
         if (!str_ends_with($root, 'barcode/')) {
             $root .= 'barcode/';

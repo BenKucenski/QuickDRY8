@@ -86,11 +86,11 @@ class ACCESS
     }
 
     /**
-     * @param $sql
-     * @param $params
+     * @param string $sql
+     * @param array|null $params
      * @return array
      */
-    public function Query($sql, $params = null): array
+    public function Query(string $sql, ?array $params = null): array
     {
         if (!$this->connection) {
             Exception('Not Connected');
@@ -117,11 +117,11 @@ class ACCESS
     }
 
     /**
-     * @param $sql
-     * @param $params
+     * @param string $sql
+     * @param array|null $params
      * @return void
      */
-    public function Execute($sql, $params = null): void
+    public function Execute(string $sql, ?array $params = null): void
     {
         if (!$this->connection) {
             Exception('Not Connected');

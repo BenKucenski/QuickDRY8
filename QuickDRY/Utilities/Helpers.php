@@ -21,12 +21,12 @@ class Helpers extends strongType
     }
 
     /**
-     * @param $arr
+     * @param array $arr
      * @param bool $null_string
-     * @param null $prop_definitions
-     * @return mixed
+     * @param array|null $prop_definitions
+     * @return array
      */
-    public static function cleanArray($arr, bool $null_string = false, $prop_definitions = null): mixed
+    public static function cleanArray(array $arr, bool $null_string = false, ?array $prop_definitions = null): array
     {
         // Cleans up an array of values so that it can ben
         // put into a database object and be saved into the database

@@ -117,15 +117,15 @@ class APIRequest
      * @param array|null $data
      * @param array|null $headers
      * @param bool $post
-     * @param null $custom_method
+     * @param string|null $custom_method
      * @return bool|string|null
      */
     private function _Request(
-        string $path,
-        ?array $data = null,
-        ?array $headers = null,
-        bool   $post = true,
-               $custom_method = null
+        string  $path,
+        ?array  $data = null,
+        ?array  $headers = null,
+        bool    $post = true,
+        ?string $custom_method = null
     ): bool|string|null
     {
         $file = null;
@@ -267,45 +267,45 @@ class APIRequest
     }
 
     /**
-     * @param $path
-     * @param null $data
-     * @param null $headers
+     * @param string $path
+     * @param array|null $data
+     * @param array|null $headers
      * @return bool|string|null
      */
-    protected function _Put($path, $data = null, $headers = null): bool|string|null
+    protected function _Put(string $path, ?array $data = null, ?array $headers = null): bool|string|null
     {
         return $this->_Request($path, $data, $headers, true, 'PUT');
     }
 
     /**
-     * @param $path
-     * @param null $data
-     * @param null $headers
+     * @param string $path
+     * @param array|null $data
+     * @param array|null $headers
      * @return bool|string|null
      */
-    protected function _Delete($path, $data = null, $headers = null): bool|string|null
+    protected function _Delete(string $path, ?array $data = null, ?array $headers = null): bool|string|null
     {
         return $this->_Request($path, $data, $headers, true, 'DELETE');
     }
 
     /**
-     * @param $path
-     * @param null $data
-     * @param null $headers
+     * @param string $path
+     * @param array|null $data
+     * @param array|null $headers
      * @return bool|string|null
      */
-    protected function _Post($path, $data = null, $headers = null): bool|string|null
+    protected function _Post(string $path, ?array $data = null, ?array $headers = null): bool|string|null
     {
         return $this->_Request($path, $data, $headers);
     }
 
     /**
-     * @param $path
-     * @param null $data
-     * @param null $headers
+     * @param string $path
+     * @param array|null $data
+     * @param array|null $headers
      * @return bool|string|null
      */
-    protected function _Get($path, $data = null, $headers = null): bool|string|null
+    protected function _Get(string $path, ?array $data = null, ?array $headers = null): bool|string|null
     {
         return $this->_Request($path, $data, $headers, false);
     }
@@ -345,9 +345,9 @@ class APIRequest
     }
 
     /**
-     * @param null $headers
+     * @param array|null $headers
      */
-    public function Post($headers = null): void
+    public function Post(?array $headers = null): void
     {
         $res = $this->_Post($this->path, $this->data, $headers);
         $this->_raw = $res;
@@ -360,9 +360,9 @@ class APIRequest
     }
 
     /**
-     * @param null $headers
+     * @param array|null $headers
      */
-    public function Put($headers = null): void
+    public function Put(?array $headers = null): void
     {
         $res = $this->_Put($this->path, $this->data, $headers);
         $this->_raw = $res;
@@ -375,9 +375,9 @@ class APIRequest
     }
 
     /**
-     * @param null $headers
+     * @param array|null $headers
      */
-    public function Delete($headers = null): void
+    public function Delete(?array $headers = null): void
     {
         $res = $this->_Delete($this->path, $this->data, $headers);
         $this->_raw = $res;
@@ -390,9 +390,9 @@ class APIRequest
     }
 
     /**
-     * @param null $headers
+     * @param array|null $headers
      */
-    public function Get($headers = null): void
+    public function Get(?array $headers = null): void
     {
         $res = $this->_Get($this->path, $this->data, $headers);
         $this->_raw = $res;

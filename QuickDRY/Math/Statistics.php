@@ -49,11 +49,11 @@ class Statistics
     }
 
     /**
-     * @param $list
-     * @param $key
+     * @param array $list
+     * @param string|null $key
      * @return float|int
      */
-    public static function mean($list, $key = null): float|int
+    public static function mean(array $list, ?string $key = null): float|int
     {
         $t = 0;
         if (sizeof($list) == 0) {

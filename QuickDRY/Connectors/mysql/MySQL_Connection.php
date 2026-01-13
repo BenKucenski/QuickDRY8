@@ -10,13 +10,14 @@ use mysqli;
 use QuickDRY\Connectors\mssql\MSSQL_ForeignKey;
 use QuickDRY\Connectors\MySQL;
 use QuickDRY\Connectors\QueryExecuteResult;
+use QuickDRY\Interfaces\ISQLConnection;
 use QuickDRY\Utilities\Log;
 use QuickDRY\Utilities\Metrics;
 
 /**
  * Class MySQL
  */
-class MySQL_Connection
+class MySQL_Connection implements ISQLConnection
 {
     public ?bool $IgnoreDuplicateError = true;
 
@@ -298,17 +299,15 @@ database = ' . $this->current_db . '
     }
 
     /**
-     * @param string $sql
+     * @param mixed $sql
      * @param array|null $params
-     * @param string|null $return_type
      * @param null $map_function
      * @return array|string
      */
     public function Query(
-        string  $sql,
-        ?array  $params = null,
-        ?string $return_type = null,
-                $map_function = null
+        mixed  $sql,
+        ?array $params = null,
+        mixed  $map_function = null
     ): array|string
     {
         $query_hash = 'all';
@@ -323,10 +322,6 @@ database = ' . $this->current_db . '
         Metrics::Start('MySQL: ' . $query_hash);
 
         $this->_connect();
-
-        $return = [
-            'data' => ''
-        ];
 
         if ($params) {
             $sql = MySQL::EscapeQuery($this->db, $sql, $params);
@@ -368,18 +363,7 @@ database = ' . $this->current_db . '
 
         if ($res && is_object($res)) {
             while ($r = mysqli_fetch_assoc($res)) {
-                if (is_null($return_type)) {
-
-                    $list[] = !is_null($map_function) ? call_user_func($map_function, $r) : $r;
-                } else {
-                    if (!class_exists($return_type)) {
-                        Exception($return_type . ' does not exist: MySQL_Connection::Query');
-                    }
-
-                    $c = new $return_type();
-                    $c->FromRow($r);
-                    $list[] = $c;
-                }
+                $list[] = !is_null($map_function) ? call_user_func($map_function, $r) : $r;
             }
 
             mysqli_free_result($res);
@@ -397,19 +381,11 @@ database = ' . $this->current_db . '
 
         $return['error'] = mysqli_error($this->db);
         $return['sql'] = $sql;
-        if (is_null($return_type)) {
-            $return['data'] = $list;
-        } else {
-            $return[$return_type] = $list;
-        }
+        $return['data'] = $list;
 
         Metrics::Stop('MySQL: ' . $query_hash);
 
         $this->Log($sql, microtime(true) - $start, $return['error']);
-
-        if ($return_type && !$return['error']) {
-            return $return[$return_type];
-        }
 
         if (!$map_function || $return['error']) {
             return $return;
@@ -455,17 +431,17 @@ database = ' . $this->current_db . '
      */
     public function LastID(?int $LastID = null): ?int
     {
-        if($LastID) {
+        if ($LastID) {
             self::$_LastID = $LastID;
             return $LastID;
         }
 
-        if(self::$_LastID) {
+        if (self::$_LastID) {
             $id = self::$_LastID;
             self::$_LastID = null;
             return $id;
         }
-        
+
         return mysqli_insert_id($this->db);
     }
 
@@ -488,16 +464,16 @@ database = ' . $this->current_db . '
     }
 
     /**
-     * @param string $table
+     * @param string $table_name
      * @return array
      */
-    public function GetTableColumns(string $table): array
+    public function GetTableColumns(string $table_name): array
     {
         $sql = '
 			SHOW COLUMNS FROM
 			    `{{nq}}`;
 		';
-        $res = $this->Query($sql, [$table]);
+        $res = $this->Query($sql, [$table_name]);
         if ($res['error']) {
             Exception($res);
         }
@@ -628,10 +604,10 @@ database = ' . $this->current_db . '
     /**
      * @param $table_name
      *
-     * @return array|null
+     * @return array
      */
 
-    public function GetPrimaryKey($table_name): ?array
+    public function GetPrimaryKey($table_name): array
     {
         if (is_null(self::$_PrimaryKey) || !isset(self::$_PrimaryKey[$table_name])) {
 
@@ -727,9 +703,9 @@ SHOW INDEXES FROM
     }
 
     /**
-     * @return array|string
+     * @return array
      */
-    public function GetStoredProcs(): array|string
+    public function GetStoredProcs(): array
     {
         $sql = '
 SELECT
@@ -759,10 +735,10 @@ ORDER BY
     }
 
     /**
-     * @param string $specific_name
-     * @return array|string
+     * @param string $stored_proc
+     * @return array
      */
-    public function GetStoredProcParams(string $specific_name): array|string
+    public function GetStoredProcParams(string $stored_proc): array
     {
         $sql = '
 SELECT
@@ -773,7 +749,7 @@ LEFT JOIN information_schema.parameters t110  ON t110.SPECIFIC_SCHEMA = t100.ROU
 WHERE t110.PARAMETER_MODE = \'IN\'
 AND (t100.ROUTINE_TYPE IN(\'FUNCTION\',\'PROCEDURE\'))
   AND t100.ROUTINE_SCHEMA = \'' . $this->current_db . '\'
-  AND t100.SPECIFIC_NAME = \'' . $specific_name . '\'
+  AND t100.SPECIFIC_NAME = \'' . $stored_proc . '\'
 		';
         $res = $this->Query($sql, null, MySQL_StoredProcParam::class);
         if (isset($res['error'])) {
@@ -801,5 +777,35 @@ AND (t100.ROUTINE_TYPE IN(\'FUNCTION\',\'PROCEDURE\'))
 //    $this->Execute("ALTER TABLE info_schema.key_column_usage ADD INDEX (`column_name`);", null, true);
 //    $this->Execute("INSERT INTO info_schema.key_column_usage SELECT * FROM INFORMATION_SCHEMA.key_column_usage;", null, true);
 
+    }
+
+    public function TableToClass(string $database, string $table): string
+    {
+        Exception('Not Implemented');
+    }
+
+    public function ExecuteWindows(mixed $query, bool $large = false): ?QueryExecuteResult
+    {
+        Exception('Not Implemented');
+    }
+
+    public function GetDatabases(): array
+    {
+        Exception('Not Implemented');
+    }
+
+    public function GetTableIndexes(mixed $table_name): array
+    {
+        Exception('Not Implemented');
+    }
+
+    public function GetTriggers(): array
+    {
+        Exception('Not Implemented');
+    }
+
+    public function GetDefinitions(): array
+    {
+        Exception('Not Implemented');
     }
 }
