@@ -242,13 +242,13 @@ class SQLCodeGen extends strongType
         $HasUserLink = false;
 
         foreach ($cols as $col) {
-            /* @var MSSQL_TableColumn $col */ // these are the same for MySQL and MSSQL, only claim it's one to help with code completion
+            /* @var TableColumn $col */ // these are the same for MySQL and MSSQL, only claim it's one to help with code completion
             if ($col->field !== $col->field_alias) {
                 $aliases[] = $col;
             }
             $class_props[] = ' * @property ' . SQLCodeGen::ColumnTypeToProperty(preg_replace('/\(.*?\)/si', '', $col->type), $this->DatabaseType) . ' ' . $col->field_alias;
             $class_const[] = ' public const string COLUMN_' . str_replace('-', '_', strtoupper($col->field_alias)) . ' = \'' . $col->field_alias . '\';';
-            $props .= "'" . $col->field . "' => ['type' => '" . str_replace('\'', '\\\'', $col->type) . "', 'is_nullable' => " . ($col->null ? 'true' : 'false') . ", 'display' => '" . SQLCodeGen::FieldToDisplay($col->field) . "'],\r\n\t\t";
+            $props .= "'" . $col->field . "' => ['type' => '" . str_replace('\'', '\\\'', $col->type) . "', 'length' => '" . $col->decimal_length . "', 'is_nullable' => " . ($col->null ? 'true' : 'false') . ", 'display' => '" . SQLCodeGen::FieldToDisplay($col->field) . "'],\r\n\t\t";
             if ($col->field === 'user_id') {
                 $HasUserLink = true;
             }

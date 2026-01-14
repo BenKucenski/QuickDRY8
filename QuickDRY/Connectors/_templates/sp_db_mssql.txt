@@ -48,7 +48,7 @@ class db_[[sp_class]] extends strongType
         ';
         $res = \[[DatabaseClass]]::Execute($sql, [[[params]]]);
 
-        if (self::$HaltSPOnError && $res['error']) {
+        if (self::$HaltSPOnError && $res->error) {
             Debug($res);
         }
         return $res;

@@ -1022,6 +1022,31 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
 
         $_type = static::$prop_definitions[$name]['type'];
 
+        if (str_starts_with($_type, 'decimal')) {
+            $_type .= '(' . static::$prop_definitions[$name]['length'] . ')';
+
+            if (!preg_match('/decimal\s*\(\s*\d+\s*,\s*(\d+)\s*\)/i', $_type, $m)) {
+                Exception("Invalid decimal type: $_type");
+            }
+
+            $scale = (int) $m[1];
+
+            // Work strictly with strings — never float
+            $value = (string) $value;
+
+            // Normalize scientific notation if present
+            if (stripos($value, 'e') !== false) {
+                $value = sprintf("%.{$scale}f", (float)$value);
+            }
+
+            if (!str_contains($value, '.')) {
+                return $value . '.' . str_repeat('0', $scale);
+            }
+
+            [$int, $frac] = explode('.', $value, 2);
+            return $int . '.' . str_pad(substr($frac, 0, $scale), $scale, '0');
+        }
+
         switch ($_type) {
             case 'date':
             case 'timestamp':
@@ -1072,6 +1097,7 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
                 return $value ? 1 : 0;
 
             case 'decimal(18,2)':
+            case 'decimal(18,5)':
             case 'int(10)':
                 $value = Strings::Numeric($value);
                 return $value * 1.0;
@@ -1213,6 +1239,8 @@ WHERE
     ' . implode(' AND ', $primary_sql) . '
 ';
             }
+
+//            Debug($sql, $params, $this);
 
             if ($return_query) {
                 return new SQL_Query($sql, $params);

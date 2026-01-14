@@ -3,18 +3,13 @@ declare(strict_types=1);
 
 namespace QuickDRY\Connectors\mysql;
 
+use QuickDRY\Connectors\TableColumn;
+
 /**
  * Class MSSQL_TableColumn
  */
-class MySQL_TableColumn
+class MySQL_TableColumn extends TableColumn
 {
-    public ?string $field;
-    public ?string $field_alias;
-    public ?string $type;
-    public ?bool $null;
-    public ?string $default;
-    public ?string $length = null;
-
     /**
      * @param array $row
      */

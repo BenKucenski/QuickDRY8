@@ -219,9 +219,9 @@ class MSSQL_Connection extends strongType implements ISQLConnection
      * @param string|null $err
      */
     private function Log(
-        string $sql,
-        ?array $params = null,
-        float $time = 0,
+        string  $sql,
+        ?array  $params = null,
+        float   $time = 0,
         ?string $err = null
     ): void
     {
@@ -655,12 +655,12 @@ class MSSQL_Connection extends strongType implements ISQLConnection
      */
     public function LastID(?int $LastID = null): ?int
     {
-        if($LastID) {
+        if ($LastID) {
             self::$_LastID = $LastID;
             return $LastID;
         }
 
-        if(self::$_LastID) {
+        if (self::$_LastID) {
             $id = self::$_LastID;
             self::$_LastID = null;
             return $id;
@@ -715,12 +715,23 @@ ORDER BY "TABLE_NAME"
             Exception($res);
         }
 
+        $start = true;
+        if (defined('STARTING_TABLE')) {
+            $start = false;
+        }
         foreach ($res['data'] as $row) {
             $t = $row['TABLE_NAME'];
             if (str_starts_with($t, 'TEMP')) {
                 continue;
             }
-            $list[] = $t;
+            if (defined('STARTING_TABLE')) {
+                if (strcasecmp($t, STARTING_TABLE) == 0) {
+                    $start = true;
+                }
+            }
+            if ($start) {
+                $list[] = $t;
+            }
         }
         return $list;
     }
