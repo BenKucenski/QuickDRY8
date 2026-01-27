@@ -117,6 +117,7 @@ class SQLCodeGen extends strongType
             case 'image':
             case 'uniqueidentifier':
             case 'longtext':
+            case 'mediumtext':
             case 'longblob':
             case 'binary':
             case 'ntext':

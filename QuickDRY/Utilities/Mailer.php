@@ -24,7 +24,7 @@ class Mailer extends strongType
     public ?string $from_name = null;
     public ?array $embedded_images = null;
 
-    public PHPMailer $mail;
+    public ?PHPMailer $mail = null;
 
     /**
      *

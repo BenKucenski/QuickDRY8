@@ -40,9 +40,9 @@ function Debug(...$args): void
     $code = time() . '.' . rand(0, 1000000);
     $file = DATA_FOLDER . '/logs/' . $code . '.txt';
     $data = json_encode([
-        'data'      => $args,
         'server'    => $_SERVER ?? null,
         'session'   => $_SESSION ?? null,
+        'data'      => $args,
         'backtrace' => debug_backtrace(),
     ], JSON_PRETTY_PRINT);
     file_put_contents($file, $data);
