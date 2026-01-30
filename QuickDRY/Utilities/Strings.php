@@ -475,8 +475,37 @@ class Strings extends strongType
         }
 
         $res = number_format($val * 1.0, $sig_figs);
-        if ($dollar_sign)
+        if ($dollar_sign) {
             return '$' . $res;
+        }
+        return $res;
+    }
+
+    /**
+     * @param      $val
+     * @param bool $dollar_sign
+     * @param int $sig_figs
+     * @return string
+     */
+    public static function CurrencyAccountant($val, bool $dollar_sign = true, int $sig_figs = 2): string
+    {
+        if (!is_numeric($val)) {
+            return '--';
+        }
+
+        if ($val * 1.0 == 0) {
+            return '--';
+        }
+
+        if($dollar_sign && $val < 0) {
+            $res = number_format(-$val * 1.0, $sig_figs);
+            return '($' . $res . ')';
+        }
+
+        $res = number_format($val * 1.0, $sig_figs);
+        if ($dollar_sign) {
+            return '$' . $res;
+        }
         return $res;
     }
 

@@ -23,10 +23,10 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
  */
 class SimpleExcel extends strongType
 {
-    public string $Filename;
-    public array $Report;
-    public array $Columns;
-    public string $Title;
+    public ?string $Filename = null;
+    public ?array $Report = null;
+    public ?array $Columns = null;
+    public ?string $Title = null;
 
     /**
      * @param Worksheet $sheet
@@ -215,6 +215,7 @@ class SimpleExcel extends strongType
         }
 
 
+        $spreadsheet->setActiveSheetIndex(0);
         try {
             $writer = new Xlsx($spreadsheet);
             if (isset($_SERVER['HTTP_HOST'])) {
