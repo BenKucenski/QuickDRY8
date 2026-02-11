@@ -15,6 +15,7 @@ $opts .= 'f::';
 $opts .= 'o::';
 $opts .= 'j::';
 $opts .= 's::';
+$opts .= 'z::';
 
 $options = getopt($opts);
 
@@ -29,6 +30,11 @@ $_USE_FK_COLUMN_NAME = $options['f'] ?? '';
 $_DATABASE_CLASS = $options['o'] ?? null;
 $_GENERATE_JSON = $options['j'] ?? true;
 $_SCHEMA_ONLY = $options['s'] ?? false;
+$_STARTING_TABLE = $options['z'] ?? null;
+
+if($_STARTING_TABLE) {
+    define('STARTING_TABLE', $_STARTING_TABLE);
+}
 
 if(!$_DATABASE) {
     exit(basename(__FILE__) . ' usage: -d<database> -c<database constant optional> -u<user class> -v<user variable> -i<user id column>' . PHP_EOL);

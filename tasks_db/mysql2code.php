@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use QuickDRY\Connectors\mysql\MySQL_CodeGen;
 
@@ -21,10 +22,10 @@ $_USER_CLASS = $options['u'] ?? '';
 $_USER_VAR = $options['v'] ?? '';
 $_USER_ID_COLUMN = $options['i'] ?? '';
 $_MASTERPAGE = $options['m'] ?? '';
-$_LOWERCASE_TABLE = $options['l'] ?? '';
-$_USE_FK_COLUMN_NAME = $options['f'] ?? '';
+$_LOWERCASE_TABLE = (int)($options['l'] ?? 0);
+$_USE_FK_COLUMN_NAME = (int)($options['f'] ?? 0);
 $_DATABASE_CLASS = $options['o'] ?? null;
-$_GENERATE_JSON = $options['j'] ?? true;
+$_GENERATE_JSON = (bool)($options['j'] ?? true);
 
 if(!$_DATABASE) {
     exit(basename(__FILE__) . ' usage: -d<database> -c<database constant optional> -u<user class> -v<user variable> -i<user id column>' . PHP_EOL);
