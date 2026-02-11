@@ -122,12 +122,12 @@ class Statistics
     }
 
     /**
-     * @param $data
-     * @param $key
+     * @param array $data
+     * @param string|null $key
      * @param bool $minus_one
      * @return float
      */
-    public static function stddev($data, $key = null, bool $minus_one = true): float
+    public static function stddev(array $data, ?string $key = null, bool $minus_one = true): float
     {
         if (!sizeof($data)) {
             return 0;

@@ -244,11 +244,11 @@ class OAuthRequest
     }
 
     /**
-     * @param null $realm
+     * @param string|null $realm
      * @return string
      * @throws OAuthException
      */
-    public function to_header($realm = null): string
+    public function to_header(?string $realm = null): string
     {
         $first = true;
         if ($realm) {

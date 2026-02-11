@@ -15,9 +15,12 @@ class Strings extends strongType
      * @param string $emails
      * @return array
      */
-    public static function SplitEmails(string $emails): array
+    public static function SplitEmails(?string $emails): array
     {
         $list = [];
+        if(!$emails) {
+            return $list;
+        }
         $temp = explode(';', str_replace(',', ';', $emails));
         foreach ($temp as $item) {
             if(trim($item)) {

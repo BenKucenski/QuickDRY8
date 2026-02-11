@@ -1040,11 +1040,11 @@ OFFSET ' . ($per_page * $page) . ' ROWS FETCH NEXT ' . $per_page . ' ROWS ONLY
             }
 
             if (!str_contains($value, '.')) {
-                return $value . '.' . str_repeat('0', $scale);
+                return (float)($value . '.' . str_repeat('0', $scale));
             }
 
             [$int, $frac] = explode('.', $value, 2);
-            return $int . '.' . str_pad(substr($frac, 0, $scale), $scale, '0');
+            return (float)($int . '.' . str_pad(substr($frac, 0, $scale), $scale, '0'));
         }
 
         switch ($_type) {

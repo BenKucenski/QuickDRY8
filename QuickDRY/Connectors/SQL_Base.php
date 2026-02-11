@@ -720,7 +720,7 @@ class SQL_Base implements JsonSerializable
      * @param bool $force_value
      * @return mixed|null
      */
-    public function ValueToNiceValue(string $column_name, $value = null, bool $force_value = false): mixed
+    public function ValueToNiceValue(string $column_name, mixed $value = null, bool $force_value = false): mixed
     {
         return $value;
     }
@@ -1007,7 +1007,7 @@ class SQL_Base implements JsonSerializable
         $value,
         $order_by,
         string $display = '',
-        $where = null,
+        ?array $where = null,
         bool $show_none = true,
         string $onchange = ''): string
     {
