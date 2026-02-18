@@ -56,12 +56,12 @@ class OAuthDataStore
     }
 
     /**
-     * @param string $token
-     * @param string $consumer
+     * @param OAuthToken $token
+     * @param OAuthConsumer $consumer
      * @param string|null $verifier
      * @return OAuthToken|null
      */
-    public function new_access_token(string $token, string $consumer, ?string $verifier = null): ?OAuthToken
+    public function new_access_token(OAuthToken $token, OAuthConsumer $consumer, ?string $verifier = null): ?OAuthToken
     {
         // return a new access token attached to this consumer
         // for the user associated with this token if the request token

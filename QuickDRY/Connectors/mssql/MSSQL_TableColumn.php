@@ -69,12 +69,10 @@ class MSSQL_TableColumn extends TableColumn
             }
         }
 
-        if($this->NUMERIC_PRECISION || $this->NUMERIC_PRECISION_RADIX) {
+        if ($this->NUMERIC_PRECISION || $this->NUMERIC_PRECISION_RADIX) {
             $this->decimal_length = $this->NUMERIC_PRECISION . ',' . $this->NUMERIC_PRECISION_RADIX;
-        } else {
-            if($this->CHARACTER_MAXIMUM_LENGTH) {
-                $this->decimal_length = (string)$this->CHARACTER_MAXIMUM_LENGTH;
-            }
+        } elseif ($this->CHARACTER_MAXIMUM_LENGTH) {
+            $this->decimal_length = (string)$this->CHARACTER_MAXIMUM_LENGTH;
         }
     }
 }
