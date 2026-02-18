@@ -145,6 +145,13 @@ class strongType implements JsonSerializable
 
         return $values;
     }
+
+
+    public function fromRequest(array $data): void
+    {
+        $this->fromData($data, false);
+    }
+
     /**
      * @param array $data
      * @param bool $strict
