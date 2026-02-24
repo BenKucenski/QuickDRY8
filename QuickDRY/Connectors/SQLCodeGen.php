@@ -121,6 +121,10 @@ class SQLCodeGen extends strongType
             case 'longblob':
             case 'binary':
             case 'ntext':
+
+            case 'money':
+            case 'decimal':
+
                 return 'string';
 
             case 'tinyint unsigned':
@@ -135,9 +139,6 @@ class SQLCodeGen extends strongType
             case 'int unsigned':
                 return 'int';
 
-            case 'money':
-            case 'decimal':
-                return 'float';
 
             case 'smalldatetime':
             case 'datetime':
