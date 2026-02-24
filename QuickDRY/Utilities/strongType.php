@@ -326,6 +326,251 @@ class strongType implements JsonSerializable
     }
 
     /**
+     * Render a single object as a vertical (key/value) HTML table (recursive).
+     *
+     * @param object|null $item
+     * @param string|null $class
+     * @param string|null $style
+     * @param bool $exclude_empty
+     * @param int $maxDepth
+     * @return string
+     */
+    public static function ToHTML_VerticalRecursive(
+        ?object $item,
+        ?string $class = 'table table-sm mb-0',
+        ?string $style = '',
+        bool $exclude_empty = false,
+        int $maxDepth = 6
+    ): string
+    {
+        if (!$item) {
+            return '';
+        }
+
+        $seen = new \SplObjectStorage();
+
+        return self::renderVerticalTable(
+            $item,
+            (string)$class,
+            (string)$style,
+            $exclude_empty,
+            0,
+            $maxDepth,
+            $seen,
+            'root'
+        );
+    }
+
+    /**
+     * @param mixed $value
+     */
+    private static function renderVerticalTable(
+        $value,
+        string $class,
+        string $style,
+        bool $exclude_empty,
+        int $depth,
+        int $maxDepth,
+        \SplObjectStorage $seen,
+        string $path
+    ): string
+    {
+        // Depth guard
+        if ($depth > $maxDepth) {
+            return '<div class="text-muted small">Max depth reached</div>';
+        }
+
+        // Normalize object -> array of properties
+        if (is_object($value)) {
+            if ($seen->contains($value)) {
+                return '<div class="text-muted small">↩︎ Circular reference</div>';
+            }
+            $seen->attach($value);
+
+            if ($value instanceof self) {
+                $data = $value->toArray($exclude_empty);
+            } else {
+                $data = get_object_vars($value);
+                if ($exclude_empty) {
+                    $data = array_filter($data, static fn($v) => $v !== null);
+                }
+            }
+        } elseif (is_array($value)) {
+            $data = $value;
+            if ($exclude_empty) {
+                $data = array_filter($data, static fn($v) => $v !== null);
+            }
+        } else {
+            // Scalar fallback
+            return '<span>' . htmlspecialchars(self::formatScalar($value)) . '</span>';
+        }
+
+        $html  = '<table class="' . htmlspecialchars($class) . '" style="' . htmlspecialchars($style) . '">';
+        $html .= '<tbody>';
+
+        foreach ($data as $key => $val) {
+            $keyStr = is_int($key) ? (string)$key : (string)$key;
+            if ($keyStr === '') {
+                continue;
+            }
+            if ($keyStr[0] === '_') {
+                continue;
+            }
+
+            $rowKey = htmlspecialchars($keyStr);
+
+            // Scalar / DateTime
+            if (!is_array($val) && !is_object($val)) {
+                $display = htmlspecialchars(self::formatScalar($val));
+                $html .= '<tr>';
+                $html .= '<th scope="row" style="white-space:nowrap;vertical-align:top;">' . $rowKey . '</th>';
+                $html .= '<td style="white-space:pre-wrap;">' . $display . '</td>';
+                $html .= '</tr>';
+                continue;
+            }
+
+            // Nested array/object -> collapsible sub-table
+            $collapseId = 'st_' . substr(sha1($path . '.' . $keyStr . '.' . $depth), 0, 12);
+
+            $summary = is_object($val)
+                ? ('Object: ' . get_class($val))
+                : ('Array(' . count($val) . ')');
+
+            $html .= '<tr>';
+            $html .= '<th scope="row" style="white-space:nowrap;vertical-align:top;">' . $rowKey . '</th>';
+            $html .= '<td>';
+
+            $html .= '<div class="d-flex align-items-center gap-2">';
+            $html .= '<button class="btn btn-sm btn-outline-secondary" type="button" '
+                . 'data-bs-toggle="collapse" data-bs-target="#' . $collapseId . '" '
+                . 'aria-expanded="false" aria-controls="' . $collapseId . '">'
+                . 'View'
+                . '</button>';
+            $html .= '<span class="text-muted small">' . htmlspecialchars($summary) . '</span>';
+            $html .= '</div>';
+
+            $html .= '<div id="' . $collapseId . '" class="collapse mt-2">';
+            $html .= '<div class="border rounded p-2 bg-light">';
+            $html .= self::renderVerticalTable(
+                $val,
+                $class,
+                '', // style for nested
+                $exclude_empty,
+                $depth + 1,
+                $maxDepth,
+                $seen,
+                $path . '.' . $keyStr
+            );
+            $html .= '</div></div>';
+
+            $html .= '</td>';
+            $html .= '</tr>';
+        }
+
+        $html .= '</tbody></table>';
+
+        return $html;
+    }
+
+    /**
+     * @param mixed $v
+     */
+    private static function formatScalar($v): string
+    {
+        if ($v instanceof \DateTime) {
+            return Dates::Timestamp($v);
+        }
+        if (is_bool($v)) {
+            return $v ? 'true' : 'false';
+        }
+        if ($v === null) {
+            return 'null';
+        }
+        if (is_float($v) && (is_nan($v) || is_infinite($v))) {
+            return (string)$v;
+        }
+        return (string)$v;
+    }
+
+    /**
+     * Render a single object as a vertical (key/value) HTML table.
+     *
+     * Left column: property name
+     * Right column: value
+     *
+     * @param object|null $item
+     * @param string|null $class  CSS class for <table>
+     * @param string|null $style  inline style for <table>
+     * @param bool $exclude_empty skip null values
+     * @return string
+     */
+    public static function ToHTML_Vertical(
+        ?object $item,
+        ?string $class = '',
+        ?string $style = '',
+        bool $exclude_empty = false
+    ): string
+    {
+        if (!$item) {
+            return '';
+        }
+
+        // If it's a strongType instance, use toArray() so DateTime conversion & alias rules can apply there if you want.
+        // Otherwise, fall back to public props.
+        if ($item instanceof self) {
+            $data = $item->toArray($exclude_empty);
+        } else {
+            $data = get_object_vars($item);
+            if ($exclude_empty) {
+                $data = array_filter($data, static fn($v) => $v !== null);
+            }
+        }
+
+        $html = '<table class="' . htmlspecialchars((string)$class) . '" style="' . htmlspecialchars((string)$style) . '">';
+        $html .= '<tbody>';
+
+        foreach ($data as $key => $val) {
+            if (!is_string($key) || $key === '') {
+                continue;
+            }
+
+            // Skip internal/hidden keys like "_foo"
+            if ($key[0] === '_') {
+                continue;
+            }
+
+            // Value formatting
+            if ($val instanceof DateTime) {
+                $display = Dates::Timestamp($val);
+            } elseif (is_object($val)) {
+                // Try Dates::Datestamp() like your ToHTML() does; if it fails, fall back safely.
+                try {
+                    $display = Dates::Datestamp($val);
+                } catch (\Throwable $e) {
+                    $display = get_class($val);
+                }
+            } elseif (is_array($val)) {
+                // Keep consistent with your ToHTML() which "continue;" on arrays:
+                continue;
+
+                // Alternative if you'd rather show arrays:
+                // $display = '<pre class="mb-0 small">' . htmlspecialchars(json_encode($val, JSON_PRETTY_PRINT)) . '</pre>';
+            } else {
+                $display = (string)$val;
+            }
+
+            $html .= '<tr>';
+            $html .= '<th scope="row" style="white-space:nowrap;vertical-align:top;">' . htmlspecialchars($key) . '</th>';
+            $html .= '<td>' . htmlspecialchars($display) . '</td>';
+            $html .= '</tr>';
+        }
+
+        $html .= '</tbody></table>';
+
+        return $html;
+    }
+
+    /**
      * @param self[] $items
      * @param string|null $class
      * @param string|null $style
