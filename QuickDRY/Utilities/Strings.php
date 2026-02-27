@@ -12,18 +12,18 @@ use SimpleXMLElement;
 class Strings extends strongType
 {
     /**
-     * @param string $emails
+     * @param string|null $emails
      * @return array
      */
     public static function SplitEmails(?string $emails): array
     {
         $list = [];
-        if(!$emails) {
+        if (!$emails) {
             return $list;
         }
-        $temp = explode(';', str_replace(',', ';', $emails));
+        $temp = explode(';', str_replace([',', '/'], ';', $emails));
         foreach ($temp as $item) {
-            if(trim($item)) {
+            if (trim($item)) {
                 $list [] = trim($item);
             }
         }
@@ -500,7 +500,7 @@ class Strings extends strongType
             return '--';
         }
 
-        if($dollar_sign && $val < 0) {
+        if ($dollar_sign && $val < 0) {
             $res = number_format(-$val * 1.0, $sig_figs);
             return '($' . $res . ')';
         }
@@ -802,6 +802,7 @@ class Strings extends strongType
 
 
     }
+
     /**
      * @param $val
      * @return mixed

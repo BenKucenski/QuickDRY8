@@ -164,6 +164,10 @@ class strongType implements JsonSerializable
                 $k = '_' . $k;
             }
 
+            if($v === 'null') {
+                $v = null;
+            }
+
             try {
                 $rp = new ReflectionProperty(static::class, $k);
             } catch (ReflectionException $e) {
@@ -179,9 +183,9 @@ class strongType implements JsonSerializable
             switch ($rp->getType()->getName()) {
                 case 'DateTime':
                     try {
-                        $this->$k = is_string($v) ? new DateTime($v) : $v;
+                        $this->$k = ($v && is_string($v)) ? new DateTime($v) : $v;
                     } catch (Exception $e) {
-                        Exception($e->getMessage());
+                        Exception($v, $e->getMessage());
                     }
                     break;
 
