@@ -6,6 +6,7 @@ namespace QuickDRY\Utilities;
 
 use DateTime;
 use Exception;
+use JetBrains\PhpStorm\NoReturn;
 use JsonSerializable;
 use ReflectionException;
 use ReflectionObject;
@@ -18,6 +19,22 @@ class strongType implements JsonSerializable
 {
     private array $_missing_properties = [];
     protected static ?array $_alias = null;
+
+    public static function dumpStatic(): array
+    {
+        // Use Reflection to access all static properties, including protected/private ones
+        $reflection = new \ReflectionClass(static::class);
+        $staticProperties = $reflection->getProperties(\ReflectionProperty::IS_STATIC);
+
+        $data = [];
+
+        foreach ($staticProperties as $property) {
+            $data[$property->getName()] = $property->getValue();
+        }
+
+        // Dump all static properties and their values
+        return $data;
+    }
 
     /**
      * @return void

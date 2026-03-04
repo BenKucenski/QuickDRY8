@@ -313,6 +313,9 @@ class SimpleExcel extends strongType
             $value = $property_type == SimpleExcel_Column::SIMPLE_EXCEL_PROPERTY_TYPE_DATE ? Dates::Datestamp($value, '') : Dates::Timestamp($value, '');
             $value = Date::PHPToExcel( $value );
         }
+        if(is_array($value)) {
+            $value = implode(', ', $value);
+        }
 
         if ($property_type == SimpleExcel_Column::SIMPLE_EXCEL_PROPERTY_TYPE_AS_GIVEN) {
             $sheet->setCellValueExplicit($sheet_column . $sheet_row, $value, DataType::TYPE_STRING);

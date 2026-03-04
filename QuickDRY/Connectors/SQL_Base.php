@@ -530,9 +530,9 @@ class SQL_Base implements JsonSerializable
                 $changed = true;
                 $change_reason = 'diff = ' . abs($new_val - $old_val);
             }
-        } elseif (!is_null($old_val) && !is_null($new_val) && strcmp($new_val, $old_val) != 0) {
+        } elseif (!is_null($old_val) && !is_null($new_val) && strcmp((string)$new_val, (string)$old_val) != 0) {
             $changed = true;
-            $change_reason = '"' . $new_val . '" "' . $old_val . '" ' . strlen($new_val) . ' ' . strlen($old_val) . ': strcmp = ' . strcmp($new_val, $old_val);
+            $change_reason = '"' . $new_val . '" "' . $old_val . '" ' . strlen((string)$new_val) . ' ' . strlen((string)$old_val) . ': strcmp = ' . strcmp((string)$new_val, (string)$old_val);
         }
 
 
