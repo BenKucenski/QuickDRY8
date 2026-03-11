@@ -57,7 +57,7 @@ class Mailer extends strongType
         $t->subject = $subject;
         $t->message = $message;
         $t->log = null;
-        $t->headers = serialize($attachments);
+        $t->headers = json_encode($attachments);
         $t->embedded_images = $embedded_images;
 
         return $t;
@@ -90,7 +90,7 @@ class Mailer extends strongType
             }
         }
 
-        $to_emails = explode(',', str_replace(';', ',', $this->to_email));
+        $to_emails = Strings::SplitEmails($this->to_email);
         foreach ($to_emails as $to) {
 
             $mail = new PHPMailer();
@@ -155,35 +155,41 @@ class Mailer extends strongType
                 }
             }
 
-            $attachments = unserialize($this->headers);
-            if (is_array($attachments)) {
-                foreach ($attachments as $name => $path) {
+            if($this->headers) {
+                $attachments = json_decode($this->headers, true);
+                if (json_last_error()) {
+                    $attachments = unserialize($this->headers);
+                }
 
-                    if ($name === 'report_id') {
-                        // don't handle this here, we need to update the email queue record
-                        return 0;
-                    } elseif (is_object($path)) {
-                        if (get_class($path) == 'EmailAttachment') {
-                            $name = $path->FileName;
-                            $path = $path->FileLocation;
+                if (is_array($attachments)) {
+                    foreach ($attachments as $name => $path) {
+
+                        if ($name === 'report_id') {
+                            // don't handle this here, we need to update the email queue record
+                            return 0;
+                        } elseif (is_object($path)) {
+                            if (get_class($path) == 'EmailAttachment') {
+                                $name = $path->FileName;
+                                $path = $path->FileLocation;
+                            } else {
+                                return 0;
+                            }
+                        }
+
+                        if (file_exists($path)) {
+                            try {
+                                $mail->addAttachment($path, $name);
+                            } catch (Exception $ex) {
+                                $this->log = $ex->getMessage();
+                                return 0;
+                            }
                         } else {
-                            return 0;
-                        }
-                    }
-
-                    if (file_exists($path)) {
-                        try {
-                            $mail->addAttachment($path, $name);
-                        } catch (Exception $ex) {
-                            $this->log = $ex->getMessage();
-                            return 0;
-                        }
-                    } else {
-                        try {
-                            $mail->addStringAttachment(base64_decode($path), $name);
-                        } catch (Exception $ex) {
-                            $this->log = $ex->getMessage();
-                            return 0;
+                            try {
+                                $mail->addStringAttachment(base64_decode($path), $name);
+                            } catch (Exception $ex) {
+                                $this->log = $ex->getMessage();
+                                return 0;
+                            }
                         }
                     }
                 }
