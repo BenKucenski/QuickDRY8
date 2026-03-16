@@ -384,7 +384,7 @@ class SQL_Base implements JsonSerializable
      * @param array|null $left_join
      * @param int|null $limit
      *
-     * @return string|null
+     * @return array|null
      */
     public static function GetAllPaginated(
         ?array $where = null,
@@ -393,7 +393,7 @@ class SQL_Base implements JsonSerializable
         int    $per_page = 0,
         ?array $left_join = null,
         ?int   $limit = null
-    ): ?string
+    ): ?array
     {
         return static::_GetAllPaginated($where, $order_by, $page, $per_page, $left_join, $limit);
     }
@@ -566,12 +566,12 @@ class SQL_Base implements JsonSerializable
     public static function GetHeader(
         ?string $sort_by = '',
         ?string $dir = '',
-        ?bool    $modify = false,
-        ?array   $add = [],
-        ?array   $ignore = [],
-        ?string  $add_params = '',
-        ?bool    $sortable = true,
-        ?array   $column_order = []
+        ?bool   $modify = false,
+        ?array  $add = [],
+        ?array  $ignore = [],
+        ?string $add_params = '',
+        ?bool   $sortable = true,
+        ?array  $column_order = []
     ): string
     {
         return static::_GetHeader(static::$prop_definitions, $sort_by, $dir, $modify, $add, $ignore, $add_params, $sortable, $column_order);
@@ -613,12 +613,12 @@ class SQL_Base implements JsonSerializable
         array   $props,
         ?string $sort_by,
         ?string $dir,
-        ?bool    $modify = false,
-        ?array   $add = [],
-        ?array   $ignore = [],
-        ?string  $add_params = '',
-        ?bool    $sortable = true,
-        ?array   $column_order = []
+        ?bool   $modify = false,
+        ?array  $add = [],
+        ?array  $ignore = [],
+        ?string $add_params = '',
+        ?bool   $sortable = true,
+        ?array  $column_order = []
     ): string
     {
         $not_dir = $dir == 'asc' ? 'desc' : 'asc';
@@ -637,7 +637,7 @@ class SQL_Base implements JsonSerializable
         foreach ($props as $name => $info) {
             if (!in_array($name, $ignore)) {
                 if ($sortable) {
-                    $columns[$name] = '<th><a href="' . CURRENT_PAGE . '?sort_by=' . $name . '&dir=' . (strcasecmp($sort_by, $name) == 0 ? $not_dir : 'asc') . '&per_page=' . PER_PAGE . '&' . $add_params . '">' . static::ColumnNameToNiceName($name) . '</a>' . (strcasecmp($sort_by, $name) == 0 ? ' ' . $arrow : '') . '</th>';
+                    $columns[$name] = '<th><a href="' . CURRENT_PAGE . '?sort_by=' . $name . '&sort_dir=' . (strcasecmp($sort_by ?? '', $name ?? '') == 0 ? $not_dir : 'asc') . '&per_page=' . PER_PAGE . '&' . $add_params . '">' . static::ColumnNameToNiceName($name) . '</a>' . (strcasecmp($sort_by ?? '', $name ?? '') == 0 ? ' ' . $arrow : '') . '</th>';
                 } else {
                     $columns[$name] = '<th>' . static::ColumnNameToNiceName($name) . '</th>';
                 }
@@ -727,21 +727,22 @@ class SQL_Base implements JsonSerializable
 
     /**
      * @param bool $modify
-     * @param array $swap
-     * @param array $add
-     * @param array $ignore
-     * @param string $custom_link
-     * @param array $column_order
+     * @param array|null $swap
+     * @param array|null $add
+     * @param array|null $ignore
+     * @param string|null $custom_link
+     * @param array|null $column_order
      *
      * @return string
      */
     public function ToRow(
         bool   $modify = false,
-        array  $swap = [],
-        array  $add = [],
-        array  $ignore = [],
-        string $custom_link = '',
-        array  $column_order = []): string
+        ?array $swap = null,
+        ?array $add = null,
+        ?array $ignore = null,
+        ?array $custom_link = null,
+        ?array $column_order = null
+    ): string
     {
         $res = '';
 
@@ -765,7 +766,7 @@ class SQL_Base implements JsonSerializable
 
 
             if (array_key_exists($name, $swap)) {
-                if(method_exists($this, $swap[$name])) {
+                if (method_exists($this, $swap[$name])) {
                     $value = $this->{$swap[$name]}();
                 } else {
                     $value = $this->{$swap[$name]};
@@ -802,7 +803,7 @@ class SQL_Base implements JsonSerializable
 
                 $columns[$name] = '<td>' . $value . '</td>';
             }
-        if (sizeof($column_order) > 0) {
+        if ($column_order && sizeof($column_order) > 0) {
             foreach ($column_order as $name) {
                 $res .= $columns[$name];
             }
@@ -814,11 +815,11 @@ class SQL_Base implements JsonSerializable
             $res .= '
    			<td class="data_text">
    				<a href="#"  onclick="' . get_base_class($this) . '.Load(' . $this->{static::$_primary[0]} . ')"><i class="fa fa-edit"></i></a>
-   			</td>
    			';
-        }
-        if (is_array($custom_link)) {
-            $res .= '<td class="data_text"><a href="' . $custom_link['page'] . '?' . static::$_primary[0] . '=' . $this->{static::$_primary[0]} . '">' . $custom_link['title'] . '</a></td>';
+            if (is_array($custom_link)) {
+                $res .= '<a class="btn btn-primary btn-sm" href="' . $custom_link['page'] . '?' . static::$_primary[0] . '=' . $this->{static::$_primary[0]} . '">' . $custom_link['title'] . '</a>';
+            }
+            $res .= '</td>';
         }
         return $res . '</tr>';
     }
@@ -857,19 +858,19 @@ class SQL_Base implements JsonSerializable
 
                     switch ($typeName) {
                         case 'int':
-                            $value = (int) $value;
+                            $value = (int)$value;
                             break;
                         case 'float':
-                            $value = (float) $value;
+                            $value = (float)$value;
                             break;
                         case 'bool':
-                            $value = (bool) $value;
+                            $value = (bool)$value;
                             break;
                         case 'string':
-                            $value = (string) $value;
+                            $value = (string)$value;
                             break;
                         case 'array':
-                            $value = (array) $value;
+                            $value = (array)$value;
                             break;
                         default:
                             // if it's a class/interface type, you may need to handle

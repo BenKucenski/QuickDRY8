@@ -753,7 +753,12 @@ class MySQL_Core extends SQL_Base implements ISQLCore
 
             $list = static::Query($sql, $params, true);
         }
-        return ['count' => $count, 'items' => $list, 'sql' => $sql, 'res' => $res];
+        return [
+            'count' => (int)$count,
+            'items' => $list,
+            'sql'   => $sql,
+            'res'   => $res,
+        ];
     }
 
     /**
