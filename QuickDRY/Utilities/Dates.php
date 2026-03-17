@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace QuickDRY\Utilities;
 
+use DateMalformedStringException;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -39,9 +40,13 @@ class Dates extends strongType
      */
     public static function DaysDiff($start_date, $end_date): int
     {
-        $start_date = strtotime(self::Datestamp($start_date));
-        $end_date = strtotime(self::Datestamp($end_date));
-        return (int)floor(($end_date - $start_date) / 3600.0 / 24.0);
+        try {
+            $start = new DateTime(self::Datestamp($start_date));
+            $end = new DateTime(self::Datestamp($end_date));
+        } catch (Exception $e) {
+            Exception($e->getMessage());
+        }
+        return (int)$start->diff($end)->days;
     }
 
     /**
@@ -52,7 +57,7 @@ class Dates extends strongType
     public static function ConvertToUserDate($datetime, $timezone): string
     {
         $datetime = Dates::Timestamp($datetime);
-        if(!$timezone) {
+        if (!$timezone) {
             return $datetime;
         }
         try {
