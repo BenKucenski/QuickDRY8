@@ -46,7 +46,10 @@ class Dates extends strongType
         } catch (Exception $e) {
             Exception($e->getMessage());
         }
-        return (int)$start->diff($end)->days;
+
+        $diff = $start->diff($end);
+
+        return $diff->invert ? -$diff->days : $diff->days;
     }
 
     /**

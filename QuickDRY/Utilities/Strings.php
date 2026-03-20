@@ -1056,7 +1056,7 @@ class Strings extends strongType
      */
     public static function StringToBR($text): string
     {
-        $text = str_replace("\r", '', $text);
+        $text = str_replace("\r", '', $text ?? '');
         $t = explode("\n", $text);
         return implode('<br/>', $t);
     }
