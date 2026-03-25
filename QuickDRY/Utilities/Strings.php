@@ -11,6 +11,42 @@ use SimpleXMLElement;
  */
 class Strings extends strongType
 {
+    public static function insertBeforeKey(array $array, string $targetKey, string $newKey, mixed $newValue): array
+    {
+        $result = [];
+
+        foreach ($array as $key => $value) {
+            if ($key === $targetKey) {
+                $result[$newKey] = $newValue;
+            }
+            $result[$key] = $value;
+        }
+
+        return $result;
+    }
+
+    public static function insertAfterKey(
+        array &$array,
+        string $targetKey,
+        string $newKey,
+        mixed $newValue
+    ): array
+    {
+        $result = [];
+
+        foreach ($array as $key => $value) {
+            $result[$key] = $value;
+
+            if ($key === $targetKey) {
+                $result[$newKey] = $newValue;
+            }
+        }
+
+        $array = $result;
+
+        return $result;
+    }
+
     /**
      * @param string|null $emails
      * @return array

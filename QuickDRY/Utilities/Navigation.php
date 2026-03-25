@@ -12,6 +12,7 @@ class Navigation
     protected array $_MENU = [];
 
     protected ?string $Brand = null;
+    public ?string $ActiveURL = null;
 
     public ?array $Legend = null;
 
@@ -219,7 +220,11 @@ style="' . $style . '"
                 $html .= sprintf('<ul class="dropdown-menu" aria-labelledby="%s">', htmlspecialchars($id)) . PHP_EOL;
                 foreach ($items as $itemLabel => $href) {
 
-                    $active = strcmp($CurrentPage ?? '', $href ?? '') == 0;
+                    if($this->ActiveURL) {
+                        $active = $this->ActiveURL == $href;
+                    } else {
+                        $active = strcmp($CurrentPage ?? '', $href ?? '') == 0;
+                    }
                     // Determine classes
                     $classes = '';
                     if ($active) {
@@ -240,7 +245,12 @@ style="' . $style . '"
                     continue;
                 }
 
-                $active = strcmp($CurrentPage ?? '', $items) == 0;
+                if($this->ActiveURL) {
+                    $active = $this->ActiveURL == $items;
+                } else {
+                    $active = strcmp($CurrentPage ?? '', $items ?? '') == 0;
+                }
+
                 // Determine classes
                 $classes = 'btn btn-primary';
                 if ($active) {
