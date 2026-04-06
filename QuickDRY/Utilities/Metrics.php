@@ -13,6 +13,8 @@ class Metrics
     private static array $_total = [];
     private static array $_running = [];
 
+    public static ?bool $log = false;
+
     // --- Memory tracking ---
     private static array $_memVars   = []; // name => start bytes
     private static array $_memTotal  = []; // name => sum of deltas
@@ -95,6 +97,10 @@ class Metrics
      */
     public static function Start($name): void
     {
+        if(self::$log) {
+            Log::Insert('Start: ' . $name);
+        }
+
         if (isset(self::$_running[$name])) {
             return;
         }
@@ -108,6 +114,10 @@ class Metrics
      */
     public static function Stop($name): void
     {
+        if(self::$log) {
+            Log::Insert('Stop: ' . $name);
+        }
+
         if (!isset(self::$_running[$name])) {
             return;
         }

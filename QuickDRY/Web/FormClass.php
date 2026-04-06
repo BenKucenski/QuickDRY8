@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace QuickDRY\Web;
 
+use QuickDRY\Utilities\strongType;
+
 /**
  * Class FormClass
  */
-class FormClass
+class FormClass extends strongType
 {
     public static array $_options = [];
 

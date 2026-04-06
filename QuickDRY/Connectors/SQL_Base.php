@@ -434,9 +434,9 @@ class SQL_Base implements JsonSerializable
      * @param array $arr
      * @param bool $null_string
      * @param array|null $prop_definitions
-     * @return mixed
+     * @return array
      */
-    public static function _ToArray(array $arr, bool $null_string = false, ?array $prop_definitions = null): mixed
+    public static function _ToArray(array $arr, bool $null_string = false, ?array $prop_definitions = null): array
     {
         // Cleans up an array of values so that it can ben
         // put into a database object and be saved into the database
@@ -716,7 +716,7 @@ class SQL_Base implements JsonSerializable
 
     /**
      * @param string $column_name
-     * @param $value
+     * @param mixed $value
      * @param bool $force_value
      * @return mixed|null
      */
@@ -997,7 +997,7 @@ class SQL_Base implements JsonSerializable
      * @param        $value
      * @param        $order_by
      * @param string $display
-     * @param null $where
+     * @param array|null $where
      * @param bool $show_none
      * @param string $onchange
      * @return string
