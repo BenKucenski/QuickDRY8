@@ -10,6 +10,7 @@ use JsonSerializable;
 use ReflectionException;
 use ReflectionObject;
 use ReflectionProperty;
+use SplObjectStorage;
 
 /**
  *
@@ -367,7 +368,7 @@ class strongType implements JsonSerializable
             return '';
         }
 
-        $seen = new \SplObjectStorage();
+        $seen = new SplObjectStorage();
 
         return self::renderVerticalTable(
             $item,
@@ -383,15 +384,23 @@ class strongType implements JsonSerializable
 
     /**
      * @param mixed $value
+     * @param string $class
+     * @param string $style
+     * @param bool $exclude_empty
+     * @param int $depth
+     * @param int $maxDepth
+     * @param SplObjectStorage $seen
+     * @param string $path
+     * @return string
      */
     private static function renderVerticalTable(
-        $value,
+        mixed $value,
         string $class,
         string $style,
         bool $exclude_empty,
         int $depth,
         int $maxDepth,
-        \SplObjectStorage $seen,
+        SplObjectStorage $seen,
         string $path
     ): string
     {
@@ -494,10 +503,11 @@ class strongType implements JsonSerializable
 
     /**
      * @param mixed $v
+     * @return string
      */
-    private static function formatScalar($v): string
+    private static function formatScalar(mixed $v): string
     {
-        if ($v instanceof \DateTime) {
+        if ($v instanceof DateTime) {
             return Dates::Timestamp($v);
         }
         if (is_bool($v)) {

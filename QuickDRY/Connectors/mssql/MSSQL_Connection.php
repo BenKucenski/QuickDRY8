@@ -724,8 +724,8 @@ ORDER BY "TABLE_NAME"
             if (str_starts_with($t, 'TEMP')) {
                 continue;
             }
-            if (defined('STARTING_TABLE')) {
-                if (strcasecmp($t, STARTING_TABLE) == 0) {
+            if (defined('STARTING_TABLE') && STARTING_TABLE) {
+                if (strcasecmp($t, (string)STARTING_TABLE) == 0) {
                     $start = true;
                 }
             }

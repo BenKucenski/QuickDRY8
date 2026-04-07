@@ -16,16 +16,16 @@ class MathClass
      * @param $km
      * @return float
      */
-    public static function KMtoMiles($km): float
+    public static function KMtoMiles(float $km): float
     {
         return $km * 0.621371;
     }
 
     /**
-     * @param $arr
+     * @param array $arr
      * @return float
      */
-    public static function Mean($arr): float
+    public static function Mean(array $arr): float
     {
         if (!sizeof($arr)) {
             return 0;
@@ -34,10 +34,10 @@ class MathClass
     }
 
     /**
-     * @param $arr
+     * @param array $arr
      * @return float
      */
-    public static function Median($arr): float
+    public static function Median(array $arr): float
     {
         $count = count($arr); //total numbers in array
         $middleval = floor(($count - 1) / 2); // find the middle value, or the lowest middle value
@@ -52,10 +52,10 @@ class MathClass
     }
 
     /**
-     * @param $arr
+     * @param array $arr
      * @return int
      */
-    public static function Mode($arr): int
+    public static function Mode(array $arr): int
     {
         $summary = [];
         foreach ($arr as $val) {
@@ -69,38 +69,38 @@ class MathClass
     }
 
     /**
-     * @param $raw
+     * @param float $raw
      * @param int $decimals
      * @return string
      */
-    public static function ReportPercent($raw, int $decimals = 1): string
+    public static function ReportPercent(float $raw, int $decimals = 1): string
     {
         return number_format($raw * 100, $decimals);
     }
 
     /**
-     * @param $rate
-     * @param $principal
-     * @param $periods
+     * @param float $rate
+     * @param float $principal
+     * @param float $periods
      * @return float
      */
-    public static function AccruedInterest($rate, $principal, $periods): float
+    public static function AccruedInterest(float $rate, float $principal, float $periods): float
     {
         return $principal * pow(1 + $rate, $periods) - $principal;
     }
 
     /**
-     * @param $rate
-     * @param $principal
-     * @param $payment
+     * @param float $rate
+     * @param float $principal
+     * @param float $payment
      * @param mixed $start_date
      * @param mixed $maturity_date
      * @return PrincipalInterest|null
      */
     public static function MonthsToRepay(
-        $rate,
-        $principal,
-        $payment,
+        float $rate,
+        float $principal,
+        float $payment,
         mixed $start_date = null,
         mixed $maturity_date = null
     ): ?PrincipalInterest
@@ -177,23 +177,23 @@ class MathClass
 
 
     /**
-     * @param $rate
-     * @param $principal
-     * @param $term
+     * @param float $rate
+     * @param float $principal
+     * @param float $term
      * @return float
      */
-    public static function MonthlyPayment($rate, $principal, $term): float
+    public static function MonthlyPayment(float $rate, float $principal, float $term): float
     {
         return self::MonthlyPaymentForPeriod($rate, $principal, $term, 12);
     }
 
     /**
-     * @param $principal
-     * @param $payment
-     * @param $periods
+     * @param float $principal
+     * @param float $payment
+     * @param float $periods
      * @return float
      */
-    public static function FindInterest($principal, $payment, $periods): float
+    public static function FindInterest(float $principal, float $payment, float $periods): float
     {
         $low = 0.0;
         $high = 100.0;
@@ -209,13 +209,13 @@ class MathClass
     }
 
     /**
-     * @param $rate
-     * @param $principal
-     * @param $term
-     * @param $periods
+     * @param float $rate
+     * @param float $principal
+     * @param float $term
+     * @param float $periods
      * @return float
      */
-    public static function MonthlyPaymentForPeriod($rate, $principal, $term, $periods): float
+    public static function MonthlyPaymentForPeriod(float $rate, float $principal, float $term, float $periods): float
     {
         if ($rate == 0)
             return $principal / ($term * $periods);
@@ -232,24 +232,24 @@ class MathClass
     }
 
     /**
-     * @param $rate
-     * @param $principal
-     * @param $term
+     * @param float $rate
+     * @param float $principal
+     * @param float $term
      * @return float
      */
-    public static function TotalInterest($rate, $principal, $term): float
+    public static function TotalInterest(float $rate, float $principal, float $term): float
     {
         return self::TotalInterestForPeriod($rate, $principal, $term, 12);
     }
 
     /**
-     * @param $rate
-     * @param $principal
-     * @param $term
-     * @param $periods
+     * @param float $rate
+     * @param float $principal
+     * @param float $term
+     * @param float $periods
      * @return float
      */
-    public static function TotalInterestForPeriod($rate, $principal, $term, $periods): float
+    public static function TotalInterestForPeriod(float $rate, float $principal, float $term, float $periods): float
     {
         $payment = self::MonthlyPaymentForPeriod($rate, $principal, $term, $periods);
         $res = self::MonthsToRepay($rate, $principal, $payment);
@@ -260,24 +260,24 @@ class MathClass
     }
 
     /**
-     * @param $rate
-     * @param $principal
-     * @param $term
+     * @param float $rate
+     * @param float $principal
+     * @param float $term
      * @return array
      */
-    public static function Amortization($rate, $principal, $term): array
+    public static function Amortization(float $rate, float $principal, float $term): array
     {
         return self::AmortizationForPeriod($rate, $principal, $term, 12);
     }
 
     /**
-     * @param $rate
-     * @param $principal
-     * @param $term
-     * @param $periods
+     * @param float $rate
+     * @param float $principal
+     * @param float $term
+     * @param float $periods
      * @return array
      */
-    public static function AmortizationForPeriod($rate, $principal, $term, $periods): array
+    public static function AmortizationForPeriod(float $rate, float $principal, float $term, float $periods): array
     {
         $points = [];
 
@@ -483,13 +483,13 @@ class MathClass
     }
 
     /**
-     * @param $current_time
-     * @param $current_price
-     * @param $start_time
-     * @param $start_price
+     * @param mixed $current_time
+     * @param float $current_price
+     * @param mixed $start_time
+     * @param float $start_price
      * @return float
      */
-    public static function APY($current_time, $current_price, $start_time, $start_price): float
+    public static function APY(mixed $current_time, float $current_price, mixed $start_time, float $start_price): float
     {
         if ($start_price == 0) {
             return 0;
@@ -513,14 +513,14 @@ class MathClass
     }
 
     /**
-     * @param $present_value
-     * @param $payment
-     * @param $interest_rate
-     * @param $years
-     * @param $payments_per_year
+     * @param float $present_value
+     * @param float $payment
+     * @param float $interest_rate
+     * @param float $years
+     * @param float $payments_per_year
      * @return float|int
      */
-    public static function GetFutureValue($present_value, $payment, $interest_rate, $years, $payments_per_year): float|int
+    public static function GetFutureValue(float $present_value, float $payment, float $interest_rate, float $years, float $payments_per_year): float|int
     {
         $interest_rate /= 100;
         $rk = $interest_rate / $payments_per_year;
@@ -529,14 +529,14 @@ class MathClass
     }
 
     /**
-     * @param $present_value
-     * @param $future_value
-     * @param $payment
-     * @param $interest_rate
-     * @param $payments_per_year
+     * @param float $present_value
+     * @param float $future_value
+     * @param float $payment
+     * @param float $interest_rate
+     * @param float $payments_per_year
      * @return float|int
      */
-    public static function GetYearsToFutureValue($present_value, $future_value, $payment, $interest_rate, $payments_per_year): float|int
+    public static function GetYearsToFutureValue(float $present_value, float $future_value, float $payment, float $interest_rate, float $payments_per_year): float|int
     {
         $interest_rate /= 100.0;
         $rk = $interest_rate / $payments_per_year;
@@ -552,13 +552,13 @@ class MathClass
     }
 
     /**
-     * @param $present_value
-     * @param $current_payment
-     * @param $interest_rate
-     * @param $months
+     * @param float $present_value
+     * @param float $current_payment
+     * @param float $interest_rate
+     * @param float $months
      * @return float
      */
-    public static function GetAdditionalPayment($present_value, $current_payment, $interest_rate, $months): float
+    public static function GetAdditionalPayment(float $present_value, float $current_payment, float $interest_rate, float $months): float
     {
         // https://www.sapling.com/8609716/calculate-months-pay-off-loan
         $interest_rate /= 100.0;

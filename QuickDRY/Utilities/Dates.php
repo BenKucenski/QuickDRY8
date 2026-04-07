@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace QuickDRY\Utilities;
 
-use DateMalformedStringException;
 use DateTime;
 use DateTimeZone;
 use Exception;
