@@ -51,7 +51,7 @@ function Debug(...$args): void
         $email = Mailer::Queue(
             SMTP_DEBUG_EMAIL,
             SMTP_DEBUG_EMAIL,
-            'System Error',
+            defined('JS_ERROR') && JS_ERROR ? 'JS Error' : 'PHP Error',
             (string)$data
         );
         $email->Send();
