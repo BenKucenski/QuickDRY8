@@ -716,9 +716,10 @@ ORDER BY "TABLE_NAME"
         }
 
         $start = true;
-        if (defined('STARTING_TABLE')) {
+        if (defined('STARTING_TABLE') && STARTING_TABLE) {
             $start = false;
         }
+
         foreach ($res['data'] as $row) {
             $t = $row['TABLE_NAME'];
             if (str_starts_with($t, 'TEMP')) {
@@ -733,6 +734,7 @@ ORDER BY "TABLE_NAME"
                 $list[] = $t;
             }
         }
+
         return $list;
     }
 

@@ -40,11 +40,17 @@ class MSSQL_CodeGen extends SQLCodeGen
         string $DestinationFolder = '../httpdocs'
     ): void
     {
+        if($DatabaseClass[0] != '\\') {
+            $DatabaseClass = '\\' . $DatabaseClass;
+        }
+
+
         $this->DatabaseTypePrefix = 'ms';
 
         if (!$DatabaseClass) {
             $DatabaseClass = 'QuickDRY\Connectors\mssql\MSSQL_A';
         }
+
         if (!class_exists($DatabaseClass)) {
             exit($DatabaseClass . ' is invalid');
         }
