@@ -47,6 +47,7 @@ class Web extends strongType
     public ?string $HTML = null;
     public ?string $js = null;
     public ?string $css = null;
+    public ?string $mjs = null; // null
 
 
     public ?string $Verb = null;
