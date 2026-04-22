@@ -76,6 +76,7 @@ class SimpleExcel_Column extends strongType
 
         switch($type_name) {
             case 'string':
+            case 'array':
                 return self::SIMPLE_EXCEL_PROPERTY_TYPE_AS_GIVEN;
 
             case 'DateTime':
