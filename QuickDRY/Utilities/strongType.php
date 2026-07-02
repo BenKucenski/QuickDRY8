@@ -11,6 +11,7 @@ use ReflectionException;
 use ReflectionObject;
 use ReflectionProperty;
 use SplObjectStorage;
+use Throwable;
 
 /**
  *
@@ -576,7 +577,7 @@ class strongType implements JsonSerializable
                 // Try Dates::Datestamp() like your ToHTML() does; if it fails, fall back safely.
                 try {
                     $display = Dates::Datestamp($val);
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     $display = get_class($val);
                 }
             } elseif (is_array($val)) {
