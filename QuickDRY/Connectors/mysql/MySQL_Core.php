@@ -840,6 +840,7 @@ class MySQL_Core extends SQL_Base implements ISQLCore
                 return $value ? 1 : 0;
 
             case 'bigint':
+            case 'smallint unsigned':
                 if (is_null($value) && static::$prop_definitions[$name]['is_nullable']) {
                     return null;
                 }
