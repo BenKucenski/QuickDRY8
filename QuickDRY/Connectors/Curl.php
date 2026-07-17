@@ -86,7 +86,7 @@ class Curl
 
             $client = new Client(self::$options);
             $response = $client->post($path, [
-                'query'       => $params,
+                'form_params' => $params,
                 'headers'     => $additional_headers,
                 'http_errors' => false,
             ]);
