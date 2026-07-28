@@ -321,8 +321,8 @@ class UTMClass extends strongType
      */
     public static function LatLonToUTMXY($lat, $lon, $zone): self
     {
-        $zone = self::UTMCentralMeridian($zone);
-        $xy = self::MapLatLonToXY($lat, $lon, $zone);
+        $cmeridian = self::UTMCentralMeridian($zone);
+        $xy = self::MapLatLonToXY($lat, $lon, $cmeridian);
 
         /* Adjust easting and northing for UTM system. */
         $xy[0] = $xy[0] * self::$UTMScaleFactor + 500000.0;
@@ -330,7 +330,7 @@ class UTMClass extends strongType
         if ($xy[1] < 0.0)
             $xy[1] = $xy[1] + 10000000.0;
 
-        $xy[2] = $zone;
+        $xy[2] = $zone;   // now the actual zone number, e.g. 12
 
         return new self([
             'utm_x'    => $xy[0],

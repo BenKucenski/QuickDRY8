@@ -216,6 +216,35 @@ class Curl
         }
     }
 
+    /**
+     * @param string $path
+     * @param array|null $params
+     * @param array|null $additional_headers
+     * @return Curl|void
+     */
+    public static function PutJSON(
+        string $path,
+        ?array $params = null,
+        ?array $additional_headers = null
+    )
+    {
+        try {
+            $start = microtime(true);
+            $client = new Client(self::$options);
+            $response = $client->put($path, [
+                RequestOptions::JSON => $params,
+                'headers'            => $additional_headers,
+                'http_errors'        => false,
+            ]);
+
+            CurlLog::Log($path, $params, microtime(true) - $start, 'PutJSON');
+
+            return self::getResFromGuzzle($response, $path, $params, $additional_headers);
+        } catch (GuzzleException $e) {
+            Exception($e->getMessage());
+        }
+    }
+
 }
 
 
