@@ -210,7 +210,7 @@ WHERE SCHEMA_NAME = :SCHEMA_NAME
             $last_id = 0;
             $aff = 0;
 
-            if ($large || strlen($sql) > 128 * 1024) {
+            if ($large && strlen($sql) > 128 * 1024) {
                 if (!is_dir('sql')) {
                     mkdir('sql');
                 }
@@ -253,9 +253,9 @@ database = ' . $this->current_db . '
 
                 if (!static::$keep_files) {
                     unlink($fname);
-                }
-                if (file_exists($file)) {
-                    unlink($file);
+                    if (file_exists($file)) {
+                        unlink($file);
+                    }
                 }
 
                 Metrics::Stop('MySQL: ' . $query_hash);
