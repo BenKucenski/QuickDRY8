@@ -862,6 +862,9 @@ class MySQL_Core extends SQL_Base implements ISQLCore
             case 'text':
             case 'mediumtext':
             case 'longtext':
+            case 'longblob':
+            case 'json':
+            case 'binary(16)':
                 return (string)$value;
 
             default:
