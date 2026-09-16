@@ -185,16 +185,7 @@ class Security extends strongType
         ?bool     $strict_host = true
     ): ?array
     {
-        $token = $_SERVER['HTTP_AUTHORIZATION'] ?? ($_REQUEST['HTTP_AUTHORIZATION'] ?? null);
-        if (!$token) {
-            $token = self::validateHeaders();
-            if (!$token) {
-                return null;
-            }
-        }
-
-        $token = explode(' ', $token);
-        $token = trim($token[sizeof($token) - 1] ?? null);
+        $token = self::getToken();
 
         if (!$token) {
             return null;
@@ -234,6 +225,36 @@ class Security extends strongType
         }
 
         return $data;
+    }
+
+    /**
+     * @return array|null
+     */
+    public static function getJWT(): ?JWTClass
+    {
+        $token = self::getToken();
+
+        if (!$token) {
+            return null;
+        }
+
+        return new JWTClass(json_decode(json_encode(self::decodeBearerToken($token)), true));
+    }
+
+    public static function getToken(): ?string
+    {
+        $token = $_SERVER['HTTP_AUTHORIZATION'] ?? ($_REQUEST['HTTP_AUTHORIZATION'] ?? null);
+        if (!$token) {
+            $token = self::validateHeaders();
+            if (!$token) {
+                return null;
+            }
+        }
+
+        $token = explode(' ', $token);
+        $token = trim($token[sizeof($token) - 1] ?? null);
+
+        return $token;
     }
 
     /**
@@ -281,6 +302,63 @@ class Security extends strongType
         }
 
         return Security::createBearerToken([
+            'email'     => $check->email_address,
+            'client_id' => $check->client_id,
+        ], $expire);
+    }
+
+    /**
+     * Extracts a bearer token from the Authorization header (or `bearer` request param
+     * as a fallback), decodes it, confirms the client is still valid, and issues a
+     * brand new token with a fresh expiration window.
+     *
+     * Unlike getBearer(), this does not require client_secret — possession of a
+     * still-valid (non-expired) bearer token is the credential.
+     *
+     * @param string $token
+     * @param int $expire
+     * @return string
+     */
+    public static function renewBearer(string $token, int $expire = 3600): string
+    {
+        $jwt = self::decodeBearerToken($token); // exits 401 itself if expired/invalid
+
+        if ($_SERVER['HTTP_HOST'] !== $jwt->iss) {
+            HTTP::ExitJSON(['error' => 'Invalid Host'], HTTP::HTTP_STATUS_UNAUTHORIZED);
+        }
+
+        $data = json_decode(json_encode($jwt->data ?? null), true);
+        $client_id = $data['client_id'] ?? null;
+
+        if (!$client_id) {
+            HTTP::ExitJSON(['error' => 'invalid token'], HTTP::HTTP_STATUS_UNAUTHORIZED);
+        }
+
+        $check = APIUser::GetForClientId($client_id);
+
+        $log = new APIUserLog();
+        $log->client_id = $client_id;
+        $log->created_at = Dates::Timestamp();
+        $log->remote_addr = Server::REMOTE_ADDR();
+        $log->host = $_SERVER['HTTP_HOST'] ?? null;
+
+        if (!$check) {
+            $log->is_success = 0;
+            $log->Save();
+            HTTP::ExitJSON([
+                'error' => 'unauthorized',
+                'code'  => 1
+            ], HTTP::HTTP_STATUS_UNAUTHORIZED);
+        }
+
+        $log->is_success = 1;
+        $log->Save();
+
+        if (!$expire || $expire > 3600) {
+            $expire = 3600;
+        }
+
+        return self::createBearerToken([
             'email'     => $check->email_address,
             'client_id' => $check->client_id,
         ], $expire);
