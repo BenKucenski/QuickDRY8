@@ -62,7 +62,7 @@ class Security extends strongType
      */
     public static function encrypt(?string $plaintext): ?string
     {
-        if(!$plaintext) {
+        if (!$plaintext) {
             return null;
         }
 
@@ -177,9 +177,13 @@ class Security extends strongType
 
     /**
      * @param callable|null $checkCount
+     * @param bool|null $strict_host
      * @return array|null
      */
-    public static function validateRequest(?callable $checkCount = null): ?array
+    public static function validateRequest(
+        ?callable $checkCount = null,
+        ?bool     $strict_host = true
+    ): ?array
     {
         $token = $_SERVER['HTTP_AUTHORIZATION'] ?? ($_REQUEST['HTTP_AUTHORIZATION'] ?? null);
         if (!$token) {
@@ -197,6 +201,10 @@ class Security extends strongType
         }
 
         $jwt = self::decodeBearerToken($token);
+
+        if ($strict_host && $_SERVER['HTTP_HOST'] !== $jwt->iss) {
+            HTTP::ExitJSON(['error' => 'Invalid Host'], HTTP::HTTP_STATUS_UNAUTHORIZED);
+        }
 
         $data = json_decode(json_encode($jwt->data ?? null), true);
 
@@ -253,6 +261,7 @@ class Security extends strongType
         $log->client_id = $check->client_id;
         $log->created_at = Dates::Timestamp();
         $log->remote_addr = Server::REMOTE_ADDR();
+        $log->host = $_SERVER['HTTP_HOST'] ?? null;
 
         if (!$check->validate($client_secret)) {
             $log->is_success = 0;
