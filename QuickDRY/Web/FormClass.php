@@ -41,7 +41,7 @@ class FormClass extends strongType
      */
     public static function SelectItems(
         array     $options,
-        ?string   $selected,
+        mixed   $selected,
         ElementID $elementID,
         ?string   $class = null,
         ?string   $onchange = null,

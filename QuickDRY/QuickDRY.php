@@ -261,6 +261,11 @@ function arrays_are_equal(array $a, array $b): bool
     return true;
 }
 
+/**
+ * @param string $label
+ * @param bool $real
+ * @return void
+ */
 function mem(string $label, bool $real = true): void
 {
     $cur = memory_get_usage($real);
@@ -373,6 +378,10 @@ function coerce_to_reflection_type($value, ?ReflectionType $type)
     return $value;
 }
 
+/**
+ * @param int $limit
+ * @return array
+ */
 function safeBacktrace(int $limit = 20): array
 {
     $bt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $limit);

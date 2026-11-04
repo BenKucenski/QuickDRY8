@@ -131,6 +131,36 @@ class Curl
 
     /**
      * @param string $path
+     * @param array|null $params
+     * @param array|null $additional_headers
+     * @return Curl
+     */
+    public static function PatchJSON(
+        string $path,
+        ?array $params = null,
+        ?array $additional_headers = null
+    ): Curl
+    {
+
+        try {
+            $start = microtime(true);
+            $client = new Client(self::$options);
+            $response = $client->patch($path, [
+                RequestOptions::JSON => $params,
+                'headers'            => $additional_headers,
+                'http_errors'        => false,
+            ]);
+
+            CurlLog::Log($path, $params, microtime(true) - $start, 'PatchJSON');
+
+            return self::getResFromGuzzle($response, $path, $params, $additional_headers);
+        } catch (GuzzleException $e) {
+            Exception($e->getMessage());
+        }
+    }
+
+    /**
+     * @param string $path
      * @param string|null $xml
      * @param array|null $additional_headers
      * @return Curl

@@ -143,6 +143,7 @@ class SQLCodeGen extends strongType
 
             case 'smalldatetime':
             case 'datetime':
+            case 'timestamp':
             case 'datetime2':
             case 'date':
                 if ($DatabaseType === 'mysql') {

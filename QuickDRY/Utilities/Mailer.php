@@ -133,6 +133,7 @@ class Mailer extends strongType
         }
 
         $to_emails = Strings::SplitEmails($this->to_email);
+        foreach ($to_emails as $to) {
 
         // Opt-in single-message mode: one send, all "to" addresses in To:, cc_emails in Cc:
         if ($this->cc_emails !== null) {
@@ -148,6 +149,8 @@ class Mailer extends strongType
                     Exception('Mailer Add Address', $e->getMessage());
                 }
             }
+            $mail->Host = SMTP_HOST;
+            $mail->Port = defined('SMTP_PORT') ? SMTP_PORT : 25;
 
             foreach (Strings::SplitEmails($this->cc_emails) as $cc) {
                 if (!$cc) {
@@ -159,10 +162,18 @@ class Mailer extends strongType
                     Exception('Mailer Add CC', $e->getMessage());
                 }
             }
+            $mail->SMTPOptions = [
+                'ssl' => [
+                    'verify_peer'       => false,
+                    'verify_peer_name'  => false,
+                    'allow_self_signed' => true
+                ]
+            ];
 
             if (!$this->attachAndSend($mail, $debug)) {
                 return 0;
             }
+            $mail->Mailer = 'smtp';
 
             $this->is_sent = true;
             $this->sent_at = Dates::Timestamp(time());
@@ -321,6 +332,8 @@ class Mailer extends strongType
             $this->log = $e->getMessage();
             return false;
         }
+        $this->is_sent = true;
+        $this->sent_at = Dates::Timestamp(time());
 
         return true;
     }

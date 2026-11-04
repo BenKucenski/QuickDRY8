@@ -112,7 +112,7 @@ WHERE SCHEMA_NAME = :SCHEMA_NAME
             try {
                 if (defined('MYSQL_SSL') && MYSQL_SSL) {
                     $con = mysqli_init();
-                    mysqli_options($con, MYSQLI_OPT_SSL_VERIFY_SERVER_CERT, false);
+                    mysqli_options($con, MYSQLI_OPT_SSL_VERIFY_SERVER_CERT, 0);
                     mysqli_ssl_set($con
                         , NULL
                         , NULL
@@ -210,7 +210,7 @@ WHERE SCHEMA_NAME = :SCHEMA_NAME
             $last_id = 0;
             $aff = 0;
 
-            if ($large && strlen($sql) > 128 * 1024) {
+            if ($large || strlen($sql) > 128 * 1024) {
                 if (!is_dir('sql')) {
                     mkdir('sql');
                 }
@@ -253,9 +253,9 @@ database = ' . $this->current_db . '
 
                 if (!static::$keep_files) {
                     unlink($fname);
-                    if (file_exists($file)) {
-                        unlink($file);
-                    }
+                }
+                if (file_exists($file)) {
+                    unlink($file);
                 }
 
                 Metrics::Stop('MySQL: ' . $query_hash);
@@ -779,31 +779,54 @@ AND (t100.ROUTINE_TYPE IN(\'FUNCTION\',\'PROCEDURE\'))
 
     }
 
+    /**
+     * @param string $database
+     * @param string $table
+     * @return string
+     */
     public function TableToClass(string $database, string $table): string
     {
         Exception('Not Implemented');
     }
 
+    /**
+     * @param mixed $query
+     * @param bool $large
+     * @return QueryExecuteResult|null
+     */
     public function ExecuteWindows(mixed $query, bool $large = false): ?QueryExecuteResult
     {
         Exception('Not Implemented');
     }
 
+    /**
+     * @return array
+     */
     public function GetDatabases(): array
     {
         Exception('Not Implemented');
     }
 
+    /**
+     * @param mixed $table_name
+     * @return array
+     */
     public function GetTableIndexes(mixed $table_name): array
     {
         Exception('Not Implemented');
     }
 
+    /**
+     * @return array
+     */
     public function GetTriggers(): array
     {
         Exception('Not Implemented');
     }
 
+    /**
+     * @return array
+     */
     public function GetDefinitions(): array
     {
         Exception('Not Implemented');

@@ -230,7 +230,7 @@ class HTTP extends strongType
         }
 
         header('location: ' . $_SERVER['REQUEST_URI']);
-        exit;
+        exit();
     }
 
     /**
@@ -249,7 +249,7 @@ class HTTP extends strongType
     })();
     </script>
     ';
-        exit;
+        exit();
     }
 
     // https://stackoverflow.com/questions/6041741/fastest-way-to-check-if-a-string-is-json-in-php
@@ -379,7 +379,7 @@ class HTTP extends strongType
 
             // Output the file content
             echo $content;
-            exit;
+            exit();
         } else {
             header('Content-Type: ' . $ContentType);
         }

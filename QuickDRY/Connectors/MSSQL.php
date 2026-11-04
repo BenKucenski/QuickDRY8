@@ -45,7 +45,7 @@ class MSSQL extends strongType
 
         if ($data) {
             foreach ($non_displayables as $regex) {
-                $data = preg_replace($regex, '', $data);
+                $data = preg_replace($regex, '', (string)$data);
             }
         }
 

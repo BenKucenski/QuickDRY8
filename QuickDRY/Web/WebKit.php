@@ -144,7 +144,7 @@ class WebKit
             }
 
             readfile($FileName);
-            exit;
+            exit();
         } else {
             rename($FileName, $Web->PDFFileName);
         }

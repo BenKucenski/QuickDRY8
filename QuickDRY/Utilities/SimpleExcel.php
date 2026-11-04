@@ -79,7 +79,7 @@ class SimpleExcel extends strongType
         $sheet_column = 'A';
         foreach ($se->Columns as $column) {
             self::_SetSpreadsheetCellValue($sheet, $sheet_column, $sheet_row, $column->Header, $column->PropertyType);
-            $sheet_column++;
+            $sheet_column = str_increment($sheet_column);
         }
         $sheet_row++;
         foreach ($se->Report as $item) {
@@ -109,7 +109,7 @@ class SimpleExcel extends strongType
                 }
 
                 self::_SetSpreadsheetCellValue($sheet, $sheet_column, $sheet_row, $value, $column->PropertyType);
-                $sheet_column++;
+                $sheet_column = str_increment($sheet_column);
             }
             $sheet_row++;
         }
@@ -122,7 +122,7 @@ class SimpleExcel extends strongType
                 header('Content-Disposition: attachment;filename="' . $se->Filename . '"');
                 header('Cache-Control: max-age=0');
                 $writer->save('php://output');
-                exit;
+                exit();
             } else {
                 $writer->save($se->Filename);
             }
@@ -223,7 +223,7 @@ class SimpleExcel extends strongType
                 header('Content-Disposition: attachment;filename="' . $filename . '"');
                 header('Cache-Control: max-age=0');
                 $writer->save('php://output');
-                exit;
+                exit();
             } else {
                 $writer->save($filename);
             }
@@ -280,7 +280,7 @@ class SimpleExcel extends strongType
                 header('Content-Disposition: download;filename="' . $se->Filename . '"');
                 header('Cache-Control: max-age=0');
                 $writer->save('php://output');
-                exit;
+                exit();
             } else {
                 $writer->save($se->Filename);
             }

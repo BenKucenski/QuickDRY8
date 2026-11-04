@@ -34,7 +34,7 @@ class MySQL_Queue
         $res = MySQL_A::Execute($sql, null, true);
         if ($res->error) {
             Log::Insert($res);
-            exit;
+            exit();
         }
 
         $this->_sql = [];

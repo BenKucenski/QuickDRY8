@@ -146,7 +146,7 @@ class MySQL_Core extends SQL_Base implements ISQLCore
     }
 
     /**
-     * @param string $table
+     * @param string $table_name
      * @return array
      */
     public static function GetTableColumns(string $table_name): array
@@ -168,7 +168,7 @@ class MySQL_Core extends SQL_Base implements ISQLCore
     }
 
     /**
-     * @param string $table
+     * @param string $table_name
      * @return mixed
      */
     public static function GetUniqueKeys(string $table_name): mixed
@@ -431,7 +431,7 @@ class MySQL_Core extends SQL_Base implements ISQLCore
             $placeholders = [];
             foreach ($vals as $i => $v) {
                 $placeholders[] = ":{$paramName}_in" . $i;
-                $vals[$i] = [$paramName . "_in" . $i => $v];
+                $vals[$i] = [$paramName . '_in' . $i => $v];
             }
             $col .= ' IN (' . implode(', ', $placeholders) . ')';
             $val = array_merge(...$vals);
@@ -440,7 +440,7 @@ class MySQL_Core extends SQL_Base implements ISQLCore
             $placeholders = [];
             foreach ($vals as $i => $v) {
                 $placeholders[] = ":{$paramName}_nin" . $i;
-                $vals[$i] = [$paramName . "_nin" . $i => $v];
+                $vals[$i] = [$paramName . '_nin' . $i => $v];
             }
             $col .= ' NOT IN (' . implode(', ', $placeholders) . ')';
             $val = array_merge(...$vals);
@@ -840,8 +840,6 @@ class MySQL_Core extends SQL_Base implements ISQLCore
                 return $value ? 1 : 0;
 
             case 'bigint':
-            case 'smallint unsigned':
-            case 'bigint unsigned':
                 if (is_null($value) && static::$prop_definitions[$name]['is_nullable']) {
                     return null;
                 }
@@ -862,9 +860,6 @@ class MySQL_Core extends SQL_Base implements ISQLCore
             case 'text':
             case 'mediumtext':
             case 'longtext':
-            case 'longblob':
-            case 'json':
-            case 'binary(16)':
                 return (string)$value;
 
             default:
@@ -1098,31 +1093,50 @@ WHERE
         return $res;
     }
 
+    /**
+     * @return array
+     */
     public static function GetDatabases(): array
     {
         Exception('Not Implemented');
     }
 
+    /**
+     * @param string $table_name
+     * @return array
+     */
     public static function GetTableIndexes(string $table_name): array
     {
         Exception('Not Implemented');
     }
 
+    /**
+     * @return array
+     */
     public static function GetTriggers(): array
     {
         Exception('Not Implemented');
     }
 
+    /**
+     * @return array
+     */
     public static function GetDefinitions(): array
     {
         Exception('Not Implemented');
     }
 
+    /**
+     * @return string
+     */
     public static function GUID(): string
     {
         Exception('Not Implemented');
     }
 
+    /**
+     * @return ISQLConnection|null
+     */
     public static function getConnection(): ?ISQLConnection
     {
         return static::$connection;

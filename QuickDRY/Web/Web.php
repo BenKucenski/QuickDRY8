@@ -284,7 +284,7 @@ class Web extends strongType
         if ($this->IndexFile) {
             header('Content-Type: text/html; charset=UTF-8');
             readfile($this->IndexFile);
-            exit;
+            exit();
         }
 
         if ($this->ControllerFile) {

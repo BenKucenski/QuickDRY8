@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace QuickDRY\Utilities;
 
 use Exception;
+use JetBrains\PhpStorm\NoReturn;
+use Throwable;
 
 /**
  * Class ExceptionHandler
@@ -11,14 +13,19 @@ use Exception;
 class ExceptionHandler
 {
     /**
-     * @param string $err
+     * @param Throwable $e
      */
-    public static function Exception(string $err): void
+    #[NoReturn]
+    public static function Exception(Throwable $e): void
     {
-        if (defined('SHOW_ERRORS') && SHOW_ERRORS) {
-            Exception($err);
-        }
-        self::LogError(-1, $err, '', 0);
+        self::LogError(
+            -1,
+            $e->getMessage(),
+            $e->getFile(),
+            $e->getLine()
+        );
+
+        Exception($e);
     }
 
     /**
@@ -34,10 +41,10 @@ class ExceptionHandler
     }
 
     /**
-     * @param int    $errno
+     * @param int $errno
      * @param string $errstr
      * @param string $errfile
-     * @param int    $errline
+     * @param int $errline
      * @return bool
      * @throws Exception
      */
@@ -73,15 +80,32 @@ class ExceptionHandler
     public static function Fatal(): void
     {
         $error = error_get_last();
-        if (isset($error['type'])) {
-            if ($error['type'] === E_ERROR) {
-                try {
-                    self::Error((int)$error['type'], (string)$error['message'], (string)$error['file'], (int)$error['line']);
-                } catch (Exception $e) {
-                    Exception($e);
-                }
-            }
+
+        if ($error === null) {
+            return;
         }
+
+        $fatalTypes = [
+            E_ERROR,
+            E_PARSE,
+            E_CORE_ERROR,
+            E_COMPILE_ERROR,
+            E_USER_ERROR,
+            E_RECOVERABLE_ERROR,
+        ];
+
+        if (!in_array($error['type'], $fatalTypes, true)) {
+            return;
+        }
+
+        self::LogError(
+            (int)$error['type'],
+            (string)$error['message'],
+            (string)$error['file'],
+            (int)$error['line']
+        );
+
+        Exception($error);
     }
 
     /**

@@ -27,6 +27,7 @@ class BasePage extends strongType
     public static ?string $MasterPage = null;
     private static ?string $MetaTitle = null;
     public static ?string $CurrentPage = null;
+    public static ?array $PutData = null;
 
     /**
      * @return void
@@ -106,7 +107,24 @@ class BasePage extends strongType
     {
         $temp = parse_url($_SERVER['REQUEST_URI'] ?? '');
         self::$CurrentPage = $temp['path'] ?? '/';
-        self::$PostData = json_decode(file_get_contents('php://input'), true); // return an array
+
+        $input = file_get_contents('php://input');
+        if($input) {
+            $putData = [];
+            $json = json_decode($input, true);
+
+            if (json_last_error()) {
+                parse_str($input, $putData);
+            } else {
+                $putData = $json;
+            }
+
+            self::$PostData = $putData;
+            foreach ($putData as $name => $value) {
+                $_POST[$name] = $value;
+                $_REQUEST[$name] = $value;
+            }
+        }
     }
 
     /**

@@ -5,6 +5,9 @@ namespace QuickDRY\Connectors;
 
 use QuickDRY\Utilities\strongType;
 
+/**
+ *
+ */
 class TableColumn extends strongType
 {
     public ?string $field = null;

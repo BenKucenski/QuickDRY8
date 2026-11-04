@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace QuickDRY\Interfaces;
 
+/**
+ *
+ */
 interface IAPIUserLog
 {
     public ?string $client_id = null {
@@ -22,5 +25,8 @@ interface IAPIUserLog
         set;
     }
 
-    public function Save();
+    /**
+     * @return mixed
+     */
+    public function Save(): mixed;
 }

@@ -241,6 +241,9 @@ class Security extends strongType
         return new JWTClass(json_decode(json_encode(self::decodeBearerToken($token)), true));
     }
 
+    /**
+     * @return string|null
+     */
     public static function getToken(): ?string
     {
         $token = $_SERVER['HTTP_AUTHORIZATION'] ?? ($_REQUEST['HTTP_AUTHORIZATION'] ?? null);
@@ -252,9 +255,7 @@ class Security extends strongType
         }
 
         $token = explode(' ', $token);
-        $token = trim($token[sizeof($token) - 1] ?? null);
-
-        return $token;
+        return trim($token[sizeof($token) - 1] ?? null);
     }
 
     /**

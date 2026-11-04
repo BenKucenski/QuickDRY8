@@ -13,7 +13,7 @@ use QuickDRY\Utilities\Dates;
 class MathClass
 {
     /**
-     * @param $km
+     * @param float $km
      * @return float
      */
     public static function KMtoMiles(float $km): float

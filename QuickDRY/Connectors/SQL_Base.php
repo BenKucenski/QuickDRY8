@@ -730,7 +730,7 @@ class SQL_Base implements JsonSerializable
      * @param array|null $swap
      * @param array|null $add
      * @param array|null $ignore
-     * @param string|null $custom_link
+     * @param array|null $custom_link
      * @param array|null $column_order
      *
      * @return string
@@ -1100,6 +1100,9 @@ class SQL_Base implements JsonSerializable
         return $select;
     }
 
+    /**
+     * @return array
+     */
     public function jsonSerialize(): array
     {
         return $this->ToJSONArray();

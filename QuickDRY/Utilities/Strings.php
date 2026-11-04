@@ -6,11 +6,19 @@ namespace QuickDRY\Utilities;
 use JetBrains\PhpStorm\NoReturn;
 use SimpleXMLElement;
 
+
 /**
  * Class Strings
  */
 class Strings extends strongType
 {
+    /**
+     * @param array $array
+     * @param string $targetKey
+     * @param string $newKey
+     * @param mixed $newValue
+     * @return array
+     */
     public static function insertBeforeKey(array $array, string $targetKey, string $newKey, mixed $newValue): array
     {
         $result = [];
@@ -25,11 +33,18 @@ class Strings extends strongType
         return $result;
     }
 
+    /**
+     * @param array $array
+     * @param string $targetKey
+     * @param string $newKey
+     * @param mixed $newValue
+     * @return array
+     */
     public static function insertAfterKey(
-        array &$array,
+        array  &$array,
         string $targetKey,
         string $newKey,
-        mixed $newValue
+        mixed  $newValue
     ): array
     {
         $result = [];
@@ -307,7 +322,7 @@ class Strings extends strongType
             if (!isset($out['@attributes'])) {
                 $out['@attributes'] = [];
             }
-            $out['@attributes'][(string)$k] = (string)$v;
+            $out['@attributes'][$k] = (string)$v;
         }
 
         // Children
@@ -992,6 +1007,43 @@ class Strings extends strongType
         }
         $company = trim(implode(' ', $company));
         return strtolower($company);
+    }
+
+    /**
+     * @param string|null $address
+     * @return ParsedUSAddress
+     */
+    public static function ParseUSAddress(?string $address): ParsedUSAddress
+    {
+        $result = new ParsedUSAddress();
+
+        if (!$address) {
+            return $result;
+        }
+
+        $address = trim($address);
+
+        // Match: everything up to the last comma = street+city, then state, then zip
+        if (!preg_match('/^(.+),\s*([A-Z]{2})\s+(\d{5}(?:-\d{4})?)$/', $address, $matches)) {
+            return $result;
+        }
+
+        $beforeState = trim($matches[1]);
+        $result->state = $matches[2];
+        $result->zip = $matches[3];
+
+        if (str_contains($beforeState, ',')) {
+            [$street, $city] = explode(',', $beforeState, 2);
+            $result->street = trim($street);
+            $result->city = trim($city);
+        } elseif (preg_match('/^(.*\b(?:St|Ave|Dr|Blvd|Rd|Ln|Ct|Cir|Pl|Way|Pkwy|Hwy|Trl|Ter|Run|Loop|Pass|Pt|Sq|N|S|E|W|NE|NW|SE|SW)\.?)\s+([A-Za-z\s]+)$/i', $beforeState, $m)) {
+            $result->street = trim($m[1]);
+            $result->city = trim($m[2]);
+        } else {
+            $result->street = $beforeState;
+        }
+
+        return $result;
     }
 
     /**
