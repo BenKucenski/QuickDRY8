@@ -29,6 +29,9 @@ class BasePage extends strongType
     public static ?string $CurrentPage = null;
     public static ?array $PutData = null;
 
+    public static ?string $Notice = null;
+    public static ?string $Error = null;
+
     /**
      * @return void
      */
@@ -107,6 +110,14 @@ class BasePage extends strongType
     {
         $temp = parse_url($_SERVER['REQUEST_URI'] ?? '');
         self::$CurrentPage = $temp['path'] ?? '/';
+
+        if (self::$Notice = Session::Get('notice')) {
+            Session::Set('notice', null);
+        }
+
+        if (self::$Error = Session::Get('error')) {
+            Session::Set('error', null);
+        }
 
         $input = file_get_contents('php://input');
         if($input) {
